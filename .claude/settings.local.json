@@ -10,7 +10,9 @@
       "Bash(sed -i 's/from pymarc/from rmarc/g; s/import pymarc/import rmarc/g; s/pymarc\\\\./rmarc./g; s|\"\"test/|\"\"test_pymarc/|g; s|''''test/|''''test_pymarc/|g' \"$f\")",
       "Bash(done)",
       "Bash(wc:*)",
-      "Bash(python bench/generate_data.py)"
+      "Bash(python bench/generate_data.py)",
+      "Bash(ls:*)",
+      "Bash(cargo check:*)"
     ]
   }
 }

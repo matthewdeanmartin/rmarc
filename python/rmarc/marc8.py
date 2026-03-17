@@ -8,9 +8,25 @@ import unicodedata
 
 from rmarc import marc8_mapping
 
+try:
+    from rmarc._rmarc import marc8_to_unicode_rs as _marc8_to_unicode_rs
+    _HAS_RUST_MARC8 = True
+except ImportError:
+    _HAS_RUST_MARC8 = False
+
 
 def marc8_to_unicode(marc8, hide_utf8_warnings: bool = False) -> str:
     """Pass in a string, and get back a Unicode object."""
+    if _HAS_RUST_MARC8:
+        if isinstance(marc8, str):
+            marc8 = marc8.encode("latin-1")
+        return _marc8_to_unicode_rs(marc8, hide_utf8_warnings)
+
+    return _marc8_to_unicode_python(marc8, hide_utf8_warnings)
+
+
+def _marc8_to_unicode_python(marc8, hide_utf8_warnings: bool = False) -> str:
+    """Pure Python fallback for marc8_to_unicode."""
     converter = MARC8ToUnicode(quiet=hide_utf8_warnings)
     try:
         return converter.translate(marc8)

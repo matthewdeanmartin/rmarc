@@ -35,6 +35,12 @@ from rmarc.field import (
 from rmarc.leader import Leader
 from rmarc.marc8 import marc8_to_unicode
 
+try:
+    from rmarc._rmarc import decode_marc_raw as _decode_marc_raw, encode_marc_raw as _encode_marc_raw
+    _HAS_RUST_CODEC = True
+except ImportError:
+    _HAS_RUST_CODEC = False
+
 isbn_regex: Pattern = re.compile(r"([0-9\-xX]+)")
 logger = logging.getLogger("pymarc")
 
@@ -183,6 +189,141 @@ class Record:
         utf8_handling: str = "strict",
         encoding: str = "iso8859-1",
     ) -> None:
+        if _HAS_RUST_CODEC:
+            self._decode_marc_rust(
+                marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding
+            )
+        else:
+            self._decode_marc_python(
+                marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding
+            )
+
+    def _decode_marc_rust(
+        self,
+        marc,
+        to_unicode: bool,
+        force_utf8: bool,
+        hide_utf8_warnings: bool,
+        utf8_handling: str,
+        encoding: str,
+    ) -> None:
+        """Fast path: Rust does byte-level parsing + encoding, Python wraps into objects."""
+        # Validate leader first (needed for encoding detection)
+        if len(marc) < LEADER_LEN:
+            raise RecordLeaderInvalid
+
+        leader_str = marc[0:LEADER_LEN].decode("ascii")
+        if leader_str[9] == "a" or self.force_utf8:
+            encoding = "utf-8"
+
+        self.leader = Leader(leader_str)
+
+        # Validate before calling Rust (to raise the right exception types)
+        base_address = int(marc[12:17])
+        if base_address <= 0:
+            raise BaseAddressNotFound
+        if base_address >= len(marc):
+            raise BaseAddressInvalid
+        if len(marc) < int(self.leader[:5]):
+            raise TruncatedRecord
+
+        # Rust does parsing + encoding conversion in one shot
+        try:
+            _leader, fields_raw = _decode_marc_raw(
+                marc,
+                to_unicode=to_unicode,
+                force_utf8=force_utf8,
+                encoding=encoding,
+                utf8_handling=utf8_handling,
+                quiet=hide_utf8_warnings,
+            )
+        except ValueError as e:
+            msg = str(e)
+            if "DirectoryInvalid" in msg:
+                raise RecordDirectoryInvalid from None
+            if "NoFieldsFound" in msg:
+                raise NoFieldsFound from None
+            if "not valid ASCII" in msg:
+                raise UnicodeDecodeError("ascii", b"", 0, 1, msg) from None
+            raise
+
+        # Convert Rust output into Python Field/RawField objects
+        # Rust returns decoded strings for utf-8 and marc8/iso8859-1 cases,
+        # but raw bytes for unknown encodings and to_unicode=False.
+        # We need to decode raw bytes when to_unicode=True but encoding is unknown to Rust.
+        needs_python_decode = to_unicode and encoding not in ("utf-8", "iso8859-1")
+        field_count = 0
+
+        for tag, field_info in fields_raw:
+            field_type = field_info[0]
+
+            if field_type == "control":
+                data_val = field_info[1]
+                if needs_python_decode and isinstance(data_val, bytes):
+                    data_val = data_val.decode(encoding)
+                if to_unicode:
+                    field = Field(tag=tag, data=data_val)
+                else:
+                    field = RawField(tag=tag, data=data_val)
+            else:
+                ind1 = field_info[1]
+                ind2 = field_info[2]
+                raw_subfields = field_info[3]
+
+                subfields = []
+                for code_or_bytes, value in raw_subfields:
+                    if isinstance(code_or_bytes, bytes):
+                        # Non-ASCII subfield code — rare path
+                        warnings.warn(
+                            BadSubfieldCodeWarning(code_or_bytes + value),
+                            stacklevel=2,
+                        )
+                        code, skip_bytes = normalize_subfield_code(code_or_bytes + value)
+                        value = (code_or_bytes + value)[skip_bytes:]
+                        if to_unicode:
+                            if self.leader[9] == "a" or force_utf8:
+                                value = value.decode("utf-8", utf8_handling)
+                            elif encoding == "iso8859-1":
+                                value = marc8_to_unicode(value, hide_utf8_warnings)
+                            else:
+                                value = value.decode(encoding)
+                    else:
+                        code = code_or_bytes
+                        # Rust decoded the value for utf-8/marc8; decode here for other encodings
+                        if needs_python_decode and isinstance(value, bytes):
+                            value = value.decode(encoding)
+
+                    subfields.append(Subfield(code=code, value=value))
+
+                if to_unicode:
+                    field = Field(
+                        tag=tag,
+                        indicators=Indicators(ind1, ind2),
+                        subfields=subfields,
+                    )
+                else:
+                    field = RawField(
+                        tag=tag,
+                        indicators=Indicators(ind1, ind2),
+                        subfields=subfields,
+                    )
+
+            self.add_field(field)
+            field_count += 1
+
+        if field_count == 0:
+            raise NoFieldsFound
+
+    def _decode_marc_python(
+        self,
+        marc,
+        to_unicode: bool,
+        force_utf8: bool,
+        hide_utf8_warnings: bool,
+        utf8_handling: str,
+        encoding: str,
+    ) -> None:
+        """Pure Python fallback for decode_marc."""
         # extract record leader
         leader = marc[0:LEADER_LEN].decode("ascii")
 
@@ -293,10 +434,6 @@ class Record:
             raise NoFieldsFound
 
     def as_marc(self) -> bytes:
-        fields = b""
-        directory = b""
-        offset = 0
-
         if self.to_unicode:
             if isinstance(self.leader, Leader):
                 self.leader.coding_scheme = "a"
@@ -305,18 +442,32 @@ class Record:
 
         encoding = "utf-8" if self.leader[9] == "a" or self.force_utf8 else "iso8859-1"
 
+        # Encode all fields first (needed by both paths)
+        field_pairs = []
         for field in self.fields:
             if isinstance(field, RawField):
                 field_data = field.as_marc()
             else:
                 field_data = field.as_marc(encoding=encoding)
-            fields += field_data
-            if field.tag.isdigit():
-                directory += f"{int(field.tag):03d}".encode(encoding)
-            else:
-                directory += f"{field.tag:>03}".encode(encoding)
-            directory += f"{len(field_data):04d}{offset:05d}".encode(encoding)
 
+            if field.tag.isdigit():
+                tag_str = f"{int(field.tag):03d}"
+            else:
+                tag_str = f"{field.tag:>03}"
+            field_pairs.append((tag_str, field_data))
+
+        if _HAS_RUST_CODEC:
+            return _encode_marc_raw(str(self.leader), field_pairs)
+
+        # Python fallback
+        fields = b""
+        directory = b""
+        offset = 0
+
+        for tag_str, field_data in field_pairs:
+            fields += field_data
+            directory += tag_str.encode(encoding)
+            directory += f"{len(field_data):04d}{offset:05d}".encode(encoding)
             offset += len(field_data)
 
         directory += END_OF_FIELD.encode(encoding)
