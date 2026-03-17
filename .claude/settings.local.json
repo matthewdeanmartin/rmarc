@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv add:*)",
+      "Bash(cargo search:*)",
+      "Bash(uv run:*)",
+      "Bash(make ci:*)"
+    ]
+  }
+}

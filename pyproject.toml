@@ -1,0 +1,215 @@
+[project]
+name = "rmarc"
+version = "0.1.0"
+description = "Pymarc compaitible reimplementation in Rust."
+readme = "README.md"
+authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
+keywords = ["bash", "gitlab", "github"]
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Repository = "https://github.com/matthewdeanmartin/rmarc"
+Documentation = "https://rmarc.readthedocs.io/en/latest/"
+Changelog = "https://github.com/matthewdeanmartin/rmarc/blob/main/CHANGELOG.md"
+
+homepage = "https://github.com/matthewdeanmartin/rmarc"
+issues = "https://github.com/matthewdeanmartin/rmarc/issues/"
+
+
+
+
+[dependency-groups]
+dev = [
+    "jiggle-version>=2.0.1",
+    "maturin>=1.9.6; python_version >= '3.14'",
+    "pydantic>=2.12.0; python_version >= '3.14'",
+    "troml-dev-status>=0.4.1; python_version >= '3.9'",
+    "git2md; python_version >= '3.10'",
+    "pyclean; python_version >= '3.12'",
+    "strip-docs>=1.0; python_version >= '3.12'",
+    "gha-update; python_version >= '3.12'",
+    "mkdocstrings[python]",
+    "mkdocs; python_version >= '3.12'",
+    "mdformat",
+    # plugin finder
+    "packaging; python_version >= '3.8'",
+    # mpy
+    "mypy; python_version >= '3.8'",
+    "types-toml; python_version >= '3.8'",
+    "types-jsonschema; python_version >= '3.8'",
+    # reports
+    # build
+    "vermin; python_version >= '3.8'",
+    "metametameta>=0.1.3; python_version >= '3.9'",
+    "hatchling; python_version >= '3.8'",
+    "ruff>=0.12.0; python_version >= '3.8'",
+    "pylint; python_version >= '3.8'",
+    "bandit; python_version >= '3.8'",
+    "pre-commit; python_version >= '3.8'",
+    # testing tools
+    "pytest; python_version >= '3.8'",
+    "pytest-cov; python_version >= '3.8'",
+    "pytest-xdist>=3.5.0; python_version >= '3.8'",
+    "pytest-randomly>=3.15.0; python_version >= '3.8'",
+    "pytest-sugar>=0.9.7; python_version >= '3.8'",
+    "pytest-mock; python_version >= '3.8'",
+    "pytest-unused-fixtures; python_version >= '3.10'",
+    "hypothesis[cli]; python_version >= '3.8'",
+    "detect-test-pollution",
+    "pytest-timeout>=2.4.0",
+    # docs
+    "interrogate>=1.5.0; python_version >= '3.8'",
+    "pydoctest==0.2.1; python_version >= '3.8'",
+    "pdoc3>=0.5.0; python_version >= '3.8'",
+    "mdformat>=0.5.0; python_version >= '3.8'",
+    "linkcheckmd>=1.4.0; python_version >= '3.8'",
+    "codespell>=2.2.6; python_version >= '3.8'",
+    "pyenchant>=3.2.2; python_version >= '3.8'",
+    "maturin>=1.12.6",
+    "pyright>=1.1.408",
+    "mypy>=1.19.1",
+]
+
+[tool.uv]
+default-groups = "all"
+
+[tool.uv.sources]
+rmarc = { workspace = true }
+
+[tool.uv.workspace]
+members = ["./",
+]
+
+[project.scripts]
+rmarc = "rmarc.__main__:main"
+
+
+[build-system]
+requires = ["maturin>=1.9,<2.0"]
+build-backend = "maturin"
+
+[tool.maturin]
+python-source = "python"
+module-name = "rmarc._rmarc"
+features = ["pyo3/extension-module"]
+
+
+[tool.black]
+line-length = 120
+target-version = ['py39']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  | foo.py           # also separately exclude a file named foo.py in
+                     # the root of the project
+)
+'''
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "test",
+    "tests"
+]
+junit_family = "xunit1"
+norecursedirs = ["vendor", "scripts"]
+# don't know how to do this in toml
+#addopts = "--strict-markers"
+#markers =
+#	slow: marks tests as slow (deselect with '-m "not slow"')
+#	fast: marks tests as fast (deselect with '-m "not fast"')
+
+[tool.isort]
+default_section = "THIRDPARTY"
+force_grid_wrap = 0
+include_trailing_comma = true
+known_first_party = ["dedlin"]
+line_length = 120
+multi_line_output = 3
+use_parentheses = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "UP", "B", "C", "S", "SIM", "I"]
+ignore = [
+    "F403", "F401",   # star imports / unused imports (re-exports)
+    "E501",           # line length — enforced by formatter not linter
+    "C901",           # McCabe complexity
+    "S317",           # defusedxml
+    "S101",           # assert is fine in tests
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+
+[tool.coverage.run]
+branch = true
+source = ["python/rmarc"]
+
+[tool.coverage.report]
+skip_covered = true
+skip_empty = true
+show_missing = true
+exclude_also = [
+    "def __repr__",
+    "if self\\.debug",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "except ImportError",
+    "except ModuleNotFoundError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.mypy]
+exclude = ["^dist", "^target", "^pymarc_src"]
+python_version = "3.10"
+
+[tool.pyright]
+pythonVersion = "3.10"
+include = ["python/rmarc", "tests"]
+exclude = ["dist", "target", "pymarc_src"]
+typeCheckingMode = "basic"
+
+[tool.bug_trail]
+app_name = "rmarc"
+app_author = "matth"
+source_folder = "rmarc"

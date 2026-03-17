@@ -1,0 +1,87 @@
+.PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
+        format format-check build build-release clean all ci claude
+
+# ── Developer workflow ────────────────────────────────────────────────────────
+
+## Build and install the Rust extension in-place (editable dev mode).
+dev:
+	uv run maturin develop
+
+## Rebuild after Rust changes without reinstalling Python deps.
+rebuild:
+	uv run maturin develop --skip-install
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+
+## Run tests with unittest discover (matches pymarc CI floor).
+test:
+	uv run python -m unittest discover -s tests -v
+
+## Run tests with coverage measurement and report.
+test-coverage:
+	uv run coverage run -m unittest discover -s tests
+	uv run coverage xml
+	uv run coverage report
+
+# ── Linting ───────────────────────────────────────────────────────────────────
+
+## Run all linters.
+lint: lint-ruff lint-pylint lint-mypy lint-pyright
+
+## ruff: fast lint (pymarc CI floor).
+lint-ruff:
+	uv run ruff check python/rmarc tests
+
+## pylint: deeper static analysis.
+lint-pylint:
+	uv run pylint python/rmarc tests
+
+## mypy: strict type checking.
+lint-mypy:
+	uv run mypy python/rmarc tests
+
+## pyright: Microsoft type checker (pymarc CI floor).
+lint-pyright:
+	uv run pyright python/rmarc tests
+
+# ── Formatting ────────────────────────────────────────────────────────────────
+
+## Auto-format with ruff (pymarc CI floor).
+format:
+	uv run ruff format python/rmarc tests
+
+## Check formatting without modifying files (CI mode).
+format-check:
+	uv run ruff format --check --diff python/rmarc tests
+
+# ── Building & packaging ──────────────────────────────────────────────────────
+
+## Build a debug wheel.
+build:
+	uv run maturin build
+
+## Build a release wheel (optimised).
+build-release:
+	uv run maturin build --release
+
+# ── CI pipeline (mirrors pymarc .gitlab-ci.yml floor + extras) ────────────────
+
+## Full CI sequence: lint → format-check → test-coverage.
+ci: lint-ruff format-check lint-pyright test-coverage
+
+## Full quality gate including pylint and mypy on top of CI floor.
+all: lint format-check test-coverage
+
+# ── Housekeeping ──────────────────────────────────────────────────────────────
+
+## Remove build artefacts.
+clean:
+	cargo clean
+	find . -name "*.pyc" -delete
+	find . -name "__pycache__" -type d -exec rm -rf {} +
+	rm -rf .mypy_cache .ruff_cache coverage.xml .coverage
+
+# ── Meta ──────────────────────────────────────────────────────────────────────
+
+claude:
+	claude --allow-dangerously-skip-permissions
