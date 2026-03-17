@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -8,8 +8,8 @@ import re
 import tempfile
 from unittest import TestCase
 
-import pymarc
-from pymarc import Field, Record, exceptions
+import rmarc
+from rmarc import Field, Record, exceptions
 
 # TODO: these tests are overly complicated and should be converted over to using
 # pytest functions possibly in separate modules instead of getting fancy with inheritence
@@ -36,7 +36,7 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
     """Tests MARCReader which provides iterator based access to a MARC file."""
 
     def setUp(self):
-        self.reader = pymarc.MARCReader(open("test/test.dat", "rb"))  # noqa: SIM115
+        self.reader = rmarc.MARCReader(open("test_pymarc/test.dat", "rb"))  # noqa: SIM115
 
     def tearDown(self):
         if self.reader:
@@ -48,8 +48,8 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
         def f(r):
             self.count += 1
 
-        with open("test/test.dat", "rb") as fh:
-            pymarc.map_records(f, fh)
+        with open("test_pymarc/test.dat", "rb") as fh:
+            rmarc.map_records(f, fh)
             self.assertEqual(self.count, 10, "map_records appears to work")
 
     def test_multi_map_records(self):
@@ -58,28 +58,28 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
         def f(r):
             self.count += 1
 
-        with open("test/test.dat", "rb") as fh1, open("test/test.dat", "rb") as fh2:
-            pymarc.map_records(f, fh1, fh2)
+        with open("test_pymarc/test.dat", "rb") as fh1, open("test_pymarc/test.dat", "rb") as fh2:
+            rmarc.map_records(f, fh1, fh2)
             self.assertEqual(self.count, 20, "map_records appears to work")
 
     def test_bad_subfield(self):
-        with open("test/bad_subfield_code.dat", "rb") as fh:
-            reader = pymarc.MARCReader(fh)
+        with open("test_pymarc/bad_subfield_code.dat", "rb") as fh:
+            reader = rmarc.MARCReader(fh)
             record = next(reader)
             assert isinstance(record, Record)
             self.assertEqual(record["245"]["a"], "ActivePerl with ASP and ADO /")
 
     def test_bad_indicator(self):
-        with open("test/bad_indicator.dat", "rb") as fh:
-            reader = pymarc.MARCReader(fh)
+        with open("test_pymarc/bad_indicator.dat", "rb") as fh:
+            reader = rmarc.MARCReader(fh)
             record = next(reader)
             assert isinstance(record, Record)
             self.assertEqual(record["245"]["a"], "Aristocrats of color :")
 
     def test_regression_45(self):
         # https://github.com/edsu/pymarc/issues/45
-        with open("test/regression45.dat", "rb") as fh:
-            reader = pymarc.MARCReader(fh)
+        with open("test_pymarc/regression45.dat", "rb") as fh:
+            reader = rmarc.MARCReader(fh)
             record = next(reader)
             assert isinstance(record, Record)
             self.assertEqual(record["752"]["a"], "Russian Federation")
@@ -91,11 +91,11 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
 
 class MARCReaderStringTest(TestCase, MARCReaderBaseTest):
     def setUp(self):
-        with open("test/test.dat", "rb") as fh:
+        with open("test_pymarc/test.dat", "rb") as fh:
             raw = fh.read()
             fh.close()
 
-        self.reader = pymarc.reader.MARCReader(raw)
+        self.reader = rmarc.reader.MARCReader(raw)
 
     # inherit same tests from MARCReaderBaseTest
 
@@ -104,7 +104,7 @@ class MARCReaderFilePermissiveTest(TestCase):
     """Tests MARCReader which provides iterator based access in a permissive way."""
 
     def setUp(self):
-        self.reader = pymarc.MARCReader(open("test/bad_records.mrc", "rb"))  # noqa: SIM115
+        self.reader = rmarc.MARCReader(open("test_pymarc/bad_records.mrc", "rb"))  # noqa: SIM115
 
     def tearDown(self):
         if self.reader:
@@ -159,14 +159,14 @@ class MARCReaderFilePermissiveTest(TestCase):
 class TestTruncatedData(TestCase):
     def test_empty_data(self):
         count = 0
-        for record in pymarc.MARCReader(b""):
+        for record in rmarc.MARCReader(b""):
             count += 1
             self.assertIsNone(record)
         self.assertEqual(count, 0, "expected no records from empty data")
 
     def test_partial_length(self):
         count = 0
-        reader = pymarc.MARCReader(b"0012")
+        reader = rmarc.MARCReader(b"0012")
         for record in reader:
             count += 1
             self.assertIsNone(record, "expected one None record")
@@ -180,7 +180,7 @@ class TestTruncatedData(TestCase):
 
     def test_bad_length(self):
         count = 0
-        reader = pymarc.MARCReader(b"0012X")
+        reader = rmarc.MARCReader(b"0012X")
         for record in reader:
             count += 1
             self.assertIsNone(record, "expected one None record")
@@ -195,7 +195,7 @@ class TestTruncatedData(TestCase):
     def test_partial_data(self):
         count = 0
         data = b"00120cam"
-        reader = pymarc.MARCReader(data)
+        reader = rmarc.MARCReader(data)
         for record in reader:
             count += 1
             self.assertIsNone(record, "expected one None record")
@@ -214,7 +214,7 @@ class TestTruncatedData(TestCase):
     def test_missing_end_of_record(self):
         count = 0
         data = b"00006 "
-        reader = pymarc.MARCReader(data)
+        reader = rmarc.MARCReader(data)
         for record in reader:
             count += 1
             self.assertIsNone(record, "expected one None record")
@@ -236,11 +236,11 @@ class MARCMakerReaderTest(TestCase, MARCReaderBaseTest):
 
     @classmethod
     def setUpClass(cls):
-        with open("test/test.dat", "rb") as fh:
-            cls.records = [str(record) for record in pymarc.MARCReader(fh)]
+        with open("test_pymarc/test.dat", "rb") as fh:
+            cls.records = [str(record) for record in rmarc.MARCReader(fh)]
 
     def setUp(self):
-        self.reader = pymarc.MARCMakerReader("\n".join(self.records))
+        self.reader = rmarc.MARCMakerReader("\n".join(self.records))
 
     def test_round_trip(self):
         for index, record in enumerate(self.reader):
@@ -290,19 +290,23 @@ class MARCMakerReaderTest(TestCase, MARCReaderBaseTest):
         ]
         for line in lines:
             with self.subTest(line=line):
-                reader = pymarc.MARCMakerReader(line)
-                with self.assertRaises(pymarc.exceptions.PymarcException) as cm:
+                reader = rmarc.MARCMakerReader(line)
+                with self.assertRaises(rmarc.exceptions.PymarcException) as cm:
                     next(reader)
                 self.assertEqual(str(cm.exception), f'Unable to parse line "{line}"')
 
     def test_open_from_file(self):
         for encoding in ["utf-8", "ISO-8859-1", None]:
             with self.subTest(encoding=encoding):
-                with tempfile.NamedTemporaryFile("w", encoding=encoding) as tmp:
+                tmp = tempfile.NamedTemporaryFile("w", encoding=encoding, delete=False, suffix=".mrk")
+                try:
                     tmp.write("\n".join(self.records))
-                    tmp.flush()
-                    reader = pymarc.MARCMakerReader(tmp.name, encoding=encoding)
-                record = next(reader)
-                self.assertEqual(
-                    str(record), self.records[0], "records should be identical"
-                )
+                    tmp.close()
+                    reader = rmarc.MARCMakerReader(tmp.name, encoding=encoding)
+                    record = next(reader)
+                    self.assertEqual(
+                        str(record), self.records[0], "records should be identical"
+                    )
+                finally:
+                    import os
+                    os.unlink(tmp.name)

@@ -1,20 +1,20 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
 # file.
 import unittest
 
-from pymarc.exceptions import (
+from rmarc.exceptions import (
     BaseAddressInvalid,
     FieldNotFound,
     MissingLinkedFields,
     RecordLeaderInvalid,
 )
-from pymarc.field import Field, Indicators, Subfield
-from pymarc.leader import Leader
-from pymarc.reader import MARCReader
-from pymarc.record import Record
+from rmarc.field import Field, Indicators, Subfield
+from rmarc.leader import Leader
+from rmarc.reader import MARCReader
+from rmarc.record import Record
 
 
 class RecordTest(unittest.TestCase):
@@ -339,7 +339,7 @@ class RecordTest(unittest.TestCase):
         self.assertEqual(record.issnl, "0395-2037")
 
     def test_multiple_isbn(self):
-        with open("test/multi_isbn.dat", "rb") as fh:
+        with open("test_pymarc/multi_isbn.dat", "rb") as fh:
             reader = MARCReader(fh)
             record = next(reader)
             assert record
@@ -666,7 +666,7 @@ class RecordTest(unittest.TestCase):
     def test_copy(self):
         from copy import deepcopy
 
-        with open("test/one.dat", "rb") as fh:
+        with open("test_pymarc/one.dat", "rb") as fh:
             r1 = next(MARCReader(fh))
             assert r1
             r2 = deepcopy(r1)
@@ -707,7 +707,7 @@ class RecordTest(unittest.TestCase):
         self.assertTrue(leader_not_touched == leader_touched)
 
     def test_remove_fields(self):
-        with open("test/testunimarc.dat", "rb") as fh:
+        with open("test_pymarc/testunimarc.dat", "rb") as fh:
             record = Record(fh.read(), force_utf8=True)
         self.assertTrue(len(record.get_fields("899")) != 0)
         self.assertTrue(len(record.get_fields("702")) != 0)
@@ -776,10 +776,10 @@ class RecordTest(unittest.TestCase):
         self.assertEqual(transmission_format_leader, b"00067fghia2200037rst4500")
 
     def test_as_marc_to_unicode_conversion(self):
-        with open("test/marc8-to-unicode.dat", "rb") as fh:
+        with open("test_pymarc/marc8-to-unicode.dat", "rb") as fh:
             modified_record_bytes = fh.read()
 
-        with open("test/marc8.dat", "rb") as fh:
+        with open("test_pymarc/marc8.dat", "rb") as fh:
             original_record_bytes = fh.read()
             reader = MARCReader(original_record_bytes, to_unicode=True)
             record = next(reader)
@@ -789,9 +789,9 @@ class RecordTest(unittest.TestCase):
             self.assertEqual(modified_record_bytes, record_bytes)
 
     def test_map_marc8_record_against_unicode_as_marc(self):
-        from pymarc.record import map_marc8_record
+        from rmarc.record import map_marc8_record
 
-        with open("test/marc8.dat", "rb") as fh:
+        with open("test_pymarc/marc8.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=True)
             record = next(reader)
             assert record

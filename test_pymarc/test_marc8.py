@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -8,7 +8,7 @@ import os
 import tempfile
 import unittest
 
-from pymarc import (
+from rmarc import (
     Field,
     Indicators,
     Leader,
@@ -23,7 +23,7 @@ from pymarc import (
 
 class MARC8Test(unittest.TestCase):
     def test_marc8_reader(self):
-        with open("test/marc8.dat", "rb") as fh:
+        with open("test_pymarc/marc8.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=False)
             r = next(reader)
             assert isinstance(r, Record)
@@ -33,7 +33,7 @@ class MARC8Test(unittest.TestCase):
             self.assertEqual(utitle, b"De la solitude \xe1a la communaut\xe2e.")
 
     def test_marc8_reader_to_unicode(self):
-        with open("test/marc8.dat", "rb") as fh:
+        with open("test_pymarc/marc8.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=True)
             r = next(reader)
             assert isinstance(r, Record)
@@ -42,7 +42,7 @@ class MARC8Test(unittest.TestCase):
             self.assertEqual(utitle, "De la solitude \xe0 la communaut\xe9.")
 
     def test_marc8_reader_to_1251(self):
-        with open("test/1251.dat", "rb") as fh:
+        with open("test_pymarc/1251.dat", "rb") as fh:
             reader = MARCReader(fh, file_encoding="cp1251")
             r = next(reader)
             assert isinstance(r, Record)
@@ -51,7 +51,7 @@ class MARC8Test(unittest.TestCase):
             self.assertEqual(utitle, "Основы гидравлического расчета инженерных сетей")
 
     def test_marc8_reader_to_1251_without_1251(self):
-        with open("test/1251.dat", "rb") as fh:
+        with open("test_pymarc/1251.dat", "rb") as fh:
             reader = MARCReader(fh)
             try:
                 r = next(reader)
@@ -64,7 +64,7 @@ class MARC8Test(unittest.TestCase):
                 self.assertTrue("Was enable to decode invalid MARC")
 
     def test_marc8_reader_to_unicode_bad_eacc_sequence(self):
-        with open("test/bad_eacc_encoding.dat", "rb") as fh:
+        with open("test_pymarc/bad_eacc_encoding.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=True, hide_utf8_warnings=True)
             record = next(reader)
             assert isinstance(record, Record)
@@ -72,7 +72,7 @@ class MARC8Test(unittest.TestCase):
             self.assertTrue(record["880"]["a"].endswith(" "))
 
     def test_marc8_reader_to_unicode_bad_escape(self):
-        with open("test/bad_marc8_escape.dat", "rb") as fh:
+        with open("test_pymarc/bad_marc8_escape.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=True)
             r = next(reader)
             assert isinstance(r, Record)
@@ -81,7 +81,7 @@ class MARC8Test(unittest.TestCase):
             self.assertEqual(upublisher, "La Soci\xe9t\x1b,")
 
     def test_marc8_read_write(self):
-        with open("test/marc8.dat", "rb") as fh:
+        with open("test_pymarc/marc8.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=False)
             records = list(reader)
             self.assertEqual(len(records), 1)
@@ -104,14 +104,14 @@ class MARC8Test(unittest.TestCase):
 
     def test_marc8_to_unicode(self):
         with (
-            open("test/test_marc8.txt", "rb") as marc8_file,
-            open("test/test_utf8.txt", "rb") as utf8_file,
+            open("test_pymarc/test_marc8.txt", "rb") as marc8_file,
+            open("test_pymarc/test_utf8.txt", "rb") as utf8_file,
         ):
             count = 0
 
             while True:
-                marc8 = marc8_file.readline().strip(b"\n")
-                utf8 = utf8_file.readline().strip(b"\n")
+                marc8 = marc8_file.readline().strip(b"\r\n")
+                utf8 = utf8_file.readline().strip(b"\r\n")
                 if marc8 == b"" or utf8 == b"":
                     break
                 count += 1
@@ -125,20 +125,20 @@ class MARC8Test(unittest.TestCase):
             Field("245", Indicators("1", "0"), [Subfield(code="a", value=chr(0x1234))])
         )
         record.leader = Leader("         a              ")
-        with open("test/foo", "wb") as fh:
+        with open("test_pymarc/foo", "wb") as fh:
             writer = MARCWriter(fh)
             writer.write(record)
 
-        with open("test/foo", "rb") as fh:
+        with open("test_pymarc/foo", "rb") as fh:
             reader = MARCReader(fh, to_unicode=True)
             record = next(reader)
             assert isinstance(record, Record)
             self.assertEqual(record["245"]["a"], chr(0x1234))
 
-        os.remove("test/foo")
+        os.remove("test_pymarc/foo")
 
     def test_reading_utf8_with_flag(self):
-        with open("test/utf8_with_leader_flag.dat", "rb") as fh:
+        with open("test_pymarc/utf8_with_leader_flag.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=False)
             record = next(reader)
             assert isinstance(record, Record)
@@ -146,7 +146,7 @@ class MARC8Test(unittest.TestCase):
             self.assertEqual(type(utitle), bytes)
             self.assertEqual(utitle, b"De la solitude a\xcc\x80 la communaute\xcc\x81.")
 
-        with open("test/utf8_with_leader_flag.dat", "rb") as fh:
+        with open("test_pymarc/utf8_with_leader_flag.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=True)
             record = next(reader)
             assert isinstance(record, Record)
@@ -158,7 +158,7 @@ class MARC8Test(unittest.TestCase):
             )
 
     def test_reading_utf8_without_flag(self):
-        with open("test/utf8_without_leader_flag.dat", "rb") as fh:
+        with open("test_pymarc/utf8_without_leader_flag.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=False)
             record = next(reader)
             assert isinstance(record, Record)
@@ -166,7 +166,7 @@ class MARC8Test(unittest.TestCase):
             self.assertEqual(type(utitle), bytes)
             self.assertEqual(utitle, b"De la solitude a\xcc\x80 la communaute\xcc\x81.")
 
-        with open("test/utf8_without_leader_flag.dat", "rb") as fh:
+        with open("test_pymarc/utf8_without_leader_flag.dat", "rb") as fh:
             reader = MARCReader(fh, to_unicode=True, hide_utf8_warnings=True)
             record = next(reader)
             assert isinstance(record, Record)
@@ -177,7 +177,7 @@ class MARC8Test(unittest.TestCase):
             self.assertEqual(utitle, "De la solitude a   la communaute .")
 
         # force reading as utf-8
-        with open("test/utf8_without_leader_flag.dat", "rb") as fh:
+        with open("test_pymarc/utf8_without_leader_flag.dat", "rb") as fh:
             reader = MARCReader(
                 fh, to_unicode=True, force_utf8=True, hide_utf8_warnings=True
             )

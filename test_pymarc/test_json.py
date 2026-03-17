@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -7,16 +7,16 @@
 import json
 import unittest
 
-import pymarc
+import rmarc
 
 
 class JsonReaderTest(unittest.TestCase):
     def setUp(self):
-        with open("test/test.json") as fh:
+        with open("test_pymarc/test.json") as fh:
             self.in_json = json.load(fh, strict=False)
 
-        self._js_fh = open("test/test.json").read()  # noqa: SIM115
-        self.reader = pymarc.JSONReader(self._js_fh)
+        self._js_fh = open("test_pymarc/test.json").read()  # noqa: SIM115
+        self.reader = rmarc.JSONReader(self._js_fh)
 
     def testRoundtrip(self):
         """Test from and to json.
@@ -37,21 +37,21 @@ class JsonReaderTest(unittest.TestCase):
     def testOneRecord(self):
         """Tests case when in source json there is only 1 record not wrapped in list."""
         data = json.dumps(self.in_json[0])
-        reader = pymarc.JSONReader(data)
+        reader = rmarc.JSONReader(data)
         self.assertEqual([rec.as_dict() for rec in reader][0], self.in_json[0])
 
 
 class JsonTest(unittest.TestCase):
     def setUp(self):
-        self._test_fh = open("test/test.dat", "rb")  # noqa: SIM115
-        self.reader = pymarc.MARCReader(self._test_fh)
-        self._record = pymarc.Record()
-        field = pymarc.Field(
+        self._test_fh = open("test_pymarc/test.dat", "rb")  # noqa: SIM115
+        self.reader = rmarc.MARCReader(self._test_fh)
+        self._record = rmarc.Record()
+        field = rmarc.Field(
             tag="245",
-            indicators=pymarc.Indicators("1", "0"),
+            indicators=rmarc.Indicators("1", "0"),
             subfields=[
-                pymarc.Subfield(code="a", value="Python"),
-                pymarc.Subfield(code="c", value="Guido"),
+                rmarc.Subfield(code="a", value="Python"),
+                rmarc.Subfield(code="c", value="Guido"),
             ],
         )
         self._record.add_field(field)
@@ -114,15 +114,15 @@ class JsonTest(unittest.TestCase):
 
 class JsonParse(unittest.TestCase):
     def setUp(self):
-        self._one_dat_fh = open("test/one.dat", "rb")  # noqa: SIM115
-        self._one_js_fh = open("test/one.json")  # noqa: SIM115
-        self._batch_xml_fh = open("test/batch.xml")  # noqa: SIM115
-        self._batch_js_fh = open("test/batch.json")  # noqa: SIM115
+        self._one_dat_fh = open("test_pymarc/one.dat", "rb")  # noqa: SIM115
+        self._one_js_fh = open("test_pymarc/one.json")  # noqa: SIM115
+        self._batch_xml_fh = open("test_pymarc/batch.xml")  # noqa: SIM115
+        self._batch_js_fh = open("test_pymarc/batch.json")  # noqa: SIM115
 
-        self.reader_dat = pymarc.MARCReader(self._one_dat_fh)
-        self.parse_json = pymarc.parse_json_to_array(self._one_js_fh)
-        self.batch_xml = pymarc.parse_xml_to_array(self._batch_xml_fh)
-        self.batch_json = pymarc.parse_json_to_array(self._batch_js_fh)
+        self.reader_dat = rmarc.MARCReader(self._one_dat_fh)
+        self.parse_json = rmarc.parse_json_to_array(self._one_js_fh)
+        self.batch_xml = rmarc.parse_xml_to_array(self._batch_xml_fh)
+        self.batch_json = rmarc.parse_json_to_array(self._batch_js_fh)
 
     def tearDown(self) -> None:
         self._one_dat_fh.close()

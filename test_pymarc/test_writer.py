@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -10,7 +10,7 @@ import textwrap
 import unittest
 from io import BytesIO, StringIO
 
-import pymarc
+import rmarc
 
 
 class JSONWriterTest(unittest.TestCase):
@@ -18,7 +18,7 @@ class JSONWriterTest(unittest.TestCase):
         """If close_fh is true, then the file handle is also closed."""
         file_handle = StringIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.JSONWriter(file_handle)
+        writer = rmarc.JSONWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close()
         self.assertTrue(
@@ -29,7 +29,7 @@ class JSONWriterTest(unittest.TestCase):
         """If close_fh is false, then the file handle is NOT closed."""
         file_handle = StringIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.JSONWriter(file_handle)
+        writer = rmarc.JSONWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close(close_fh=False)
         self.assertFalse(
@@ -45,7 +45,7 @@ class JSONWriterTest(unittest.TestCase):
         )
         file_handle = StringIO()
         try:
-            writer = pymarc.JSONWriter(file_handle)
+            writer = rmarc.JSONWriter(file_handle)
             writer.close(close_fh=False)
             actual = json.loads(file_handle.getvalue())
             self.assertEqual(actual, expected)
@@ -65,8 +65,8 @@ class JSONWriterTest(unittest.TestCase):
         )
         file_handle = StringIO()
         try:
-            writer = pymarc.JSONWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.JSONWriter(file_handle)
+            record = rmarc.Record()
             writer.write(record)
             writer.close(close_fh=False)
             actual = json.loads(file_handle.getvalue())
@@ -107,22 +107,22 @@ class JSONWriterTest(unittest.TestCase):
         )
         file_handle = StringIO()
         try:
-            writer = pymarc.JSONWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.JSONWriter(file_handle)
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
@@ -208,56 +208,56 @@ class JSONWriterTest(unittest.TestCase):
         )
         file_handle = StringIO()
         try:
-            writer = pymarc.JSONWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.JSONWriter(file_handle)
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field("008", data="090227s2009    mau                 chi d")
+                rmarc.Field("008", data="090227s2009    mau                 chi d")
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
             writer.write(record)
-            record = pymarc.Record()
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
             writer.write(record)
-            record = pymarc.Record()
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
@@ -272,13 +272,13 @@ class JSONWriterTest(unittest.TestCase):
 class MARCWriterTest(unittest.TestCase):
     def test_write(self):
         """Write a record off to a file."""
-        with open("test/writer-test.dat", "wb") as file_handle:
-            writer = pymarc.MARCWriter(file_handle)
-            record = pymarc.Record()
-            field = pymarc.Field(
+        with open("test_pymarc/writer-test.dat", "wb") as file_handle:
+            writer = rmarc.MARCWriter(file_handle)
+            record = rmarc.Record()
+            field = rmarc.Field(
                 "245",
-                pymarc.Indicators("0", "0"),
-                [pymarc.Subfield(code="a", value="foo")],
+                rmarc.Indicators("0", "0"),
+                [rmarc.Subfield(code="a", value="foo")],
             )
             record.add_field(field)
             writer.write(record)
@@ -289,19 +289,19 @@ class MARCWriterTest(unittest.TestCase):
             )
 
         # read it back in
-        with open("test/writer-test.dat", "rb") as fh:
-            reader = pymarc.MARCReader(fh)
+        with open("test_pymarc/writer-test.dat", "rb") as fh:
+            reader = rmarc.MARCReader(fh)
             next(reader)
             reader.close()
 
         # remove it
-        os.remove("test/writer-test.dat")
+        os.remove("test_pymarc/writer-test.dat")
 
     def test_close_true(self):
         """If close_fh is true, then the file handle is also closed."""
         file_handle = BytesIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.MARCWriter(file_handle)
+        writer = rmarc.MARCWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close()
         self.assertTrue(
@@ -312,7 +312,7 @@ class MARCWriterTest(unittest.TestCase):
         """If close_fh is false, then the file handle is NOT closed."""
         file_handle = BytesIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.MARCWriter(file_handle)
+        writer = rmarc.MARCWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close(close_fh=False)
         self.assertFalse(
@@ -325,7 +325,7 @@ class TextWriterTest(unittest.TestCase):
     def test_writing_0_records(self):
         file_handle = StringIO()
         try:
-            writer = pymarc.TextWriter(file_handle)
+            writer = rmarc.TextWriter(file_handle)
             writer.close(close_fh=False)
             self.assertEqual(
                 file_handle.getvalue(),
@@ -344,22 +344,22 @@ class TextWriterTest(unittest.TestCase):
         expected = textwrap.dedent(expected[1:])
         file_handle = StringIO()
         try:
-            writer = pymarc.TextWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.TextWriter(file_handle)
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
@@ -386,56 +386,56 @@ class TextWriterTest(unittest.TestCase):
         expected = textwrap.dedent(expected[1:])
         file_handle = StringIO()
         try:
-            writer = pymarc.TextWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.TextWriter(file_handle)
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field("008", data="090227s2009    mau                 chi d")
+                rmarc.Field("008", data="090227s2009    mau                 chi d")
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
             writer.write(record)
-            record = pymarc.Record()
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
             writer.write(record)
-            record = pymarc.Record()
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
@@ -452,8 +452,8 @@ class TextWriterTest(unittest.TestCase):
         expected = textwrap.dedent(expected[1:])
         file_handle = StringIO()
         try:
-            writer = pymarc.TextWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.TextWriter(file_handle)
+            record = rmarc.Record()
             writer.write(record)
             writer.close(close_fh=False)
             self.assertEqual(file_handle.getvalue(), expected)
@@ -464,7 +464,7 @@ class TextWriterTest(unittest.TestCase):
         """If close_fh is true, then the file handle is also closed."""
         file_handle = StringIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.TextWriter(file_handle)
+        writer = rmarc.TextWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close()
         self.assertTrue(
@@ -475,7 +475,7 @@ class TextWriterTest(unittest.TestCase):
         """If close_fh is false, then the file handle is NOT closed."""
         file_handle = StringIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.TextWriter(file_handle)
+        writer = rmarc.TextWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close(close_fh=False)
         self.assertFalse(
@@ -494,7 +494,7 @@ class XMLWriterTest(unittest.TestCase):
         expected = textwrap.dedent(expected[1:]).replace("\n", "").encode()
         file_handle = BytesIO()
         try:
-            writer = pymarc.XMLWriter(file_handle)
+            writer = rmarc.XMLWriter(file_handle)
             writer.close(close_fh=False)
             self.assertEqual(file_handle.getvalue(), expected)
         finally:
@@ -512,8 +512,8 @@ class XMLWriterTest(unittest.TestCase):
         expected = textwrap.dedent(expected[1:]).replace("\n", "").encode()
         file_handle = BytesIO()
         try:
-            writer = pymarc.XMLWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.XMLWriter(file_handle)
+            record = rmarc.Record()
             writer.write(record)
             writer.close(close_fh=False)
             self.assertEqual(file_handle.getvalue(), expected)
@@ -539,22 +539,22 @@ class XMLWriterTest(unittest.TestCase):
         expected = textwrap.dedent(expected[1:]).replace("\n", "").encode()
         file_handle = BytesIO()
         try:
-            writer = pymarc.XMLWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.XMLWriter(file_handle)
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
@@ -601,56 +601,56 @@ class XMLWriterTest(unittest.TestCase):
         expected = textwrap.dedent(expected[1:]).replace("\n", "").encode()
         file_handle = BytesIO()
         try:
-            writer = pymarc.XMLWriter(file_handle)
-            record = pymarc.Record()
+            writer = rmarc.XMLWriter(file_handle)
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field("008", data="090227s2009    mau                 chi d")
+                rmarc.Field("008", data="090227s2009    mau                 chi d")
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
             writer.write(record)
-            record = pymarc.Record()
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "100",
-                    pymarc.Indicators("0", "0"),
-                    [pymarc.Subfield(code="a", value="me")],
+                    rmarc.Indicators("0", "0"),
+                    [rmarc.Subfield(code="a", value="me")],
                 )
             )
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
             writer.write(record)
-            record = pymarc.Record()
+            record = rmarc.Record()
             record.add_field(
-                pymarc.Field(
+                rmarc.Field(
                     "245",
-                    pymarc.Indicators("0", "0"),
+                    rmarc.Indicators("0", "0"),
                     [
-                        pymarc.Subfield(code="a", value="Foo /"),
-                        pymarc.Subfield(code="c", value="by me."),
+                        rmarc.Subfield(code="a", value="Foo /"),
+                        rmarc.Subfield(code="c", value="by me."),
                     ],
                 )
             )
@@ -664,7 +664,7 @@ class XMLWriterTest(unittest.TestCase):
         """If close_fh is true, then the file handle is also closed."""
         file_handle = BytesIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.XMLWriter(file_handle)
+        writer = rmarc.XMLWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close()
         self.assertTrue(
@@ -675,7 +675,7 @@ class XMLWriterTest(unittest.TestCase):
         """If close_fh is false, then the file handle is NOT closed."""
         file_handle = BytesIO()
         self.assertFalse(file_handle.closed, "The file handle should be open")
-        writer = pymarc.XMLWriter(file_handle)
+        writer = rmarc.XMLWriter(file_handle)
         self.assertFalse(file_handle.closed, "The file handle should still be open")
         writer.close(close_fh=False)
         self.assertFalse(

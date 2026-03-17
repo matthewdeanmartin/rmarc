@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -6,17 +6,17 @@
 
 import unittest
 
-import pymarc
+import rmarc
 
 
 class OrderedFieldsTest(unittest.TestCase):
     def test_add_ordered_fields(self):
-        record = pymarc.Record()
+        record = rmarc.Record()
         for tag in ("999", "888", "111", "abc", "666", "988", "998"):
-            field = pymarc.Field(
+            field = rmarc.Field(
                 tag,
-                pymarc.Indicators("0", "0"),
-                [pymarc.Subfield(code="a", value="foo")],
+                rmarc.Indicators("0", "0"),
+                [rmarc.Subfield(code="a", value="foo")],
             )
             record.add_ordered_field(field)
 
@@ -34,12 +34,12 @@ class OrderedFieldsTest(unittest.TestCase):
         self.assertTrue(ordered, "Fields are not strictly ordered numerically")
 
     def test_add_grouped_fields(self):
-        record = pymarc.Record()
+        record = rmarc.Record()
         for tag in ("999", "888", "111", "abc", "666", "988", "998"):
-            field = pymarc.Field(
+            field = rmarc.Field(
                 tag,
-                pymarc.Indicators("0", "0"),
-                [pymarc.Subfield(code="a", value="foo")],
+                rmarc.Indicators("0", "0"),
+                [rmarc.Subfield(code="a", value="foo")],
             )
             record.add_grouped_field(field)
 

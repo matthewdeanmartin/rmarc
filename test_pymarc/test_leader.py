@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -10,8 +10,8 @@ import random
 import string
 import unittest
 
-from pymarc.exceptions import BadLeaderValue, RecordLeaderInvalid
-from pymarc.leader import Leader
+from rmarc.exceptions import BadLeaderValue, RecordLeaderInvalid
+from rmarc.leader import Leader
 
 LEADER = "00475casaa2200169 ib4500"
 

@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -7,10 +7,10 @@
 import unittest
 from io import BytesIO
 
-from pymarc.exceptions import RecordLeaderInvalid
-from pymarc.marcxml import map_xml, parse_xml_to_array, record_to_xml
-from pymarc.reader import MARCReader
-from pymarc.record import Record
+from rmarc.exceptions import RecordLeaderInvalid
+from rmarc.marcxml import map_xml, parse_xml_to_array, record_to_xml
+from rmarc.reader import MARCReader
+from rmarc.record import Record
 
 
 class XmlTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class XmlTest(unittest.TestCase):
         def count(record):
             self.seen += 1
 
-        map_xml(count, "test/batch.xml")
+        map_xml(count, "test_pymarc/batch.xml")
         self.assertEqual(2, self.seen)
 
     def test_multi_map_xml(self):
@@ -29,11 +29,11 @@ class XmlTest(unittest.TestCase):
         def count(record):
             self.seen += 1
 
-        map_xml(count, "test/batch.xml", "test/batch.xml")
+        map_xml(count, "test_pymarc/batch.xml", "test_pymarc/batch.xml")
         self.assertEqual(4, self.seen)
 
     def test_parse_to_array(self):
-        records = parse_xml_to_array("test/batch.xml")
+        records = parse_xml_to_array("test_pymarc/batch.xml")
         self.assertEqual(len(records), 2)
 
         # should've got two records
@@ -56,7 +56,7 @@ class XmlTest(unittest.TestCase):
 
     def test_xml(self):
         # read in xml to a record
-        record1 = parse_xml_to_array("test/batch.xml")[0]
+        record1 = parse_xml_to_array("test_pymarc/batch.xml")[0]
         # generate xml
         xml = record_to_xml(record1)
         # parse generated xml
@@ -82,14 +82,14 @@ class XmlTest(unittest.TestCase):
             pos += 1
 
     def test_strict(self):
-        with open("test/batch.xml") as fh:
+        with open("test_pymarc/batch.xml") as fh:
             a = parse_xml_to_array(fh, strict=True)
             self.assertEqual(len(a), 2)
 
     def test_xml_namespaces(self):
         """Tests the 'namespace' parameter of the record_to_xml() method."""
         # get a test record
-        with open("test/test.dat", "rb") as fh:
+        with open("test_pymarc/test.dat", "rb") as fh:
             record = next(MARCReader(fh))
             # record_to_xml() with quiet set to False should generate errors
             #   and write them to sys.stderr
@@ -103,7 +103,7 @@ class XmlTest(unittest.TestCase):
             self.assertTrue(b'xmlns="http://www.loc.gov/MARC21/slim"' in xml)
 
     def test_bad_tag(self):
-        with open("test/bad_tag.xml") as fh:
+        with open("test_pymarc/bad_tag.xml") as fh:
             self.assertRaises(RecordLeaderInvalid, parse_xml_to_array, fh)
 
 

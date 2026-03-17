@@ -1,4 +1,4 @@
-# This file is part of pymarc. It is subject to the license terms in the
+# This file is part of rmarc. It is subject to the license terms in the
 # LICENSE file found in the top-level directory of this distribution and at
 # https://opensource.org/licenses/BSD-2-Clause. pymarc may be copied, modified,
 # propagated, or distributed according to the terms contained in the LICENSE
@@ -6,7 +6,7 @@
 import sys
 import unittest
 
-from pymarc.field import Field, Indicators, Subfield
+from rmarc.field import Field, Indicators, Subfield
 
 
 class FieldTest(unittest.TestCase):
