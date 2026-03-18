@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "_rmarc"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 pyo3 = { version = "0.25", features = ["extension-module"] }

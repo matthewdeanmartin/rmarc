@@ -1,5 +1,5 @@
 .PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
-        format format-check build build-release clean all ci claude
+        lint-rust rust-test format format-check build build-release clean all ci claude
 
 # ── Developer workflow ────────────────────────────────────────────────────────
 
@@ -13,8 +13,8 @@ rebuild:
 
 # ── Testing ───────────────────────────────────────────────────────────────────
 
-## Run tests with unittest discover (matches pymarc CI floor).
-test:
+## Run all tests (Rust + Python).
+test: rust-test
 	uv run python -m unittest discover -s test_pymarc -v
 	uv run pytest
 
@@ -25,10 +25,21 @@ test-coverage:
 	uv run coverage xml
 	uv run coverage report
 
+# ── Rust ──────────────────────────────────────────────────────────────────────
+
+## Run Rust unit tests.
+rust-test:
+	cargo test
+
+## Run Rust linting (fmt check + clippy).
+lint-rust:
+	cargo fmt --check
+	cargo clippy -- -D warnings
+
 # ── Linting ───────────────────────────────────────────────────────────────────
 
-## Run all linters.
-lint: lint-ruff lint-pylint lint-mypy lint-pyright
+## Run all linters (Python + Rust).
+lint: lint-ruff lint-pylint lint-mypy lint-pyright lint-rust
 
 ## ruff: fast lint (pymarc CI floor).
 lint-ruff:
@@ -68,11 +79,11 @@ build-release:
 
 # ── CI pipeline (mirrors pymarc .gitlab-ci.yml floor + extras) ────────────────
 
-## Full CI sequence: lint → format-check → test-coverage.
-ci: lint-ruff format-check lint-pyright test-coverage
+## Full CI sequence: lint → format-check → rust-test → test-coverage.
+ci: lint-ruff format-check lint-pyright lint-rust rust-test test-coverage
 
 ## Full quality gate including pylint and mypy on top of CI floor.
-all: lint format-check test-coverage
+all: lint format-check rust-test test-coverage
 
 # ── Housekeeping ──────────────────────────────────────────────────────────────
 

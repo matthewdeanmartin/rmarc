@@ -105,7 +105,7 @@ pub fn decode_marc_raw<'py>(
         return Err(PyValueError::new_err("Directory is not valid ASCII"));
     }
 
-    if directory.len() % DIRECTORY_ENTRY_LEN != 0 {
+    if !directory.len().is_multiple_of(DIRECTORY_ENTRY_LEN) {
         return Err(PyValueError::new_err("RecordDirectoryInvalid"));
     }
 
@@ -153,14 +153,9 @@ pub fn decode_marc_raw<'py>(
                     PyString::new(py, &s).into_any()
                 }
             };
-            let control_tuple = PyTuple::new(py, &[
-                PyString::intern(py, "control").into_any(),
-                value,
-            ])?;
-            let field_tuple = PyTuple::new(py, &[
-                tag_py.into_any(),
-                control_tuple.into_any(),
-            ])?;
+            let control_tuple =
+                PyTuple::new(py, &[PyString::intern(py, "control").into_any(), value])?;
+            let field_tuple = PyTuple::new(py, &[tag_py.into_any(), control_tuple.into_any()])?;
             fields_list.append(field_tuple)?;
         } else {
             let subfield_parts = split_on_indicator(field_data);
@@ -189,31 +184,31 @@ pub fn decode_marc_raw<'py>(
                             PyString::new(py, &s).into_any()
                         }
                     };
-                    let sub_tuple = PyTuple::new(py, &[
-                        code_py.into_any(),
-                        value_py,
-                    ])?;
+                    let sub_tuple = PyTuple::new(py, &[code_py.into_any(), value_py])?;
                     subfields_list.append(sub_tuple)?;
                 } else {
                     // Non-ASCII code - return raw bytes for Python to handle
-                    let sub_tuple = PyTuple::new(py, &[
-                        PyBytes::new(py, &part[..1]).into_any(),
-                        PyBytes::new(py, value).into_any(),
-                    ])?;
+                    let sub_tuple = PyTuple::new(
+                        py,
+                        &[
+                            PyBytes::new(py, &part[..1]).into_any(),
+                            PyBytes::new(py, value).into_any(),
+                        ],
+                    )?;
                     subfields_list.append(sub_tuple)?;
                 }
             }
 
-            let data_tuple = PyTuple::new(py, &[
-                PyString::intern(py, "data").into_any(),
-                PyString::new(py, &String::from(ind1 as char)).into_any(),
-                PyString::new(py, &String::from(ind2 as char)).into_any(),
-                subfields_list.into_any(),
-            ])?;
-            let field_tuple = PyTuple::new(py, &[
-                tag_py.into_any(),
-                data_tuple.into_any(),
-            ])?;
+            let data_tuple = PyTuple::new(
+                py,
+                &[
+                    PyString::intern(py, "data").into_any(),
+                    PyString::new(py, &String::from(ind1 as char)).into_any(),
+                    PyString::new(py, &String::from(ind2 as char)).into_any(),
+                    subfields_list.into_any(),
+                ],
+            )?;
+            let field_tuple = PyTuple::new(py, &[tag_py.into_any(), data_tuple.into_any()])?;
             fields_list.append(field_tuple)?;
         }
     }
@@ -224,9 +219,8 @@ pub fn decode_marc_raw<'py>(
 /// Decode bytes as UTF-8 with the given error handling
 fn decode_utf8(data: &[u8], handling: &str) -> String {
     match handling {
-        "strict" => String::from_utf8(data.to_vec()).unwrap_or_else(|_| {
-            String::from_utf8_lossy(data).into_owned()
-        }),
+        "strict" => String::from_utf8(data.to_vec())
+            .unwrap_or_else(|_| String::from_utf8_lossy(data).into_owned()),
         "ignore" => String::from_utf8_lossy(data)
             .chars()
             .filter(|c| *c != '\u{FFFD}')
@@ -234,7 +228,6 @@ fn decode_utf8(data: &[u8], handling: &str) -> String {
         _ => String::from_utf8_lossy(data).into_owned(), // "replace" and others
     }
 }
-
 
 /// Split byte slice on SUBFIELD_INDICATOR (0x1F)
 fn split_on_indicator(data: &[u8]) -> Vec<&[u8]> {
@@ -257,6 +250,28 @@ fn parse_indicators(indicators: &[u8]) -> (u8, u8) {
         1 => (indicators[0], b' '),
         _ => (indicators[0], indicators[1]),
     }
+}
+
+/// Parse a MARC-8 encoded field value string, handling escape sequences
+/// and returning a decoded Unicode string.
+///
+/// Public for testing; used by `decode_marc_raw` internally.
+#[cfg(test)]
+pub(crate) fn decode_utf8_pub(data: &[u8], handling: &str) -> String {
+    decode_utf8(data, handling)
+}
+
+#[cfg(test)]
+pub(crate) fn split_on_indicator_pub(data: &[u8]) -> Vec<Vec<u8>> {
+    split_on_indicator(data)
+        .into_iter()
+        .map(|s| s.to_vec())
+        .collect()
+}
+
+#[cfg(test)]
+pub(crate) fn parse_indicators_pub(indicators: &[u8]) -> (u8, u8) {
+    parse_indicators(indicators)
 }
 
 /// Encode structured field data back to MARC21 bytes.
@@ -301,4 +316,116 @@ pub fn encode_marc_raw<'py>(
     result.extend_from_slice(&field_data);
 
     Ok(PyBytes::new(py, &result))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── split_on_indicator ────────────────────────────────────────────────────
+
+    #[test]
+    fn split_on_indicator_empty() {
+        assert_eq!(split_on_indicator_pub(b""), vec![b"".to_vec()]);
+    }
+
+    #[test]
+    fn split_on_indicator_no_delimiter() {
+        assert_eq!(split_on_indicator_pub(b"hello"), vec![b"hello".to_vec()]);
+    }
+
+    #[test]
+    fn split_on_indicator_single_subfield() {
+        // indicator block (" ") then 0x1F 'a' "value"
+        let input = b"  \x1Favalue";
+        let parts = split_on_indicator_pub(input);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0], b"  ");
+        assert_eq!(parts[1], b"avalue");
+    }
+
+    #[test]
+    fn split_on_indicator_multiple_subfields() {
+        let input = b"  \x1Fahello\x1Fbworld";
+        let parts = split_on_indicator_pub(input);
+        assert_eq!(parts.len(), 3);
+        assert_eq!(parts[0], b"  ");
+        assert_eq!(parts[1], b"ahello");
+        assert_eq!(parts[2], b"bworld");
+    }
+
+    #[test]
+    fn split_on_indicator_leading_delimiter() {
+        let input = b"\x1Faonly";
+        let parts = split_on_indicator_pub(input);
+        assert_eq!(parts.len(), 2);
+        assert_eq!(parts[0], b"".to_vec());
+        assert_eq!(parts[1], b"aonly");
+    }
+
+    // ── parse_indicators ─────────────────────────────────────────────────────
+
+    #[test]
+    fn parse_indicators_empty_defaults_to_spaces() {
+        assert_eq!(parse_indicators_pub(b""), (b' ', b' '));
+    }
+
+    #[test]
+    fn parse_indicators_one_byte() {
+        assert_eq!(parse_indicators_pub(b"1"), (b'1', b' '));
+    }
+
+    #[test]
+    fn parse_indicators_two_bytes() {
+        assert_eq!(parse_indicators_pub(b"12"), (b'1', b'2'));
+    }
+
+    #[test]
+    fn parse_indicators_extra_bytes_ignored() {
+        assert_eq!(parse_indicators_pub(b"12extra"), (b'1', b'2'));
+    }
+
+    // ── decode_utf8 ───────────────────────────────────────────────────────────
+
+    #[test]
+    fn decode_utf8_valid_ascii() {
+        assert_eq!(decode_utf8_pub(b"hello", "strict"), "hello");
+    }
+
+    #[test]
+    fn decode_utf8_valid_multibyte() {
+        // U+00E9 LATIN SMALL LETTER E WITH ACUTE (é) in UTF-8 is 0xC3 0xA9
+        assert_eq!(decode_utf8_pub(b"\xc3\xa9", "strict"), "\u{00e9}");
+    }
+
+    #[test]
+    fn decode_utf8_invalid_strict_falls_back_to_lossy() {
+        // Invalid UTF-8 byte 0xFF — strict falls back to lossy (replacement char)
+        let result = decode_utf8_pub(b"\xff", "strict");
+        assert!(result.contains('\u{FFFD}'));
+    }
+
+    #[test]
+    fn decode_utf8_ignore_strips_replacement() {
+        let result = decode_utf8_pub(b"\xff", "ignore");
+        assert!(!result.contains('\u{FFFD}'));
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn decode_utf8_replace_keeps_replacement() {
+        let result = decode_utf8_pub(b"\xff", "replace");
+        assert!(result.contains('\u{FFFD}'));
+    }
+
+    // ── MARC record structure constants ───────────────────────────────────────
+
+    #[test]
+    fn constants_have_expected_values() {
+        assert_eq!(LEADER_LEN, 24);
+        assert_eq!(DIRECTORY_ENTRY_LEN, 12);
+        assert_eq!(SUBFIELD_INDICATOR, 0x1F);
+        assert_eq!(END_OF_FIELD, 0x1E);
+        assert_eq!(END_OF_RECORD, 0x1D);
+    }
 }

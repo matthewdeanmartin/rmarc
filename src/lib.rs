@@ -1,8 +1,8 @@
 use pyo3::prelude::*;
 
-mod marc_codec;
 mod marc8;
 mod marc8_mapping;
+mod marc_codec;
 
 /// Returns the rmarc library version string.
 #[pyfunction]
@@ -26,6 +26,26 @@ impl MarcRecord {
 
     fn value(&self) -> &str {
         "stub"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn version_returns_nonempty_string() {
+        let v = version();
+        assert!(!v.is_empty());
+    }
+
+    #[test]
+    fn version_starts_with_digit() {
+        let v = version();
+        assert!(
+            v.chars().next().unwrap().is_ascii_digit(),
+            "version should start with a digit, got: {v}"
+        );
     }
 }
 

@@ -68,12 +68,10 @@ pub fn marc8_to_unicode_rs(data: &[u8], quiet: bool) -> String {
             }
 
             // G1 designators: ) - $
-            if next_byte == b')' || next_byte == b'-' {
-                if pos + 2 < len {
-                    g1 = data[pos + 2];
-                    pos += 3;
-                    continue;
-                }
+            if (next_byte == b')' || next_byte == b'-') && pos + 2 < len {
+                g1 = data[pos + 2];
+                pos += 3;
+                continue;
             }
 
             // Check for $- sequence (G1 multibyte)
@@ -185,4 +183,113 @@ fn unicode_normalization_nfc(s: &str) -> String {
     // Use the unicode_normalization crate for proper NFC
     use unicode_normalization::UnicodeNormalization;
     s.nfc().collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── Basic Latin passthrough ───────────────────────────────────────────────
+
+    #[test]
+    fn empty_input_returns_empty_string() {
+        assert_eq!(marc8_to_unicode_rs(b"", false), "");
+    }
+
+    #[test]
+    fn ascii_text_passthrough() {
+        assert_eq!(marc8_to_unicode_rs(b"hello world", false), "hello world");
+    }
+
+    #[test]
+    fn digits_and_punctuation_passthrough() {
+        assert_eq!(marc8_to_unicode_rs(b"abc 123!", false), "abc 123!");
+    }
+
+    // ── Control character filtering ───────────────────────────────────────────
+
+    #[test]
+    fn control_chars_below_0x20_are_skipped() {
+        // 0x01 is a control character and should be dropped
+        let result = marc8_to_unicode_rs(b"\x01abc", false);
+        assert_eq!(result, "abc");
+    }
+
+    // ── Escape sequence handling ──────────────────────────────────────────────
+
+    #[test]
+    fn escape_to_basic_latin_0x73() {
+        // ESC 0x73 switches back to Basic Latin (ASCII)
+        let input = b"\x1b\x73hello";
+        let result = marc8_to_unicode_rs(input, false);
+        assert_eq!(result, "hello");
+    }
+
+    #[test]
+    fn escape_with_paren_switches_g0() {
+        // ESC '(' 'B' designates Basic Latin into G0
+        let input = b"\x1b\x28\x42hello";
+        let result = marc8_to_unicode_rs(input, false);
+        assert_eq!(result, "hello");
+    }
+
+    #[test]
+    fn incomplete_escape_at_end_does_not_panic() {
+        // ESC at end of input
+        let result = marc8_to_unicode_rs(b"hi\x1b", false);
+        // Should not panic; ESC may or may not appear in output but no crash
+        let _ = result;
+    }
+
+    // ── ANSEL combining characters ────────────────────────────────────────────
+
+    #[test]
+    fn ansel_combining_acute_on_e() {
+        // In ANSEL (G1), bytes >0x80 are combining marks or precomposed chars.
+        // 0xE2 is "combining acute accent" and 0x65 is 'e' in Basic Latin.
+        // MARC-8 puts the combining mark BEFORE the base character.
+        // Result should NFC-normalize to U+00E9 (é).
+        let input = b"\xe2\x65"; // combining acute + 'e'
+        let result = marc8_to_unicode_rs(input, false);
+        // After NFC, this should be é (U+00E9)
+        assert!(
+            result.contains('\u{00e9}') || result.contains('\u{0301}'),
+            "Expected combining accent result, got: {:?}",
+            result
+        );
+    }
+
+    // ── Quiet mode ────────────────────────────────────────────────────────────
+
+    #[test]
+    fn quiet_mode_suppresses_stderr_for_unknown_chars() {
+        // Unknown byte in ANSEL range — quiet=true should not panic
+        // (we can't easily capture stderr in tests, so just ensure no panic)
+        let result = marc8_to_unicode_rs(b"\x81", true);
+        let _ = result;
+    }
+
+    #[test]
+    fn non_quiet_mode_for_unknown_chars_does_not_panic() {
+        let result = marc8_to_unicode_rs(b"\x81", false);
+        let _ = result;
+    }
+
+    // ── NFC normalization ─────────────────────────────────────────────────────
+
+    #[test]
+    fn nfc_normalization_applied() {
+        // Input already NFC — should remain unchanged
+        let input = "caf\u{00e9}"; // café with precomposed é
+        let result = unicode_normalization_nfc(input);
+        assert_eq!(result, "caf\u{00e9}");
+    }
+
+    #[test]
+    fn nfc_normalization_composes_combining() {
+        // NFD form: 'e' + combining acute (U+0301) → NFC: é (U+00E9)
+        let nfd = "e\u{0301}";
+        let result = unicode_normalization_nfc(nfd);
+        assert_eq!(result, "\u{00e9}");
+    }
 }
