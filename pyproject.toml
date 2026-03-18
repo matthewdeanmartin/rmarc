@@ -140,7 +140,6 @@ exclude = '''
 minversion = "6.0"
 testpaths = [
     "test",
-    "tests",
     "test_pymarc"
 ]
 junit_family = "xunit1"
@@ -211,7 +210,7 @@ python_version = "3.10"
 
 [tool.pyright]
 pythonVersion = "3.10"
-include = ["python/rmarc", "tests"]
+include = ["python/rmarc"]
 exclude = ["dist", "target", "pymarc_src"]
 typeCheckingMode = "basic"
 
