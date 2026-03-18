@@ -10,25 +10,6 @@ fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
 
-/// A stub MARC record placeholder for Phase 1.
-#[pyclass]
-struct MarcRecord {
-    #[pyo3(get, set)]
-    pub tag: String,
-}
-
-#[pymethods]
-impl MarcRecord {
-    #[new]
-    fn new(tag: String) -> Self {
-        MarcRecord { tag }
-    }
-
-    fn value(&self) -> &str {
-        "stub"
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -52,7 +33,7 @@ mod tests {
 #[pymodule]
 fn _rmarc(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(version, m)?)?;
-    m.add_class::<MarcRecord>()?;
+
     m.add_function(wrap_pyfunction!(marc_codec::decode_marc_raw, m)?)?;
     m.add_function(wrap_pyfunction!(marc_codec::encode_marc_raw, m)?)?;
     m.add_function(wrap_pyfunction!(marc8::marc8_to_unicode_rs, m)?)?;

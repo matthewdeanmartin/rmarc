@@ -1,6 +1,6 @@
 # ruff: noqa
 
-from rmarc._rmarc import MarcRecord, version
+from rmarc._rmarc import version
 from rmarc.constants import *
 from rmarc.exceptions import *
 from rmarc.field import *

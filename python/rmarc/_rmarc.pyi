@@ -1,12 +1,6 @@
 """Type stubs for the rmarc Rust extension module."""
 
 def version() -> str: ...
-
-class MarcRecord:
-    tag: str
-    def __init__(self, tag: str) -> None: ...  # pylint: disable=unused-argument
-    def value(self) -> str: ...
-
 def decode_marc_raw(
     data: bytes,
     to_unicode: bool = True,

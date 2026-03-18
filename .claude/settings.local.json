@@ -20,7 +20,9 @@
       "Bash(make lint-pyright:*)",
       "Bash(cargo test:*)",
       "Bash(cargo clippy:*)",
-      "Bash(cargo fmt:*)"
+      "Bash(cargo fmt:*)",
+      "Bash(make rebuild:*)",
+      "Bash(make check-all:*)"
     ]
   }
 }
