@@ -15,8 +15,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -88,6 +86,7 @@ dev = [
     "codespell>=2.2.6; python_version >= '3.8'",
     "pyenchant>=3.2.2; python_version >= '3.8'",
     "maturin>=1.12.6",
+    "cibuildwheel>=3.4.0; python_version >= '3.11'",
     "pyright>=1.1.408",
     "mypy>=1.19.1",
     "pytest-benchmark>=5.2.3",
@@ -116,10 +115,20 @@ python-source = "python"
 module-name = "rmarc._rmarc"
 features = ["pyo3/extension-module"]
 
+[tool.cibuildwheel]
+build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
+skip = ["*-musllinux_*", "*-win32"]
+test-requires = ["pytest"]
+test-command = "pytest {project}/test_pymarc -v"
+
+[tool.cibuildwheel.linux]
+environment = { PATH = "$HOME/.cargo/bin:$PATH" }
+before-all = "dnf install -y curl && curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal"
+
 
 [tool.black]
 line-length = 120
-target-version = ['py39']
+target-version = ['py310']
 include = '\.pyi?$'
 exclude = '''
 

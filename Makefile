@@ -1,5 +1,5 @@
 .PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
-        lint-rust rust-test format format-check build build-release clean all ci check-all claude \
+        lint-rust rust-test format format-check build build-release build-wheels clean all ci check-all claude \
         fast fast-uninstall bench bench-all
 
 # ── Developer workflow ────────────────────────────────────────────────────────
@@ -86,6 +86,10 @@ build:
 ## Build a release wheel (optimised).
 build-release:
 	uv run maturin build --release
+
+## Build platform wheels for the current host via cibuildwheel.
+build-wheels:
+	uv run cibuildwheel --output-dir wheelhouse
 
 # ── CI pipeline (mirrors pymarc .gitlab-ci.yml floor + extras) ────────────────
 
