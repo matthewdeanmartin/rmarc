@@ -112,9 +112,7 @@ class Leader:
     @coding_scheme.setter
     def coding_scheme(self, value: str) -> None:
         if len(value) != 1:
-            raise BadLeaderValue(
-                f"Character coding scheme is 1 char field, got {value}"
-            )
+            raise BadLeaderValue(f"Character coding scheme is 1 char field, got {value}")
         self._replace_values(position=9, value=value)
 
     @property
@@ -164,9 +162,7 @@ class Leader:
     @cataloging_form.setter
     def cataloging_form(self, value: str) -> None:
         if len(value) != 1:
-            raise BadLeaderValue(
-                f"Descriptive cataloging form is 1 char field, got {value}"
-            )
+            raise BadLeaderValue(f"Descriptive cataloging form is 1 char field, got {value}")
         self._replace_values(position=18, value=value)
 
     @property
@@ -176,9 +172,7 @@ class Leader:
     @multipart_ressource.setter
     def multipart_ressource(self, value: str) -> None:
         if len(value) != 1:
-            raise BadLeaderValue(
-                f"Multipart resource record level is 1 char field, got {value}"
-            )
+            raise BadLeaderValue(f"Multipart resource record level is 1 char field, got {value}")
         self._replace_values(position=19, value=value)
 
     @property
@@ -188,9 +182,7 @@ class Leader:
     @length_of_field_length.setter
     def length_of_field_length(self, value: str) -> None:
         if len(value) != 1:
-            raise BadLeaderValue(
-                f"Length of the length-of-field portion is 1 char field, got {value}"
-            )
+            raise BadLeaderValue(f"Length of the length-of-field portion is 1 char field, got {value}")
         self._replace_values(position=20, value=value)
 
     @property
@@ -200,9 +192,7 @@ class Leader:
     @starting_character_position_length.setter
     def starting_character_position_length(self, value: str) -> None:
         if len(value) != 1:
-            raise BadLeaderValue(
-                f"Length of the starting-character-position portion is 1 char field, got {value}"
-            )
+            raise BadLeaderValue(f"Length of the starting-character-position portion is 1 char field, got {value}")
         self._replace_values(position=21, value=value)
 
     @property
@@ -212,7 +202,5 @@ class Leader:
     @implementation_defined_length.setter
     def implementation_defined_length(self, value: str) -> None:
         if len(value) != 1:
-            raise BadLeaderValue(
-                f"Length of the implementation-defined portion is 1 char field, got {value}"
-            )
+            raise BadLeaderValue(f"Length of the implementation-defined portion is 1 char field, got {value}")
         self._replace_values(position=22, value=value)

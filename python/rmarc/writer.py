@@ -13,7 +13,7 @@ class Writer:
     """Base Writer object."""
 
     def __init__(self, file_handle: IO) -> None:
-        self.file_handle = file_handle
+        self.file_handle: IO | None = file_handle
 
     def write(self, record: Record) -> None:
         if not isinstance(record, Record):
@@ -83,9 +83,7 @@ class XMLWriter(Writer):
         super().__init__(file_handle)
         if self.file_handle:
             self.file_handle.write(b'<?xml version="1.0" encoding="UTF-8"?>')
-            self.file_handle.write(
-                b'<collection xmlns="http://www.loc.gov/MARC21/slim">'
-            )
+            self.file_handle.write(b'<collection xmlns="http://www.loc.gov/MARC21/slim">')
 
     def write(self, record: Record) -> None:
         Writer.write(self, record)

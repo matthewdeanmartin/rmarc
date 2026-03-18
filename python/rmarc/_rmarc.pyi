@@ -15,10 +15,8 @@ def decode_marc_raw(
     utf8_handling: str = "strict",
     quiet: bool = False,
 ) -> tuple[str, list[tuple[str, tuple]]]: ...
-
 def encode_marc_raw(
     leader: str,
     fields: list[tuple[str, bytes]],
 ) -> bytes: ...
-
 def marc8_to_unicode_rs(data: bytes, quiet: bool = False) -> str: ...

@@ -31,9 +31,7 @@ class JSONHandler:
                     self._field.data = remaining
                 else:
                     self.element(remaining, "subfields")
-                    self._field.indicators = Indicators(
-                        remaining["ind1"], remaining["ind2"]
-                    )
+                    self._field.indicators = Indicators(remaining["ind1"], remaining["ind2"])
                 self._record.add_field(self._field)
             self.process_record(self._record)
         elif name == "subfields" and self._field:

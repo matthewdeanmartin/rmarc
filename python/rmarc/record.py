@@ -7,13 +7,7 @@ import unicodedata
 import warnings
 from re import Pattern
 
-from rmarc.constants import (
-    DIRECTORY_ENTRY_LEN,
-    END_OF_FIELD,
-    END_OF_RECORD,
-    LEADER_LEN,
-    SUBFIELD_INDICATOR,
-)
+from rmarc.constants import DIRECTORY_ENTRY_LEN, END_OF_FIELD, END_OF_RECORD, LEADER_LEN, SUBFIELD_INDICATOR
 from rmarc.exceptions import (
     BadSubfieldCodeWarning,
     BaseAddressInvalid,
@@ -25,18 +19,14 @@ from rmarc.exceptions import (
     RecordLeaderInvalid,
     TruncatedRecord,
 )
-from rmarc.field import (
-    Field,
-    Indicators,
-    RawField,
-    Subfield,
-    map_marc8_field,
-)
+from rmarc.field import Field, Indicators, RawField, Subfield, map_marc8_field
 from rmarc.leader import Leader
 from rmarc.marc8 import marc8_to_unicode
 
 try:
-    from rmarc._rmarc import decode_marc_raw as _decode_marc_raw, encode_marc_raw as _encode_marc_raw
+    from rmarc._rmarc import decode_marc_raw as _decode_marc_raw
+    from rmarc._rmarc import encode_marc_raw as _encode_marc_raw
+
     _HAS_RUST_CODEC = True
 except ImportError:
     _HAS_RUST_CODEC = False
@@ -173,9 +163,7 @@ class Record:
     def get_linked_fields(self, field: Field) -> list[Field]:
         num = field.linkage_occurrence_num()
         fields = self.get_fields("880")
-        linked_fields = list(
-            filter(lambda f: f.linkage_occurrence_num() == num, fields)
-        )
+        linked_fields = list(filter(lambda f: f.linkage_occurrence_num() == num, fields))
         if num is not None and not linked_fields:
             raise MissingLinkedFields(field)
         return linked_fields
@@ -190,13 +178,9 @@ class Record:
         encoding: str = "iso8859-1",
     ) -> None:
         if _HAS_RUST_CODEC:
-            self._decode_marc_rust(
-                marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding
-            )
+            self._decode_marc_rust(marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding)
         else:
-            self._decode_marc_python(
-                marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding
-            )
+            self._decode_marc_python(marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding)
 
     def _decode_marc_rust(
         self,
@@ -355,12 +339,7 @@ class Record:
             entry_tag = entry[0:3]
             entry_length = int(entry[3:7])
             entry_offset = int(entry[7:12])
-            entry_data = marc[
-                base_address + entry_offset : base_address
-                + entry_offset
-                + entry_length
-                - 1
-            ]
+            entry_data = marc[base_address + entry_offset : base_address + entry_offset + entry_length - 1]
             # assume controlfields are numeric; replicates ruby-marc behavior
             if entry_tag < "010" and entry_tag.isdigit():
                 if to_unicode:
@@ -480,12 +459,14 @@ class Record:
 
     def as_dict(self) -> dict[str, object]:
         record: dict[str, object] = {"leader": str(self.leader), "fields": []}
+        from typing import cast
+        fields_list = cast(list, record["fields"])
 
         for field in self:
             if field.control_field:
-                record["fields"].append({field.tag: field.data})
+                fields_list.append({field.tag: field.data})
             else:
-                record["fields"].append(
+                fields_list.append(
                     {
                         field.tag: {
                             "ind1": field.indicator1,
@@ -573,15 +554,48 @@ class Record:
     @property
     def subjects(self) -> list[Field]:
         return self.get_fields(
-            "600", "610", "611", "630", "648", "650", "651", "653", "654", "655",
-            "656", "657", "658", "662", "690", "691", "696", "697", "698", "699",
+            "600",
+            "610",
+            "611",
+            "630",
+            "648",
+            "650",
+            "651",
+            "653",
+            "654",
+            "655",
+            "656",
+            "657",
+            "658",
+            "662",
+            "690",
+            "691",
+            "696",
+            "697",
+            "698",
+            "699",
         )
 
     @property
     def addedentries(self) -> list[Field]:
         return self.get_fields(
-            "700", "710", "711", "720", "730", "740", "752", "753", "754", "790",
-            "791", "792", "793", "796", "797", "798", "799",
+            "700",
+            "710",
+            "711",
+            "720",
+            "730",
+            "740",
+            "752",
+            "753",
+            "754",
+            "790",
+            "791",
+            "792",
+            "793",
+            "796",
+            "797",
+            "798",
+            "799",
         )
 
     @property
@@ -591,12 +605,64 @@ class Record:
     @property
     def notes(self) -> list[Field]:
         return self.get_fields(
-            "500", "501", "502", "504", "505", "506", "507", "508", "510", "511",
-            "513", "514", "515", "516", "518", "520", "521", "522", "524", "525",
-            "526", "530", "533", "534", "535", "536", "538", "540", "541", "544",
-            "545", "546", "547", "550", "552", "555", "556", "561", "562", "563",
-            "565", "567", "580", "581", "583", "584", "585", "586", "590", "591",
-            "592", "593", "594", "595", "596", "597", "598", "599",
+            "500",
+            "501",
+            "502",
+            "504",
+            "505",
+            "506",
+            "507",
+            "508",
+            "510",
+            "511",
+            "513",
+            "514",
+            "515",
+            "516",
+            "518",
+            "520",
+            "521",
+            "522",
+            "524",
+            "525",
+            "526",
+            "530",
+            "533",
+            "534",
+            "535",
+            "536",
+            "538",
+            "540",
+            "541",
+            "544",
+            "545",
+            "546",
+            "547",
+            "550",
+            "552",
+            "555",
+            "556",
+            "561",
+            "562",
+            "563",
+            "565",
+            "567",
+            "580",
+            "581",
+            "583",
+            "584",
+            "585",
+            "586",
+            "590",
+            "591",
+            "592",
+            "593",
+            "594",
+            "595",
+            "596",
+            "597",
+            "598",
+            "599",
         )
 
     @property

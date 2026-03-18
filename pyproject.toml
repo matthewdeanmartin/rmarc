@@ -172,6 +172,10 @@ ignore = [
     "C901",           # McCabe complexity
     "S317",           # defusedxml
     "S101",           # assert is fine in tests
+    "SIM110",
+    "SIM115",
+    "SIM110",
+    "SIM108"
 ]
 
 [tool.ruff.lint.pydocstyle]

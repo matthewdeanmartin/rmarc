@@ -10,6 +10,7 @@ from rmarc import marc8_mapping
 
 try:
     from rmarc._rmarc import marc8_to_unicode_rs as _marc8_to_unicode_rs
+
     _HAS_RUST_MARC8 = True
 except ImportError:
     _HAS_RUST_MARC8 = False
@@ -54,9 +55,7 @@ class MARC8ToUnicode:
     basic_latin = 0x42
     ansel = 0x45
 
-    def __init__(
-        self, G0: int = basic_latin, G1: int = ansel, quiet: bool = False
-    ) -> None:
+    def __init__(self, G0: int = basic_latin, G1: int = ansel, quiet: bool = False) -> None:
         self.g0 = G0
         self.g0_set = {b"(", b",", b"$"}
         self.g1 = G1
@@ -74,10 +73,7 @@ class MARC8ToUnicode:
                 next_byte = marc8_string[pos + 1 : pos + 2]
                 if next_byte in self.g0_set:
                     if len(marc8_string) >= pos + 3:
-                        if (
-                            marc8_string[pos + 2 : pos + 3] == b","
-                            and next_byte == b"$"
-                        ):
+                        if marc8_string[pos + 2 : pos + 3] == b"," and next_byte == b"$":
                             pos += 1
                         self.g0 = ord(marc8_string[pos + 2 : pos + 3])
                         pos = pos + 3
@@ -132,9 +128,9 @@ class MARC8ToUnicode:
 
             try:
                 if code_point > 0x80 and not mb_flag:
-                    (uni, cflag) = marc8_mapping.CODESETS[self.g1][code_point]
+                    uni, cflag = marc8_mapping.CODESETS[self.g1][code_point]
                 else:
-                    (uni, cflag) = marc8_mapping.CODESETS[self.g0][code_point]
+                    uni, cflag = marc8_mapping.CODESETS[self.g0][code_point]
             except KeyError:
                 try:
                     uni = marc8_mapping.ODD_MAP[code_point]
@@ -143,9 +139,7 @@ class MARC8ToUnicode:
                 except KeyError:
                     pass
                 if not self.quiet:
-                    sys.stderr.write(
-                        f"Unable to parse character 0x{code_point:x} in g0={self.g0} g1={self.g1}\n"
-                    )
+                    sys.stderr.write(f"Unable to parse character 0x{code_point:x} in g0={self.g0} g1={self.g1}\n")
                 uni = ord(" ")
                 cflag = False
 

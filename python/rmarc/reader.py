@@ -3,21 +3,21 @@
 import json
 import os
 import sys
-from collections.abc import Iterator, Callable
-from io import BytesIO, IOBase, StringIO, BufferedReader
+from collections.abc import Callable, Iterator
+from io import BufferedReader, BytesIO, IOBase, StringIO
 from typing import IO, BinaryIO
 
-from rmarc.field import Field, Indicators, Subfield
-from rmarc.leader import Leader
-from rmarc.record import Record
+from rmarc.constants import END_OF_RECORD
 from rmarc.exceptions import (
-    RecordLengthInvalid,
-    TruncatedRecord,
     EndOfRecordNotFound,
     FatalReaderError,
     PymarcException,
+    RecordLengthInvalid,
+    TruncatedRecord,
 )
-from rmarc.constants import END_OF_RECORD
+from rmarc.field import Field, Indicators, Subfield
+from rmarc.leader import Leader
+from rmarc.record import Record
 
 
 class Reader:
@@ -71,9 +71,7 @@ class MARCReader(Reader):
         return self
 
     def __next__(self):
-        if self._current_exception and isinstance(
-            self._current_exception, FatalReaderError
-        ):
+        if self._current_exception and isinstance(self._current_exception, FatalReaderError):
             raise StopIteration
 
         self._current_chunk = None
@@ -141,11 +139,9 @@ class JSONReader(Reader):
             if isinstance(marc_target, str) and os.path.exists(marc_target):
                 self.file_handle = open(marc_target)
             else:
-                self.file_handle = StringIO(marc_target)
+                self.file_handle = StringIO(marc_target if isinstance(marc_target, str) else marc_target.decode(encoding))
         if stream:
-            sys.stderr.write(
-                "Streaming not yet implemented, your data will be loaded into memory\n"
-            )
+            sys.stderr.write("Streaming not yet implemented, your data will be loaded into memory\n")
         self.records = json.load(self.file_handle, strict=False)
 
     def __iter__(self) -> Iterator[Record]:
@@ -181,13 +177,14 @@ class MARCMakerReader(Reader):
     r"""MARCMaker Reader."""
 
     def __init__(self, target: bytes | str, encoding: str = "utf-8") -> None:
+        file_handle: IOBase
         if isinstance(target, IOBase):
             file_handle = target
         else:
             if isinstance(target, str) and os.path.exists(target):
                 file_handle = open(target, encoding=encoding)
             else:
-                file_handle = StringIO(target)
+                file_handle = StringIO(target if isinstance(target, str) else target.decode(encoding))
         file_content = file_handle.read()
         file_handle.close()
         self.records = list(file_content.split("\n\n"))
@@ -197,9 +194,7 @@ class MARCMakerReader(Reader):
         if line[0] != "=":
             raise ValueError('Line should start with a "=".')
         if line[4:6] != "  ":
-            raise ValueError(
-                "Tag should be separated from the rest of the field by two spaces."
-            )
+            raise ValueError("Tag should be separated from the rest of the field by two spaces.")
         tag = line[1:4]
         data = line[6:]
         if tag == "LDR":
@@ -207,9 +202,7 @@ class MARCMakerReader(Reader):
         elif tag < "010":
             return Field(tag, data=data)
         indicators = Indicators(data[0], data[1])
-        subfields: list[Subfield] = [
-            Subfield(subfield[:1], subfield[1:]) for subfield in data[3:].split("$")
-        ]
+        subfields: list[Subfield] = [Subfield(subfield[:1], subfield[1:]) for subfield in data[3:].split("$")]
         return Field(tag, indicators=indicators, subfields=subfields)
 
     def __iter__(self):
