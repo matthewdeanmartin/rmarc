@@ -252,7 +252,11 @@ class Record:
         # but raw bytes for unknown encodings and to_unicode=False.
         # We need to decode raw bytes when to_unicode=True but encoding is unknown to Rust.
         needs_python_decode = to_unicode and encoding not in ("utf-8", "iso8859-1")
-        field_count = 0
+        FieldClass = Field if to_unicode else RawField
+        fields = self.fields
+
+        if not fields_raw:
+            raise NoFieldsFound
 
         for tag, field_info in fields_raw:
             field_type = field_info[0]
@@ -261,13 +265,13 @@ class Record:
                 data_val = field_info[1]
                 if needs_python_decode and isinstance(data_val, bytes):
                     data_val = data_val.decode(encoding)
-                if to_unicode:
-                    field = Field(tag=tag, data=data_val)
-                else:
-                    field = RawField(tag=tag, data=data_val)
+                field = FieldClass.__new__(FieldClass)
+                field.tag = tag
+                field.data = data_val
+                field.control_field = True
+                field._indicators = None
+                field.subfields = []
             else:
-                ind1 = field_info[1]
-                ind2 = field_info[2]
                 raw_subfields = field_info[3]
 
                 subfields = []
@@ -295,24 +299,14 @@ class Record:
 
                     subfields.append(Subfield(code=code, value=value))
 
-                if to_unicode:
-                    field = Field(
-                        tag=tag,
-                        indicators=Indicators(ind1, ind2),
-                        subfields=subfields,
-                    )
-                else:
-                    field = RawField(
-                        tag=tag,
-                        indicators=Indicators(ind1, ind2),
-                        subfields=subfields,
-                    )
+                field = FieldClass.__new__(FieldClass)
+                field.tag = tag
+                field.data = None
+                field.control_field = False
+                field._indicators = Indicators(field_info[1], field_info[2])
+                field.subfields = subfields
 
-            self.add_field(field)
-            field_count += 1
-
-        if field_count == 0:
-            raise NoFieldsFound
+            fields.append(field)
 
     def _decode_marc_python(
         self,

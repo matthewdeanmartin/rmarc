@@ -139,7 +139,7 @@ pub fn decode_marc_raw<'py>(
         let field_data = &data[field_start..field_end];
 
         let is_control = tag_str < "010" && tag_str.bytes().all(|b| b.is_ascii_digit());
-        let tag_py = PyString::new(py, tag_str);
+        let tag_py = PyString::intern(py, tag_str);
 
         if is_control {
             let value: Bound<'_, PyAny> = match &decode_mode {
@@ -154,7 +154,7 @@ pub fn decode_marc_raw<'py>(
                 }
             };
             let control_tuple = PyTuple::new(py, &[
-                PyString::new(py, "control").into_any(),
+                PyString::intern(py, "control").into_any(),
                 value,
             ])?;
             let field_tuple = PyTuple::new(py, &[
@@ -177,6 +177,7 @@ pub fn decode_marc_raw<'py>(
 
                 if code_byte.is_ascii() {
                     let code_str = std::str::from_utf8(&part[..1]).unwrap();
+                    let code_py = PyString::intern(py, code_str);
                     let value_py: Bound<'_, PyAny> = match &decode_mode {
                         DecodeMode::Raw => PyBytes::new(py, value).into_any(),
                         DecodeMode::Utf8 => {
@@ -189,7 +190,7 @@ pub fn decode_marc_raw<'py>(
                         }
                     };
                     let sub_tuple = PyTuple::new(py, &[
-                        PyString::new(py, code_str).into_any(),
+                        code_py.into_any(),
                         value_py,
                     ])?;
                     subfields_list.append(sub_tuple)?;
@@ -204,7 +205,7 @@ pub fn decode_marc_raw<'py>(
             }
 
             let data_tuple = PyTuple::new(py, &[
-                PyString::new(py, "data").into_any(),
+                PyString::intern(py, "data").into_any(),
                 PyString::new(py, &String::from(ind1 as char)).into_any(),
                 PyString::new(py, &String::from(ind2 as char)).into_any(),
                 subfields_list.into_any(),
