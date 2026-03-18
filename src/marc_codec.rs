@@ -145,7 +145,8 @@ pub fn decode_marc_raw<'py>(
             let value: Bound<'_, PyAny> = match &decode_mode {
                 DecodeMode::Raw => PyBytes::new(py, field_data).into_any(),
                 DecodeMode::Utf8 => {
-                    let s = decode_utf8(field_data, utf8_handling);
+                    let s = decode_utf8(field_data, utf8_handling)
+                        .map_err(|msg| PyValueError::new_err(format!("InvalidUTF8: {msg}")))?;
                     PyString::new(py, &s).into_any()
                 }
                 DecodeMode::Marc8 => {
@@ -176,7 +177,9 @@ pub fn decode_marc_raw<'py>(
                     let value_py: Bound<'_, PyAny> = match &decode_mode {
                         DecodeMode::Raw => PyBytes::new(py, value).into_any(),
                         DecodeMode::Utf8 => {
-                            let s = decode_utf8(value, utf8_handling);
+                            let s = decode_utf8(value, utf8_handling).map_err(|msg| {
+                                PyValueError::new_err(format!("InvalidUTF8: {msg}"))
+                            })?;
                             PyString::new(py, &s).into_any()
                         }
                         DecodeMode::Marc8 => {
@@ -216,16 +219,24 @@ pub fn decode_marc_raw<'py>(
     Ok((PyString::new(py, leader_str), fields_list))
 }
 
-/// Decode bytes as UTF-8 with the given error handling
-fn decode_utf8(data: &[u8], handling: &str) -> String {
+/// Decode bytes as UTF-8 with the given error handling.
+///
+/// In "strict" mode, returns `Err` on invalid UTF-8 (matching Python's
+/// `bytes.decode("utf-8", "strict")` which raises `UnicodeDecodeError`).
+fn decode_utf8(data: &[u8], handling: &str) -> Result<String, String> {
     match handling {
-        "strict" => String::from_utf8(data.to_vec())
-            .unwrap_or_else(|_| String::from_utf8_lossy(data).into_owned()),
-        "ignore" => String::from_utf8_lossy(data)
+        "strict" => String::from_utf8(data.to_vec()).map_err(|e| {
+            let pos = e.utf8_error().valid_up_to();
+            format!(
+                "'utf-8' codec can't decode byte {:#04x} in position {}: invalid start byte",
+                data[pos], pos
+            )
+        }),
+        "ignore" => Ok(String::from_utf8_lossy(data)
             .chars()
             .filter(|c| *c != '\u{FFFD}')
-            .collect(),
-        _ => String::from_utf8_lossy(data).into_owned(), // "replace" and others
+            .collect()),
+        _ => Ok(String::from_utf8_lossy(data).into_owned()), // "replace" and others
     }
 }
 
@@ -257,7 +268,7 @@ fn parse_indicators(indicators: &[u8]) -> (u8, u8) {
 ///
 /// Public for testing; used by `decode_marc_raw` internally.
 #[cfg(test)]
-pub(crate) fn decode_utf8_pub(data: &[u8], handling: &str) -> String {
+pub(crate) fn decode_utf8_pub(data: &[u8], handling: &str) -> Result<String, String> {
     decode_utf8(data, handling)
 }
 
@@ -389,32 +400,35 @@ mod tests {
 
     #[test]
     fn decode_utf8_valid_ascii() {
-        assert_eq!(decode_utf8_pub(b"hello", "strict"), "hello");
+        assert_eq!(decode_utf8_pub(b"hello", "strict").unwrap(), "hello");
     }
 
     #[test]
     fn decode_utf8_valid_multibyte() {
         // U+00E9 LATIN SMALL LETTER E WITH ACUTE (é) in UTF-8 is 0xC3 0xA9
-        assert_eq!(decode_utf8_pub(b"\xc3\xa9", "strict"), "\u{00e9}");
+        assert_eq!(decode_utf8_pub(b"\xc3\xa9", "strict").unwrap(), "\u{00e9}");
     }
 
     #[test]
-    fn decode_utf8_invalid_strict_falls_back_to_lossy() {
-        // Invalid UTF-8 byte 0xFF — strict falls back to lossy (replacement char)
+    fn decode_utf8_invalid_strict_returns_error() {
+        // Invalid UTF-8 byte 0xFF — strict must return Err (matching Python UnicodeDecodeError)
         let result = decode_utf8_pub(b"\xff", "strict");
-        assert!(result.contains('\u{FFFD}'));
+        assert!(result.is_err());
+        let msg = result.unwrap_err();
+        assert!(msg.contains("can't decode byte"));
+        assert!(msg.contains("0xff"));
     }
 
     #[test]
     fn decode_utf8_ignore_strips_replacement() {
-        let result = decode_utf8_pub(b"\xff", "ignore");
+        let result = decode_utf8_pub(b"\xff", "ignore").unwrap();
         assert!(!result.contains('\u{FFFD}'));
         assert!(result.is_empty());
     }
 
     #[test]
     fn decode_utf8_replace_keeps_replacement() {
-        let result = decode_utf8_pub(b"\xff", "replace");
+        let result = decode_utf8_pub(b"\xff", "replace").unwrap();
         assert!(result.contains('\u{FFFD}'));
     }
 

@@ -22,7 +22,8 @@
       "Bash(cargo clippy:*)",
       "Bash(cargo fmt:*)",
       "Bash(make rebuild:*)",
-      "Bash(make check-all:*)"
+      "Bash(make check-all:*)",
+      "Bash(grep -l \"utf8_handling\\\\|utf-8\\\\|UTF-8\\\\|strict\\\\|force_utf8\" /github/rmarc/test_pymarc/*.py)"
     ]
   }
 }

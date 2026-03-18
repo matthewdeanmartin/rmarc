@@ -233,6 +233,8 @@ class Record:
                 raise RecordDirectoryInvalid from None
             if "NoFieldsFound" in msg:
                 raise NoFieldsFound from None
+            if "InvalidUTF8" in msg:
+                raise UnicodeDecodeError("utf-8", marc, 0, 1, msg) from None
             if "not valid ASCII" in msg:
                 raise UnicodeDecodeError("ascii", b"", 0, 1, msg) from None
             raise
