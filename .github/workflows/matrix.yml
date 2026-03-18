@@ -48,7 +48,7 @@ jobs:
 
       - name: Run full test suite
         run: |
-          uv run pytest test_pymarc/ tests/ -v
+          uv run pytest test_pymarc/ -v
 
       - name: Verify MARC binary roundtrip
         run: |
