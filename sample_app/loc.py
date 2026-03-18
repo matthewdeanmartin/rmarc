@@ -11,7 +11,6 @@ from io import BytesIO
 
 from rmarc import Record, parse_xml_to_array
 
-
 LOC_SRU_BASE = "https://lx2.loc.gov/sru/LCDB"
 LOC_SEARCH_BASE = "https://www.loc.gov/search/"
 LOC_LCCN_BASE = "https://lccn.loc.gov"
@@ -23,12 +22,14 @@ def search_loc(query: str, max_results: int = 5) -> list[dict]:
     Uses the loc.gov JSON search API.
     Returns a list of dicts with keys: title, author, date, lccn, url.
     """
-    params = urllib.parse.urlencode({
-        "q": query,
-        "fo": "json",
-        "c": str(max_results),
-        "fa": "original-format:book",
-    })
+    params = urllib.parse.urlencode(
+        {
+            "q": query,
+            "fo": "json",
+            "c": str(max_results),
+            "fa": "original-format:book",
+        }
+    )
     url = f"{LOC_SEARCH_BASE}?{params}"
 
     req = urllib.request.Request(url, headers={"Accept": "application/json"})
@@ -47,13 +48,15 @@ def search_loc(query: str, max_results: int = 5) -> list[dict]:
                 lccn = ident.replace("lccn ", "").strip()
                 break
 
-        results.append({
-            "title": item.get("title", "Unknown"),
-            "author": ", ".join(item.get("contributor", [])) if item.get("contributor") else "",
-            "date": item.get("date", ""),
-            "lccn": lccn,
-            "url": item.get("url", ""),
-        })
+        results.append(
+            {
+                "title": item.get("title", "Unknown"),
+                "author": ", ".join(item.get("contributor", [])) if item.get("contributor") else "",
+                "date": item.get("date", ""),
+                "lccn": lccn,
+                "url": item.get("url", ""),
+            }
+        )
     return results
 
 
@@ -79,13 +82,15 @@ def build_lccn_permalink_url(lccn: str, qualifier: str = "") -> str:
 
 def build_sru_url(lccn: str, record_schema: str = "marcxml", maximum_records: int = 1) -> str:
     """Build an official LC SRU URL for an LCCN search."""
-    params = urllib.parse.urlencode({
-        "operation": "searchRetrieve",
-        "version": "1.1",
-        "query": f"bath.lccn={normalize_lccn(lccn)}",
-        "maximumRecords": str(maximum_records),
-        "recordSchema": record_schema,
-    })
+    params = urllib.parse.urlencode(
+        {
+            "operation": "searchRetrieve",
+            "version": "1.1",
+            "query": f"bath.lccn={normalize_lccn(lccn)}",
+            "maximumRecords": str(maximum_records),
+            "recordSchema": record_schema,
+        }
+    )
     return f"{LOC_SRU_BASE}?{params}"
 
 

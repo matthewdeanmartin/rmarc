@@ -8,17 +8,7 @@ import os
 import tempfile
 import unittest
 
-from rmarc import (
-    Field,
-    Indicators,
-    Leader,
-    MARCReader,
-    MARCWriter,
-    RawField,
-    Record,
-    Subfield,
-    marc8_to_unicode,
-)
+from rmarc import Field, Indicators, Leader, MARCReader, MARCWriter, RawField, Record, Subfield, marc8_to_unicode
 
 
 class MARC8Test(unittest.TestCase):

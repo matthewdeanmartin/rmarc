@@ -32,13 +32,7 @@ from pymarc.exceptions import (
     RecordLeaderInvalid,
     TruncatedRecord,
 )
-from pymarc.field import (
-    Field,
-    Indicators,
-    RawField,
-    Subfield,
-    map_marc8_field,
-)
+from pymarc.field import Field, Indicators, RawField, Subfield, map_marc8_field
 from pymarc.leader import Leader
 from pymarc.marc8 import marc8_to_unicode
 

@@ -8,7 +8,6 @@ Run with:
 
 import io
 
-
 # ── Record dict/object construction ───────────────────────────────────────────
 
 
@@ -169,10 +168,10 @@ def test_bench_xml_tostring_stdlib(benchmark, one_record):
     """Baseline: stdlib ET.tostring on a pre-built node."""
     import xml.etree.ElementTree as ET
 
+    import pytest
+
     from rmarc._compat import HAS_LXML
     from rmarc.marcxml import record_to_xml_node
-
-    import pytest
 
     if HAS_LXML:
         pytest.skip("lxml is active; stdlib node not built by record_to_xml_node")

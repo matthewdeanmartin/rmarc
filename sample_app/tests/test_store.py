@@ -8,7 +8,6 @@ from pathlib import Path
 import pytest
 
 from rmarc import Field, Indicators, Record, Subfield
-
 from sample_app.store import Collection, make_record
 
 
@@ -106,6 +105,7 @@ class TestMakeRecord:
 
     def test_as_json(self, sample_record):
         import json
+
         j = sample_record.as_json()
         parsed = json.loads(j)
         assert "leader" in parsed
@@ -440,7 +440,7 @@ class TestRmarcFeatures:
         # The two 650 fields should be adjacent
         tags = [f.tag for f in rec.get_fields()]
         first_650 = tags.index("650")
-        second_650 = tags.index("650") + tags[first_650 + 1:].index("650") + 1 if tags.count("650") > 1 else first_650
+        second_650 = tags.index("650") + tags[first_650 + 1 :].index("650") + 1 if tags.count("650") > 1 else first_650
         assert second_650 == first_650 + 1
 
     def test_remove_fields(self, sample_record):

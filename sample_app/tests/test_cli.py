@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import pytest
 
-from sample_app.cli import main, build_parser
+from sample_app.cli import build_parser, main
 
 
 @pytest.fixture
@@ -26,10 +26,25 @@ def run_cli(*args: str) -> None:
 
 class TestAddAndList:
     def test_add_book(self, coll_path, capsys):
-        run_cli("-c", coll_path, "add", "The Great Gatsby", "Fitzgerald, F. Scott",
-                "--isbn", "978-0743273565", "--publisher", "Scribner", "--year", "1925",
-                "--subjects", "American fiction;Jazz Age", "--notes", "Classic",
-                "--location", "Shelf A")
+        run_cli(
+            "-c",
+            coll_path,
+            "add",
+            "The Great Gatsby",
+            "Fitzgerald, F. Scott",
+            "--isbn",
+            "978-0743273565",
+            "--publisher",
+            "Scribner",
+            "--year",
+            "1925",
+            "--subjects",
+            "American fiction;Jazz Age",
+            "--notes",
+            "Classic",
+            "--location",
+            "Shelf A",
+        )
         out = capsys.readouterr().out
         assert "Added book #0" in out
 
@@ -136,8 +151,19 @@ class TestReport:
         assert "Total books: 0" in out
 
     def test_report_with_data(self, coll_path, capsys):
-        run_cli("-c", coll_path, "add", "Book A", "Author X", "--publisher", "Pub1", "--year", "2020",
-                "--subjects", "Science")
+        run_cli(
+            "-c",
+            coll_path,
+            "add",
+            "Book A",
+            "Author X",
+            "--publisher",
+            "Pub1",
+            "--year",
+            "2020",
+            "--subjects",
+            "Science",
+        )
         run_cli("-c", coll_path, "add", "Book B", "Author X", "--publisher", "Pub2", "--year", "2021")
         run_cli("-c", coll_path, "report")
         out = capsys.readouterr().out
@@ -257,12 +283,45 @@ class TestEndToEnd:
 
     def test_full_workflow(self, coll_path, tmp_path, capsys):
         # Add books
-        run_cli("-c", coll_path, "add", "Moby Dick", "Melville, Herman",
-                "--isbn", "978-0142437247", "--year", "1851", "--subjects", "Whales;Sea adventures")
-        run_cli("-c", coll_path, "add", "1984", "Orwell, George",
-                "--isbn", "978-0451524935", "--year", "1949", "--subjects", "Dystopia;Politics")
-        run_cli("-c", coll_path, "add", "Dune", "Herbert, Frank",
-                "--isbn", "978-0441172719", "--year", "1965", "--subjects", "Science fiction")
+        run_cli(
+            "-c",
+            coll_path,
+            "add",
+            "Moby Dick",
+            "Melville, Herman",
+            "--isbn",
+            "978-0142437247",
+            "--year",
+            "1851",
+            "--subjects",
+            "Whales;Sea adventures",
+        )
+        run_cli(
+            "-c",
+            coll_path,
+            "add",
+            "1984",
+            "Orwell, George",
+            "--isbn",
+            "978-0451524935",
+            "--year",
+            "1949",
+            "--subjects",
+            "Dystopia;Politics",
+        )
+        run_cli(
+            "-c",
+            coll_path,
+            "add",
+            "Dune",
+            "Herbert, Frank",
+            "--isbn",
+            "978-0441172719",
+            "--year",
+            "1965",
+            "--subjects",
+            "Science fiction",
+        )
         capsys.readouterr()  # clear
 
         # List

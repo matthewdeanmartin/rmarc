@@ -8,13 +8,12 @@ __all__ = [
 
 import json
 import logging
-
-from rmarc._compat import HAS_ORJSON, json_dumps
 import re
 import unicodedata
 import warnings
 from re import Pattern
 
+from rmarc._compat import HAS_ORJSON, json_dumps
 from rmarc.constants import DIRECTORY_ENTRY_LEN, END_OF_FIELD, END_OF_RECORD, LEADER_LEN, SUBFIELD_INDICATOR
 from rmarc.exceptions import (
     BadSubfieldCodeWarning,

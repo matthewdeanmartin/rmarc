@@ -139,7 +139,7 @@ def record_to_xml_node(record, quiet=False, namespace=False):
     if namespace and HAS_LXML:
         # lxml manages namespaces natively; declare via nsmap on the element
         NSMAP = {None: MARC_XML_NS, "xsi": XSI_NS}
-        root = _ET.Element("record", nsmap=NSMAP)
+        root = _ET.Element("record", nsmap=NSMAP)  # type: ignore[call-arg]
         root.set(f"{{{XSI_NS}}}schemaLocation", MARC_XML_SCHEMA)
     else:
         root = _ET.Element("record")

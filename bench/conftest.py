@@ -1,5 +1,7 @@
 """Shared fixtures for benchmarks."""
+
 import os
+
 import pytest
 
 

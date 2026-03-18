@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate benchmark data files by repeating test records."""
+
 import os
 
 

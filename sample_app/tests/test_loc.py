@@ -12,7 +12,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from rmarc import record_to_xml
-
 from sample_app.loc import (
     build_lccn_permalink_url,
     build_sru_url,
@@ -36,17 +35,19 @@ class TestSearchLocMocked:
 
     @patch("sample_app.loc.urllib.request.urlopen")
     def test_search_returns_results(self, mock_urlopen):
-        mock_urlopen.return_value = self._mock_response({
-            "results": [
-                {
-                    "title": "Test Book",
-                    "contributor": ["Author A"],
-                    "date": "2020",
-                    "number": ["lccn 2020123456"],
-                    "url": "https://example.com/book",
-                },
-            ]
-        })
+        mock_urlopen.return_value = self._mock_response(
+            {
+                "results": [
+                    {
+                        "title": "Test Book",
+                        "contributor": ["Author A"],
+                        "date": "2020",
+                        "number": ["lccn 2020123456"],
+                        "url": "https://example.com/book",
+                    },
+                ]
+            }
+        )
 
         results = search_loc("test")
         assert len(results) == 1
@@ -62,15 +63,16 @@ class TestSearchLocMocked:
 
     @patch("sample_app.loc.urllib.request.urlopen")
     def test_search_no_contributor(self, mock_urlopen):
-        mock_urlopen.return_value = self._mock_response({
-            "results": [{"title": "Anonymous", "date": "2000", "number": [], "url": ""}]
-        })
+        mock_urlopen.return_value = self._mock_response(
+            {"results": [{"title": "Anonymous", "date": "2000", "number": [], "url": ""}]}
+        )
         results = search_loc("test")
         assert results[0]["author"] == ""
 
     @patch("sample_app.loc.urllib.request.urlopen")
     def test_search_connection_error(self, mock_urlopen):
         import urllib.error
+
         mock_urlopen.side_effect = urllib.error.URLError("fail")
         with pytest.raises(ConnectionError):
             search_loc("test")
@@ -114,6 +116,7 @@ class TestFetchMarcMocked:
     @patch("sample_app.loc.urllib.request.urlopen")
     def test_fetch_connection_error(self, mock_urlopen):
         import urllib.error
+
         mock_urlopen.side_effect = urllib.error.URLError("timeout")
         with pytest.raises(ConnectionError):
             fetch_marc_by_lccn("bad")
@@ -146,6 +149,7 @@ class TestLocCliMocked:
             {"title": "CLI Result", "author": "Someone", "date": "2021", "lccn": "123", "url": ""},
         ]
         from sample_app.cli import main
+
         main(["-c", str(tmp_path / "t.mrc"), "loc-search", "test"])
         out = capsys.readouterr().out
         assert "CLI Result" in out
@@ -155,6 +159,7 @@ class TestLocCliMocked:
         rec = make_record(title="LOC Book", author="LOC Author")
         mock_fetch.return_value = rec
         from sample_app.cli import main
+
         main(["-c", str(tmp_path / "t.mrc"), "loc-fetch", "123", "--show", "--no-add"])
         out = capsys.readouterr().out
         assert "LOC Book" in out
@@ -165,6 +170,7 @@ class TestLocCliMocked:
         rec = make_record(title="Added From LOC", author="LOC Author")
         mock_fetch.return_value = rec
         from sample_app.cli import main
+
         coll_path = str(tmp_path / "t.mrc")
         main(["-c", coll_path, "loc-fetch", "123"])
         out = capsys.readouterr().out
@@ -174,6 +180,7 @@ class TestLocCliMocked:
     def test_loc_fetch_cli_not_found(self, mock_fetch, tmp_path):
         mock_fetch.return_value = None
         from sample_app.cli import main
+
         with pytest.raises(SystemExit):
             main(["-c", str(tmp_path / "t.mrc"), "loc-fetch", "bad"])
 
@@ -181,5 +188,6 @@ class TestLocCliMocked:
     def test_loc_search_cli_error(self, mock_search, tmp_path):
         mock_search.side_effect = ConnectionError("fail")
         from sample_app.cli import main
+
         with pytest.raises(SystemExit):
             main(["-c", str(tmp_path / "t.mrc"), "loc-search", "test"])

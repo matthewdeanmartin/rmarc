@@ -56,24 +56,18 @@ def make_record(
 
     # 020 - ISBN
     if isbn:
-        record.add_ordered_field(
-            Field(tag="020", indicators=Indicators(" ", " "), subfields=[Subfield("a", isbn)])
-        )
+        record.add_ordered_field(Field(tag="020", indicators=Indicators(" ", " "), subfields=[Subfield("a", isbn)]))
 
     # 100 - Main entry / author
     if author:
-        record.add_ordered_field(
-            Field(tag="100", indicators=Indicators("1", " "), subfields=[Subfield("a", author)])
-        )
+        record.add_ordered_field(Field(tag="100", indicators=Indicators("1", " "), subfields=[Subfield("a", author)]))
 
     # 245 - Title statement
     ind1 = "1" if author else "0"
     title_subfields = [Subfield("a", title)]
     if author:
         title_subfields.append(Subfield("c", author))
-    record.add_ordered_field(
-        Field(tag="245", indicators=Indicators(ind1, "0"), subfields=title_subfields)
-    )
+    record.add_ordered_field(Field(tag="245", indicators=Indicators(ind1, "0"), subfields=title_subfields))
 
     # 260 - Publication info
     if publisher or year:
@@ -82,27 +76,19 @@ def make_record(
             pub_subfields.append(Subfield("b", publisher))
         if year:
             pub_subfields.append(Subfield("c", year))
-        record.add_ordered_field(
-            Field(tag="260", indicators=Indicators(" ", " "), subfields=pub_subfields)
-        )
+        record.add_ordered_field(Field(tag="260", indicators=Indicators(" ", " "), subfields=pub_subfields))
 
     # 500 - General note
     if notes:
-        record.add_ordered_field(
-            Field(tag="500", indicators=Indicators(" ", " "), subfields=[Subfield("a", notes)])
-        )
+        record.add_ordered_field(Field(tag="500", indicators=Indicators(" ", " "), subfields=[Subfield("a", notes)]))
 
     # 650 - Subject headings
     for subj in subjects or []:
-        record.add_ordered_field(
-            Field(tag="650", indicators=Indicators(" ", "0"), subfields=[Subfield("a", subj)])
-        )
+        record.add_ordered_field(Field(tag="650", indicators=Indicators(" ", "0"), subfields=[Subfield("a", subj)]))
 
     # 852 - Location
     if location:
-        record.add_ordered_field(
-            Field(tag="852", indicators=Indicators(" ", " "), subfields=[Subfield("a", location)])
-        )
+        record.add_ordered_field(Field(tag="852", indicators=Indicators(" ", " "), subfields=[Subfield("a", location)]))
 
     return record
 

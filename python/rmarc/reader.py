@@ -11,12 +11,11 @@ __all__ = [
 import json
 import os
 import sys
-
-from rmarc._compat import json_loads
 from collections.abc import Callable, Iterator
 from io import BufferedReader, BytesIO, IOBase, StringIO
 from typing import IO, BinaryIO
 
+from rmarc._compat import json_loads
 from rmarc.constants import END_OF_RECORD
 from rmarc.exceptions import (
     EndOfRecordNotFound,
@@ -176,14 +175,12 @@ class JSONReader(Reader):
                     fld.tag = f"{int(k):03}"
                 except ValueError:
                     fld.tag = k
-                fld._Field__pos = 0  # mangled __pos slot
+                object.__setattr__(fld, "_Field__pos", 0)  # mangled __pos slot
                 if isinstance(v, dict):
                     fld.control_field = False
                     fld.data = None
                     fld._indicators = Indicators(v["ind1"], v["ind2"])
-                    fld.subfields = [
-                        Subfield(code=c, value=val) for sub in v["subfields"] for c, val in sub.items()
-                    ]
+                    fld.subfields = [Subfield(code=c, value=val) for sub in v["subfields"] for c, val in sub.items()]
                 else:
                     fld.control_field = True
                     fld.data = v

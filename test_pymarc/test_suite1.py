@@ -12,6 +12,7 @@ from copy import deepcopy
 from io import BytesIO, StringIO
 
 import pytest
+
 import rmarc
 from rmarc import (
     Field,
@@ -29,13 +30,7 @@ from rmarc import (
     XMLWriter,
     marc8_to_unicode,
 )
-from rmarc.constants import (
-    DIRECTORY_ENTRY_LEN,
-    END_OF_FIELD,
-    END_OF_RECORD,
-    LEADER_LEN,
-    SUBFIELD_INDICATOR,
-)
+from rmarc.constants import DIRECTORY_ENTRY_LEN, END_OF_FIELD, END_OF_RECORD, LEADER_LEN, SUBFIELD_INDICATOR
 from rmarc.exceptions import (
     BadLeaderValue,
     BadSubfieldCodeWarning,
@@ -54,12 +49,7 @@ from rmarc.exceptions import (
     WriteNeedsRecord,
 )
 from rmarc.marcjson import parse_json_to_array
-from rmarc.marcxml import (
-    map_xml,
-    parse_xml_to_array,
-    record_to_xml,
-    record_to_xml_node,
-)
+from rmarc.marcxml import map_xml, parse_xml_to_array, record_to_xml, record_to_xml_node
 
 # ---------------------------------------------------------------------------
 # Helpers

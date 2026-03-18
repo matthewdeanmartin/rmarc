@@ -13,7 +13,6 @@ import xml.etree.ElementTree as ET
 from typing import IO
 
 from rmarc._compat import HAS_ORJSON, json_dumps
-
 from rmarc.exceptions import WriteNeedsRecord
 from rmarc.marcxml import record_to_xml_node
 from rmarc.record import Record

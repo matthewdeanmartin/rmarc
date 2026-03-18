@@ -9,22 +9,21 @@
 import json  # noqa: I001
 import os
 import sys
-from collections.abc import Iterator
-from io import BytesIO, IOBase, StringIO, BufferedReader
+from collections.abc import Callable, Iterator
+from io import BufferedReader, BytesIO, IOBase, StringIO
 from typing import IO, BinaryIO
-from collections.abc import Callable
 
-from pymarc.field import Field, Indicators, Subfield
-from pymarc.leader import Leader
-from pymarc.record import Record
+from pymarc.constants import END_OF_RECORD
 from pymarc.exceptions import (
-    RecordLengthInvalid,
-    TruncatedRecord,
     EndOfRecordNotFound,
     FatalReaderError,
     PymarcException,
+    RecordLengthInvalid,
+    TruncatedRecord,
 )
-from pymarc.constants import END_OF_RECORD
+from pymarc.field import Field, Indicators, Subfield
+from pymarc.leader import Leader
+from pymarc.record import Record
 
 
 class Reader:

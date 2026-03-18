@@ -5,12 +5,7 @@
 # file.
 import unittest
 
-from rmarc.exceptions import (
-    BaseAddressInvalid,
-    FieldNotFound,
-    MissingLinkedFields,
-    RecordLeaderInvalid,
-)
+from rmarc.exceptions import BaseAddressInvalid, FieldNotFound, MissingLinkedFields, RecordLeaderInvalid
 from rmarc.field import Field, Indicators, Subfield
 from rmarc.leader import Leader
 from rmarc.reader import MARCReader

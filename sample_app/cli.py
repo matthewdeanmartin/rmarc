@@ -10,8 +10,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from sample_app.loc import fetch_marc_by_lccn, search_loc
 from sample_app.store import Collection, make_record
-from sample_app.loc import search_loc, fetch_marc_by_lccn
 
 DEFAULT_COLLECTION = "bookshelf.mrc"
 
@@ -70,7 +70,7 @@ def cmd_edit(args: argparse.Namespace) -> None:
         print(f"Error: No book at index {args.index}.", file=sys.stderr)
         sys.exit(1)
 
-    from rmarc import Field, Subfield, Indicators
+    from rmarc import Field, Indicators, Subfield
 
     if args.title:
         record.remove_fields("245")
@@ -99,9 +99,7 @@ def cmd_edit(args: argparse.Namespace) -> None:
         yr = record.pubyear
         if yr:
             subs.append(Subfield("c", yr))
-        record.add_ordered_field(
-            Field(tag="260", indicators=Indicators(" ", " "), subfields=subs)
-        )
+        record.add_ordered_field(Field(tag="260", indicators=Indicators(" ", " "), subfields=subs))
 
     if args.year:
         f260 = record.get("260")
@@ -109,9 +107,7 @@ def cmd_edit(args: argparse.Namespace) -> None:
             record.remove_fields("260")
             subs = [s for s in f260.subfields if s.code != "c"]
             subs.append(Subfield("c", args.year))
-            record.add_ordered_field(
-                Field(tag="260", indicators=Indicators(" ", " "), subfields=subs)
-            )
+            record.add_ordered_field(Field(tag="260", indicators=Indicators(" ", " "), subfields=subs))
         else:
             record.add_ordered_field(
                 Field(tag="260", indicators=Indicators(" ", " "), subfields=[Subfield("c", args.year)])
@@ -255,7 +251,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="BookShelf: manage your personal book collection with MARC records.",
     )
     parser.add_argument(
-        "-c", "--collection",
+        "-c",
+        "--collection",
         default=DEFAULT_COLLECTION,
         help=f"Path to the .mrc collection file (default: {DEFAULT_COLLECTION})",
     )
