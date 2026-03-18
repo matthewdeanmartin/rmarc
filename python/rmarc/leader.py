@@ -1,5 +1,7 @@
 """The rmarc.leader file (pymarc compatible)."""
 
+__all__ = ["Leader"]
+
 from rmarc.constants import LEADER_LEN
 from rmarc.exceptions import BadLeaderValue, RecordLeaderInvalid
 

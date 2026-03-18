@@ -1,5 +1,11 @@
 """Rmarc Record (pymarc compatible)."""
 
+__all__ = [
+    "Record",
+    "map_marc8_record",
+    "normalize_subfield_code",
+]
+
 import json
 import logging
 import re

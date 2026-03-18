@@ -1,5 +1,13 @@
 """The rmarc field file (pymarc compatible)."""
 
+__all__ = [
+    "Subfield",
+    "Indicators",
+    "Field",
+    "RawField",
+    "map_marc8_field",
+]
+
 import logging
 import typing
 from collections import defaultdict

@@ -1,5 +1,14 @@
 """From XML to MARC21 and back again (pymarc compatible)."""
 
+__all__ = [
+    "XmlHandler",
+    "parse_xml",
+    "map_xml",
+    "parse_xml_to_array",
+    "record_to_xml",
+    "record_to_xml_node",
+]
+
 import unicodedata
 import xml.etree.ElementTree as ET
 from xml.sax import make_parser

@@ -1,5 +1,13 @@
 """Rmarc Reader (pymarc compatible)."""
 
+__all__ = [
+    "Reader",
+    "MARCReader",
+    "map_records",
+    "JSONReader",
+    "MARCMakerReader",
+]
+
 import json
 import os
 import sys

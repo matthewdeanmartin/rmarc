@@ -1,5 +1,24 @@
 """Exceptions for rmarc (pymarc compatible)."""
 
+__all__ = [
+    "PymarcException",
+    "FatalReaderError",
+    "RecordLengthInvalid",
+    "TruncatedRecord",
+    "EndOfRecordNotFound",
+    "RecordLeaderInvalid",
+    "RecordDirectoryInvalid",
+    "NoFieldsFound",
+    "BaseAddressInvalid",
+    "BaseAddressNotFound",
+    "WriteNeedsRecord",
+    "NoActiveFile",
+    "FieldNotFound",
+    "BadSubfieldCodeWarning",
+    "BadLeaderValue",
+    "MissingLinkedFields",
+]
+
 
 class PymarcException(Exception):
     """Base pymarc Exception."""

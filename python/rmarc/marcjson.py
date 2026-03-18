@@ -1,5 +1,7 @@
 """From JSON to MARC21 (pymarc compatible)."""
 
+__all__ = ["JSONHandler", "parse_json_to_array"]
+
 from rmarc.field import Field, Indicators
 from rmarc.leader import Leader
 from rmarc.reader import JSONReader

@@ -1,5 +1,5 @@
 .PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
-        lint-rust rust-test format format-check build build-release clean all ci claude
+        lint-rust rust-test format format-check build build-release clean all ci check-all claude
 
 # ── Developer workflow ────────────────────────────────────────────────────────
 
@@ -84,6 +84,22 @@ ci: lint-ruff format-check lint-pyright lint-rust rust-test test-coverage
 
 ## Full quality gate including pylint and mypy on top of CI floor.
 all: lint format-check rust-test test-coverage
+
+## Format everything, then run every check exactly as CI does. Run this before pushing.
+check-all:
+	cargo fmt
+	uv run ruff format python/rmarc tests
+	cargo fmt --check
+	uv run ruff format --check --diff python/rmarc tests
+	uv run ruff check python/rmarc tests
+	uv run pyright python/rmarc tests
+	cargo clippy -- -D warnings
+	cargo test
+	uv run pytest test_pymarc/ tests/ \
+		--cov=python/rmarc \
+		--cov-report=xml \
+		--cov-report=term-missing \
+		-v
 
 # ── Housekeeping ──────────────────────────────────────────────────────────────
 
