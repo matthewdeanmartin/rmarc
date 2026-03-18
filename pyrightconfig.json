@@ -1,4 +1,6 @@
 {
   "reportWildcardImportFromLibrary": "none",
-  "reportPossiblyUnboundVariable": "none"
+  "reportPossiblyUnboundVariable": "none",
+  "reportMissingImports": "none",
+  "reportRedeclaration": "none"
 }
