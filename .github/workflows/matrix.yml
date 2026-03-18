@@ -1,0 +1,92 @@
+name: Python Matrix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test-matrix:
+    name: "Test Python ${{ matrix.python-version }} / ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.14"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.os }}-${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "${{ matrix.python-version }}"
+          allow-prereleases: true
+
+      - name: Install dependencies
+        run: uv sync --python ${{ matrix.python-version }}
+
+      - name: Build Rust extension
+        run: uv run maturin develop
+
+      - name: Run full test suite
+        run: |
+          uv run pytest test_pymarc/ tests/ -v
+
+      - name: Verify MARC binary roundtrip
+        run: |
+          uv run python -c "
+          from rmarc import MARCReader, Record
+          with open('test_pymarc/one.dat', 'rb') as fh:
+              original = fh.read()
+          with open('test_pymarc/one.dat', 'rb') as fh:
+              record = next(MARCReader(fh))
+              assert record is not None
+              assert original == record.as_marc(), 'MARC binary roundtrip failed'
+          print('MARC binary roundtrip: OK')
+          "
+
+      - name: Verify cross-format consistency
+        run: |
+          uv run python -c "
+          from rmarc import MARCReader, JSONReader, Record
+          from rmarc.marcxml import parse_xml_to_array
+          from rmarc.marcjson import parse_json_to_array
+          import json
+
+          # dat vs json
+          with open('test_pymarc/one.json') as fh:
+              json_records = parse_json_to_array(fh)
+          with open('test_pymarc/one.dat', 'rb') as fh:
+              dat_records = list(MARCReader(fh))
+          assert len(json_records) == len(dat_records)
+          for jr, dr in zip(json_records, dat_records):
+              assert jr.as_marc() == dr.as_marc(), 'JSON/DAT mismatch'
+          print('JSON <-> DAT consistency: OK')
+
+          # json vs xml
+          with open('test_pymarc/batch.json') as fh:
+              json_records = parse_json_to_array(fh)
+          xml_records = parse_xml_to_array('test_pymarc/batch.xml')
+          assert len(json_records) == len(xml_records)
+          for jr, xr in zip(json_records, xml_records):
+              assert jr.as_marc() == xr.as_marc(), 'JSON/XML mismatch'
+          print('JSON <-> XML consistency: OK')
+          "

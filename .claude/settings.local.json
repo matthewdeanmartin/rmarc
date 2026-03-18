@@ -12,7 +12,11 @@
       "Bash(wc:*)",
       "Bash(python bench/generate_data.py)",
       "Bash(ls:*)",
-      "Bash(cargo check:*)"
+      "Bash(cargo check:*)",
+      "Bash(python -m pytest test_pymarc/test_suite1.py -v --tb=short)",
+      "Bash(.venv/Scripts/python -m pytest test_pymarc/test_suite1.py -v --tb=short)",
+      "Bash(.venv/Scripts/python -c \"from rmarc.exceptions import FatalReaderError; print\\('ok'\\)\")",
+      "Bash(.venv/Scripts/python -m pytest test_pymarc/ -v --tb=short)"
     ]
   }
 }
