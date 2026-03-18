@@ -160,9 +160,7 @@ class TestMappingPythonVsRust(unittest.TestCase):
 
         if mismatches:
             joined = "\n".join(mismatches)
-            self.fail(
-                f"Charset 0x{charset_id:02X}: {len(mismatches)} mismatch(es):\n{joined}"
-            )
+            self.fail(f"Charset 0x{charset_id:02X}: {len(mismatches)} mismatch(es):\n{joined}")
 
     # ── One test per codeset ──────────────────────────────────────────────────
 
@@ -221,9 +219,7 @@ class TestMappingPythonVsRust(unittest.TestCase):
                 key_hex = f"0x{marc8_key:X}"
                 cp_hex = f"U+{unicode_cp:04X}"
                 mismatches.append(
-                    f"  ODD_MAP key={key_hex} cp={cp_hex}"
-                    f"\n    Python → {py_result!r}"
-                    f"\n    Rust   → {rs_result!r}"
+                    f"  ODD_MAP key={key_hex} cp={cp_hex}\n    Python → {py_result!r}\n    Rust   → {rs_result!r}"
                 )
 
         if mismatches:

@@ -107,9 +107,10 @@ class MARC8ToUnicode:
 
             if mb_flag:
                 if len(marc8_string) < pos + 3:
-                    sys.stderr.write(
-                        f"Multi-byte position {pos + 3} exceeds length of marc8 string {len(marc8_string)}\n"
-                    )
+                    if not self.quiet:
+                        sys.stderr.write(
+                            f"Multi-byte position {pos + 3} exceeds length of marc8 string {len(marc8_string)}\n"
+                        )
                     code_point = 32
                 else:
                     code_point = (

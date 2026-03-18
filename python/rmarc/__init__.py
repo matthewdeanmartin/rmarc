@@ -1,6 +1,12 @@
 # ruff: noqa
 
-from rmarc._rmarc import version
+try:
+    from rmarc._rmarc import version
+
+    __version__ = version()
+except ImportError:
+    __version__ = "0.0.0"
+
 from rmarc.constants import *
 from rmarc.exceptions import *
 from rmarc.field import *
@@ -11,5 +17,3 @@ from rmarc.marcxml import *
 from rmarc.reader import *
 from rmarc.record import *
 from rmarc.writer import *
-
-__version__ = version()

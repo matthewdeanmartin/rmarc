@@ -132,6 +132,9 @@ pub fn decode_marc_raw<'py>(
             .map_err(|_| PyValueError::new_err("Field offset not a number"))?;
 
         let field_start = base_address + entry_offset;
+        if entry_length == 0 {
+            return Err(PyValueError::new_err("DirectoryInvalid: zero-length field"));
+        }
         let field_end = base_address + entry_offset + entry_length - 1;
         if field_end > data.len() {
             return Err(PyValueError::new_err("Field extends beyond record"));
@@ -292,6 +295,19 @@ pub fn encode_marc_raw<'py>(
     leader: &str,
     fields: Vec<(String, Bound<'py, PyBytes>)>,
 ) -> PyResult<Bound<'py, PyBytes>> {
+    if leader.len() < LEADER_LEN {
+        return Err(PyValueError::new_err(format!(
+            "Leader must be at least {} bytes, got {}",
+            LEADER_LEN,
+            leader.len()
+        )));
+    }
+    if !leader.is_ascii() {
+        return Err(PyValueError::new_err(
+            "Leader contains non-ASCII characters",
+        ));
+    }
+
     let mut directory = Vec::with_capacity(fields.len() * DIRECTORY_ENTRY_LEN + 1);
     let mut field_data = Vec::new();
     let mut offset: usize = 0;
