@@ -10,6 +10,7 @@ from unittest import TestCase
 
 import rmarc
 from rmarc import Field, Record, exceptions
+from test_pymarc import fixture_path
 
 # TODO: these tests are overly complicated and should be converted over to using
 # pytest functions possibly in separate modules instead of getting fancy with inheritence
@@ -36,7 +37,7 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
     """Tests MARCReader which provides iterator based access to a MARC file."""
 
     def setUp(self):
-        self.reader = rmarc.MARCReader(open("test_pymarc/test.dat", "rb"))  # noqa: SIM115
+        self.reader = rmarc.MARCReader(fixture_path("test.dat").open("rb"))  # noqa: SIM115
 
     def tearDown(self):
         if self.reader:
@@ -48,7 +49,7 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
         def f(r):
             self.count += 1
 
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             rmarc.map_records(f, fh)
             self.assertEqual(self.count, 10, "map_records appears to work")
 
@@ -58,19 +59,19 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
         def f(r):
             self.count += 1
 
-        with open("test_pymarc/test.dat", "rb") as fh1, open("test_pymarc/test.dat", "rb") as fh2:
+        with fixture_path("test.dat").open("rb") as fh1, fixture_path("test.dat").open("rb") as fh2:
             rmarc.map_records(f, fh1, fh2)
             self.assertEqual(self.count, 20, "map_records appears to work")
 
     def test_bad_subfield(self):
-        with open("test_pymarc/bad_subfield_code.dat", "rb") as fh:
+        with fixture_path("bad_subfield_code.dat").open("rb") as fh:
             reader = rmarc.MARCReader(fh)
             record = next(reader)
             assert isinstance(record, Record)
             self.assertEqual(record["245"]["a"], "ActivePerl with ASP and ADO /")
 
     def test_bad_indicator(self):
-        with open("test_pymarc/bad_indicator.dat", "rb") as fh:
+        with fixture_path("bad_indicator.dat").open("rb") as fh:
             reader = rmarc.MARCReader(fh)
             record = next(reader)
             assert isinstance(record, Record)
@@ -78,7 +79,7 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
 
     def test_regression_45(self):
         # https://github.com/edsu/pymarc/issues/45
-        with open("test_pymarc/regression45.dat", "rb") as fh:
+        with fixture_path("regression45.dat").open("rb") as fh:
             reader = rmarc.MARCReader(fh)
             record = next(reader)
             assert isinstance(record, Record)
@@ -91,7 +92,7 @@ class MARCReaderFileTest(TestCase, MARCReaderBaseTest):
 
 class MARCReaderStringTest(TestCase, MARCReaderBaseTest):
     def setUp(self):
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             raw = fh.read()
             fh.close()
 
@@ -104,7 +105,7 @@ class MARCReaderFilePermissiveTest(TestCase):
     """Tests MARCReader which provides iterator based access in a permissive way."""
 
     def setUp(self):
-        self.reader = rmarc.MARCReader(open("test_pymarc/bad_records.mrc", "rb"))  # noqa: SIM115
+        self.reader = rmarc.MARCReader(fixture_path("bad_records.mrc").open("rb"))  # noqa: SIM115
 
     def tearDown(self):
         if self.reader:
@@ -230,7 +231,7 @@ class MARCMakerReaderTest(TestCase, MARCReaderBaseTest):
 
     @classmethod
     def setUpClass(cls):
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             cls.records = [str(record) for record in rmarc.MARCReader(fh)]
 
     def setUp(self):

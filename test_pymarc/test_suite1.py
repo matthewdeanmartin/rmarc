@@ -14,6 +14,7 @@ from io import BytesIO, StringIO
 import pytest
 
 import rmarc
+from test_pymarc import fixture_path
 from rmarc import (
     Field,
     Indicators,
@@ -954,17 +955,17 @@ class TestRecordEncoding:
 
 class TestRecordEncodingFromFile:
     def test_encode_decode_one(self):
-        with open("test_pymarc/one.dat", "rb") as fh:
+        with fixture_path("one.dat").open("rb") as fh:
             original = fh.read()
-        with open("test_pymarc/one.dat", "rb") as fh:
+        with fixture_path("one.dat").open("rb") as fh:
             record = next(MARCReader(fh))
             assert record is not None
             assert original == record.as_marc()
 
     def test_encode_decode_alphatag(self):
-        with open("test_pymarc/alphatag.dat", "rb") as fh:
+        with fixture_path("alphatag.dat").open("rb") as fh:
             original = fh.read()
-        with open("test_pymarc/alphatag.dat", "rb") as fh:
+        with fixture_path("alphatag.dat").open("rb") as fh:
             record = next(MARCReader(fh))
             assert isinstance(record, Record)
             assert original == record.as_marc()
@@ -1093,19 +1094,19 @@ class TestRecordCopy:
 
 class TestMARCReaderFile:
     def test_read_test_dat(self):
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             reader = MARCReader(fh)
             records = list(reader)
         assert len(records) == 10
 
     def test_each_record_has_leader(self):
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             for record in MARCReader(fh):
                 assert record is not None
                 assert len(str(record.leader)) == LEADER_LEN
 
     def test_read_from_bytes(self):
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             data = fh.read()
         records = list(MARCReader(data))
         assert len(records) == 10
@@ -1117,7 +1118,7 @@ class TestMARCReaderFile:
             nonlocal count
             count += 1
 
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             rmarc.map_records(f, fh)
         assert count == 10
 
@@ -1128,30 +1129,30 @@ class TestMARCReaderFile:
             nonlocal count
             count += 1
 
-        with open("test_pymarc/test.dat", "rb") as fh1, open("test_pymarc/test.dat", "rb") as fh2:
+        with fixture_path("test.dat").open("rb") as fh1, fixture_path("test.dat").open("rb") as fh2:
             rmarc.map_records(f, fh1, fh2)
         assert count == 20
 
     def test_bad_subfield_code(self):
-        with open("test_pymarc/bad_subfield_code.dat", "rb") as fh:
+        with fixture_path("bad_subfield_code.dat").open("rb") as fh:
             record = next(MARCReader(fh))
             assert isinstance(record, Record)
             assert record["245"]["a"] == "ActivePerl with ASP and ADO /"
 
     def test_bad_indicator(self):
-        with open("test_pymarc/bad_indicator.dat", "rb") as fh:
+        with fixture_path("bad_indicator.dat").open("rb") as fh:
             record = next(MARCReader(fh))
             assert isinstance(record, Record)
             assert record["245"]["a"] == "Aristocrats of color :"
 
     def test_regression45(self):
-        with open("test_pymarc/regression45.dat", "rb") as fh:
+        with fixture_path("regression45.dat").open("rb") as fh:
             record = next(MARCReader(fh))
             assert isinstance(record, Record)
             assert record["752"]["a"] == "Russian Federation"
 
     def test_close(self):
-        fh = open("test_pymarc/test.dat", "rb")
+        fh = fixture_path("test.dat").open("rb")
         reader = MARCReader(fh)
         reader.close()
         assert fh.closed
@@ -1195,7 +1196,7 @@ class TestMARCReaderTruncated:
 class TestMARCReaderPermissive:
     def test_permissive_bad_records(self):
         """Test that bad_records.mrc yields the expected exceptions in order."""
-        with open("test_pymarc/bad_records.mrc", "rb") as fh:
+        with fixture_path("bad_records.mrc").open("rb") as fh:
             reader = MARCReader(fh)
             expected = [
                 None,  # good record
@@ -1239,7 +1240,7 @@ class TestRecordDecode:
 
 class TestJSONReader:
     def test_read_json_file(self):
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             data = fh.read()
         reader = JSONReader(data)
         records = list(reader)
@@ -1248,16 +1249,16 @@ class TestJSONReader:
             assert isinstance(r, Record)
 
     def test_json_roundtrip(self):
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             expected = json.load(fh, strict=False)
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             reader = JSONReader(fh.read())
         for i, rec in enumerate(reader):
             deserialized = json.loads(rec.as_json(), strict=False)
             assert deserialized == expected[i]
 
     def test_single_record_json(self):
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             all_json = json.load(fh, strict=False)
         single = json.dumps(all_json[0])
         reader = JSONReader(single)
@@ -1265,7 +1266,7 @@ class TestJSONReader:
         assert len(records) == 1
 
     def test_parse_json_to_array(self):
-        with open("test_pymarc/one.json") as fh:
+        with fixture_path("one.json").open() as fh:
             records = parse_json_to_array(fh)
         assert len(records) > 0
         assert isinstance(records[0], Record)
@@ -1279,7 +1280,7 @@ class TestJSONReader:
 class TestMARCMakerReader:
     @pytest.fixture
     def marcmaker_text(self):
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             return [str(record) for record in MARCReader(fh)]
 
     def test_round_trip(self, marcmaker_text):
@@ -1557,29 +1558,29 @@ class TestXMLWriter:
 class TestXMLParsing:
     def test_map_xml(self):
         seen = []
-        map_xml(lambda r: seen.append(r), "test_pymarc/batch.xml")
+        map_xml(lambda r: seen.append(r), str(fixture_path("batch.xml")))
         assert len(seen) == 2
 
     def test_multi_map_xml(self):
         seen = []
-        map_xml(lambda r: seen.append(r), "test_pymarc/batch.xml", "test_pymarc/batch.xml")
+        map_xml(lambda r: seen.append(r), str(fixture_path("batch.xml")), str(fixture_path("batch.xml")))
         assert len(seen) == 4
 
     def test_parse_xml_to_array(self):
-        records = parse_xml_to_array("test_pymarc/batch.xml")
+        records = parse_xml_to_array(str(fixture_path("batch.xml")))
         assert len(records) == 2
         assert isinstance(records[0], Record)
         assert isinstance(records[1], Record)
 
     def test_parse_xml_content(self):
-        records = parse_xml_to_array("test_pymarc/batch.xml")
+        records = parse_xml_to_array(str(fixture_path("batch.xml")))
         r = records[0]
         assert len(r.get_fields()) == 18
         assert r["008"].data == "910926s1957    nyuuun              eng  "
         assert r["245"]["a"] == "The Great Ray Charles"
 
     def test_record_to_xml_roundtrip(self):
-        r1 = parse_xml_to_array("test_pymarc/batch.xml")[0]
+        r1 = parse_xml_to_array(str(fixture_path("batch.xml")))[0]
         xml = record_to_xml(r1)
         r2 = parse_xml_to_array(BytesIO(xml))[0]
         assert r1.leader.leader == r2.leader.leader
@@ -1592,7 +1593,7 @@ class TestXMLParsing:
                 assert f1.indicators == f2.indicators
 
     def test_xml_namespace(self):
-        with open("test_pymarc/test.dat", "rb") as fh:
+        with fixture_path("test.dat").open("rb") as fh:
             record = next(MARCReader(fh))
         xml_no_ns = record_to_xml(record, namespace=False)
         assert b'xmlns="http://www.loc.gov/MARC21/slim"' not in xml_no_ns
@@ -1600,12 +1601,12 @@ class TestXMLParsing:
         assert b'xmlns="http://www.loc.gov/MARC21/slim"' in xml_ns
 
     def test_strict_parsing(self):
-        with open("test_pymarc/batch.xml") as fh:
+        with fixture_path("batch.xml").open() as fh:
             records = parse_xml_to_array(fh, strict=True)
         assert len(records) == 2
 
     def test_bad_tag_xml(self):
-        with open("test_pymarc/bad_tag.xml") as fh, pytest.raises(RecordLeaderInvalid):
+        with fixture_path("bad_tag.xml").open() as fh, pytest.raises(RecordLeaderInvalid):
             parse_xml_to_array(fh)
 
     def test_write_then_parse_xml(self, tmp_path):
@@ -1627,23 +1628,23 @@ class TestXMLParsing:
 
 class TestJSONParsing:
     def test_parse_json_to_array_one(self):
-        with open("test_pymarc/one.json") as fh:
+        with fixture_path("one.json").open() as fh:
             records = parse_json_to_array(fh)
         assert len(records) > 0
 
     def test_parse_json_matches_dat(self):
-        with open("test_pymarc/one.json") as fh:
+        with fixture_path("one.json").open() as fh:
             json_records = parse_json_to_array(fh)
-        with open("test_pymarc/one.dat", "rb") as fh:
+        with fixture_path("one.dat").open("rb") as fh:
             dat_records = list(MARCReader(fh))
         assert len(json_records) == len(dat_records)
         for jr, dr in zip(json_records, dat_records):
             assert jr.as_marc() == dr.as_marc()
 
     def test_parse_json_matches_xml(self):
-        with open("test_pymarc/batch.json") as fh:
+        with fixture_path("batch.json").open() as fh:
             json_records = parse_json_to_array(fh)
-        xml_records = parse_xml_to_array("test_pymarc/batch.xml")
+        xml_records = parse_xml_to_array(str(fixture_path("batch.xml")))
         assert len(json_records) == len(xml_records)
         for jr, xr in zip(json_records, xml_records):
             assert jr.as_marc() == xr.as_marc()
@@ -1656,7 +1657,7 @@ class TestJSONParsing:
 
 class TestMARC8:
     def test_marc8_reader_raw(self):
-        with open("test_pymarc/marc8.dat", "rb") as fh:
+        with fixture_path("marc8.dat").open("rb") as fh:
             r = next(MARCReader(fh, to_unicode=False))
         assert isinstance(r, Record)
         assert isinstance(r["240"], RawField)
@@ -1665,7 +1666,7 @@ class TestMARC8:
         assert utitle == b"De la solitude \xe1a la communaut\xe2e."
 
     def test_marc8_reader_to_unicode(self):
-        with open("test_pymarc/marc8.dat", "rb") as fh:
+        with fixture_path("marc8.dat").open("rb") as fh:
             r = next(MARCReader(fh, to_unicode=True))
         assert isinstance(r, Record)
         utitle = r["240"]["a"]
@@ -1674,8 +1675,8 @@ class TestMARC8:
 
     def test_marc8_to_unicode_function(self):
         with (
-            open("test_pymarc/test_marc8.txt", "rb") as marc8_file,
-            open("test_pymarc/test_utf8.txt", "rb") as utf8_file,
+            fixture_path("test_marc8.txt").open("rb") as marc8_file,
+            fixture_path("test_utf8.txt").open("rb") as utf8_file,
         ):
             count = 0
             while True:
@@ -1688,7 +1689,7 @@ class TestMARC8:
             assert count == 1515
 
     def test_marc8_read_write_roundtrip(self, tmp_path):
-        with open("test_pymarc/marc8.dat", "rb") as fh:
+        with fixture_path("marc8.dat").open("rb") as fh:
             r = next(MARCReader(fh, to_unicode=False))
         assert isinstance(r, Record)
         filepath = tmp_path / "marc8_out.dat"
@@ -1712,20 +1713,20 @@ class TestMARC8:
         assert marc8_to_unicode(b"ALIF: \xae is U+02BC") == "ALIF: \u02bc is U+02BC"
 
     def test_bad_eacc_sequence(self):
-        with open("test_pymarc/bad_eacc_encoding.dat", "rb") as fh:
+        with fixture_path("bad_eacc_encoding.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=True, hide_utf8_warnings=True))
         assert isinstance(record, Record)
         assert len(record["880"]["a"]) == 12
         assert record["880"]["a"].endswith(" ")
 
     def test_bad_escape(self):
-        with open("test_pymarc/bad_marc8_escape.dat", "rb") as fh:
+        with fixture_path("bad_marc8_escape.dat").open("rb") as fh:
             r = next(MARCReader(fh, to_unicode=True))
         assert isinstance(r, Record)
         assert r["260"]["b"] == "La Soci\xe9t\x1b,"
 
     def test_cp1251_encoding(self):
-        with open("test_pymarc/1251.dat", "rb") as fh:
+        with fixture_path("1251.dat").open("rb") as fh:
             r = next(MARCReader(fh, file_encoding="cp1251"))
         assert isinstance(r, Record)
         assert r["245"]["a"] == "Основы гидравлического расчета инженерных сетей"
@@ -1740,7 +1741,7 @@ class TestUTF8:
             for _ in record.get_fields():
                 field_count += 1
 
-        rmarc.map_xml(process_xml, "test_pymarc/utf8.xml")
+        rmarc.map_xml(process_xml, str(fixture_path("utf8.xml")))
         assert field_count == 8
 
     def test_utf8_write_copy(self, tmp_path):
@@ -1754,7 +1755,7 @@ class TestUTF8:
                 for field in record.get_fields():
                     new_record.add_field(field)
 
-            rmarc.map_xml(process_xml, "test_pymarc/utf8.xml")
+            rmarc.map_xml(process_xml, str(fixture_path("utf8.xml")))
             writer.write(new_record)
             writer.close()
         # Verify the file was written
@@ -1762,7 +1763,7 @@ class TestUTF8:
 
     def test_diacritic_str(self):
         """Issue 74: should not raise UnicodeEncodeError."""
-        with open("test_pymarc/diacritic.dat", "rb") as fh:
+        with fixture_path("diacritic.dat").open("rb") as fh:
             record = next(MARCReader(fh))
             str(record)  # should not raise
 
@@ -1781,32 +1782,32 @@ class TestUTF8:
             assert r2["245"]["a"] == chr(0x1234)
 
     def test_utf8_with_leader_flag_raw(self):
-        with open("test_pymarc/utf8_with_leader_flag.dat", "rb") as fh:
+        with fixture_path("utf8_with_leader_flag.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=False))
         assert isinstance(record, Record)
         assert record["240"]["a"] == b"De la solitude a\xcc\x80 la communaute\xcc\x81."
 
     def test_utf8_with_leader_flag_unicode(self):
-        with open("test_pymarc/utf8_with_leader_flag.dat", "rb") as fh:
+        with fixture_path("utf8_with_leader_flag.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=True))
         assert isinstance(record, Record)
         assert record["240"]["a"] == "De la solitude a" + chr(0x0300) + " la communaute" + chr(0x0301) + "."
 
     def test_utf8_without_flag_raw(self):
-        with open("test_pymarc/utf8_without_leader_flag.dat", "rb") as fh:
+        with fixture_path("utf8_without_leader_flag.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=False))
         assert isinstance(record, Record)
         assert record["240"]["a"] == b"De la solitude a\xcc\x80 la communaute\xcc\x81."
 
     def test_utf8_without_flag_force(self):
-        with open("test_pymarc/utf8_without_leader_flag.dat", "rb") as fh:
+        with fixture_path("utf8_without_leader_flag.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=True, force_utf8=True, hide_utf8_warnings=True))
         assert isinstance(record, Record)
         assert record["240"]["a"] == "De la solitude a" + chr(0x0300) + " la communaute" + chr(0x0301) + "."
 
     def test_utf8_without_flag_lossy(self):
         """Without force_utf8, MARC-8 decoding loses the combining chars."""
-        with open("test_pymarc/utf8_without_leader_flag.dat", "rb") as fh:
+        with fixture_path("utf8_without_leader_flag.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=True, hide_utf8_warnings=True))
         assert isinstance(record, Record)
         # NOTE: This is correct behavior - without the UTF-8 flag, the reader
@@ -1815,9 +1816,9 @@ class TestUTF8:
 
     def test_marc8_to_unicode_conversion(self):
         """Test that decoding MARC-8 data to unicode and re-encoding produces expected bytes."""
-        with open("test_pymarc/marc8-to-unicode.dat", "rb") as fh:
+        with fixture_path("marc8-to-unicode.dat").open("rb") as fh:
             expected_bytes = fh.read()
-        with open("test_pymarc/marc8.dat", "rb") as fh:
+        with fixture_path("marc8.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=True))
             assert record is not None
             record_bytes = record.as_marc()
@@ -1984,13 +1985,13 @@ class TestEdgeCases:
         assert r["CAT"]["a"] == "foo"
 
     def test_multiple_isbn(self):
-        with open("test_pymarc/multi_isbn.dat", "rb") as fh:
+        with fixture_path("multi_isbn.dat").open("rb") as fh:
             record = next(MARCReader(fh))
             assert record is not None
             assert record.isbn == "0914378287"
 
     def test_record_from_unimarc(self):
-        with open("test_pymarc/testunimarc.dat", "rb") as fh:
+        with fixture_path("testunimarc.dat").open("rb") as fh:
             record = Record(fh.read(), force_utf8=True)
         assert len(record.get_fields("899")) != 0
         record.remove_fields("899")
@@ -1999,7 +2000,7 @@ class TestEdgeCases:
     def test_map_marc8_record(self):
         from rmarc.record import map_marc8_record
 
-        with open("test_pymarc/marc8.dat", "rb") as fh:
+        with fixture_path("marc8.dat").open("rb") as fh:
             record = next(MARCReader(fh, to_unicode=True))
             assert record is not None
             mapped = map_marc8_record(record)

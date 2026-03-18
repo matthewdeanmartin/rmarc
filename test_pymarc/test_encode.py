@@ -5,15 +5,16 @@
 # file.
 
 from rmarc import MARCReader, Record
+from test_pymarc import fixture_path
 
 
 def test_encode_decode():
     # get raw data from file
-    with open("test_pymarc/one.dat", "rb") as fh:
+    with fixture_path("one.dat").open("rb") as fh:
         original = fh.read()
 
     # create a record object for the file
-    with open("test_pymarc/one.dat", "rb") as fh:
+    with fixture_path("one.dat").open("rb") as fh:
         reader = MARCReader(fh)
         record = next(reader)
         assert record is not None
@@ -25,11 +26,11 @@ def test_encode_decode():
 
 def test_encode_decode_alphatag():
     # get raw data from file containing non-numeric tags
-    with open("test_pymarc/alphatag.dat", "rb") as fh:
+    with fixture_path("alphatag.dat").open("rb") as fh:
         original = fh.read()
 
     # create a record object for the file
-    with open("test_pymarc/alphatag.dat", "rb") as fh:
+    with fixture_path("alphatag.dat").open("rb") as fh:
         reader = MARCReader(fh)
         record = next(reader)
         # make sure original data is the same as

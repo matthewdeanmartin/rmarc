@@ -1,6 +1,6 @@
 .PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
         lint-rust rust-test format format-check build build-release build-wheels clean all ci check-all claude \
-        fast fast-uninstall bench bench-all
+        fast fast-uninstall bench bench-contest bench-all
 
 # ── Developer workflow ────────────────────────────────────────────────────────
 
@@ -118,6 +118,10 @@ check-all:
 ## Run JSON/XML serialization benchmarks.
 bench:
 	uv run pytest bench/bench_json_xml.py --benchmark-only -v
+
+## Run large corpus comparison benchmarks derived from contest.py.
+bench-contest:
+	uv run pytest bench/bench_contest.py --benchmark-only -v
 
 ## Run all benchmarks.
 bench-all:

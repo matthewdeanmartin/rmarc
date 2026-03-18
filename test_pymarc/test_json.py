@@ -8,14 +8,15 @@ import json
 import unittest
 
 import rmarc
+from test_pymarc import fixture_path
 
 
 class JsonReaderTest(unittest.TestCase):
     def setUp(self):
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             self.in_json = json.load(fh, strict=False)
 
-        self._js_fh = open("test_pymarc/test.json").read()  # noqa: SIM115
+        self._js_fh = fixture_path("test.json").read_text()  # noqa: SIM115
         self.reader = rmarc.JSONReader(self._js_fh)
 
     def testRoundtrip(self):
@@ -41,7 +42,7 @@ class JsonReaderTest(unittest.TestCase):
 
 class JsonTest(unittest.TestCase):
     def setUp(self):
-        self._test_fh = open("test_pymarc/test.dat", "rb")  # noqa: SIM115
+        self._test_fh = fixture_path("test.dat").open("rb")  # noqa: SIM115
         self.reader = rmarc.MARCReader(self._test_fh)
         self._record = rmarc.Record()
         field = rmarc.Field(
@@ -112,10 +113,10 @@ class JsonTest(unittest.TestCase):
 
 class JsonParse(unittest.TestCase):
     def setUp(self):
-        self._one_dat_fh = open("test_pymarc/one.dat", "rb")  # noqa: SIM115
-        self._one_js_fh = open("test_pymarc/one.json")  # noqa: SIM115
-        self._batch_xml_fh = open("test_pymarc/batch.xml")  # noqa: SIM115
-        self._batch_js_fh = open("test_pymarc/batch.json")  # noqa: SIM115
+        self._one_dat_fh = fixture_path("one.dat").open("rb")  # noqa: SIM115
+        self._one_js_fh = fixture_path("one.json").open()  # noqa: SIM115
+        self._batch_xml_fh = fixture_path("batch.xml").open()  # noqa: SIM115
+        self._batch_js_fh = fixture_path("batch.json").open()  # noqa: SIM115
 
         self.reader_dat = rmarc.MARCReader(self._one_dat_fh)
         self.parse_json = rmarc.parse_json_to_array(self._one_js_fh)

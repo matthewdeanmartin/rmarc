@@ -40,6 +40,7 @@ issues = "https://github.com/matthewdeanmartin/rmarc/issues/"
 
 [dependency-groups]
 dev = [
+    "pymarc",
     "jiggle-version>=2.0.1",
     "maturin>=1.9.6; python_version >= '3.14'",
     "pydantic>=2.12.0; python_version >= '3.14'",
@@ -124,6 +125,9 @@ test-command = "pytest {project}/test_pymarc -v"
 [tool.cibuildwheel.linux]
 environment = { PATH = "$HOME/.cargo/bin:$PATH" }
 before-all = "dnf install -y curl && curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal"
+
+[tool.cibuildwheel.macos]
+environment = { MACOSX_DEPLOYMENT_TARGET = "10.12" }
 
 
 [tool.black]

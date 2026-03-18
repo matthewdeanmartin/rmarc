@@ -11,6 +11,7 @@ import unittest
 from io import BytesIO, StringIO
 
 import rmarc
+from test_pymarc import fixture_path
 
 
 class JSONWriterTest(unittest.TestCase):
@@ -268,7 +269,7 @@ class JSONWriterTest(unittest.TestCase):
 class MARCWriterTest(unittest.TestCase):
     def test_write(self):
         """Write a record off to a file."""
-        with open("test_pymarc/writer-test.dat", "wb") as file_handle:
+        with fixture_path("writer-test.dat").open("wb") as file_handle:
             writer = rmarc.MARCWriter(file_handle)
             record = rmarc.Record()
             field = rmarc.Field(
@@ -285,13 +286,13 @@ class MARCWriterTest(unittest.TestCase):
             )
 
         # read it back in
-        with open("test_pymarc/writer-test.dat", "rb") as fh:
+        with fixture_path("writer-test.dat").open("rb") as fh:
             reader = rmarc.MARCReader(fh)
             next(reader)
             reader.close()
 
         # remove it
-        os.remove("test_pymarc/writer-test.dat")
+        os.remove(fixture_path("writer-test.dat"))
 
     def test_close_true(self):
         """If close_fh is true, then the file handle is also closed."""

@@ -16,6 +16,7 @@ import rmarc
 from rmarc import Field, Indicators, JSONReader, JSONWriter, MARCReader, Record, Subfield, XMLWriter
 from rmarc._compat import HAS_LXML, HAS_ORJSON, json_dumps, json_loads
 from rmarc.marcxml import map_xml, parse_xml_to_array, record_to_xml, record_to_xml_node
+from test_pymarc import fixture_path
 
 
 def _make_record():
@@ -131,43 +132,43 @@ class TestJsonReaderConsistency(unittest.TestCase):
     """Verify JSONReader produces correct Records regardless of backend."""
 
     def test_read_single_record(self):
-        with open("test_pymarc/one.json", "rb") as fh:
+        with fixture_path("one.json").open("rb") as fh:
             data = fh.read()
         records = list(JSONReader(data))
         self.assertEqual(len(records), 1)
         self.assertIsInstance(records[0], Record)
 
     def test_read_batch_records(self):
-        with open("test_pymarc/batch.json", "rb") as fh:
+        with fixture_path("batch.json").open("rb") as fh:
             data = fh.read()
         records = list(JSONReader(data))
         self.assertGreater(len(records), 1)
 
     def test_roundtrip_json_file(self):
         """Records loaded from JSON and serialized back should match the original."""
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             original = json.load(fh, strict=False)
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             records = list(JSONReader(fh.read()))
         self.assertEqual(len(original), len(records))
         for orig, rec in zip(original, records, strict=False):
             self.assertEqual(orig, json.loads(rec.as_json()))
 
     def test_read_from_bytes(self):
-        with open("test_pymarc/one.json", "rb") as fh:
+        with fixture_path("one.json").open("rb") as fh:
             data = fh.read()
         records = list(JSONReader(data))
         self.assertEqual(len(records), 1)
 
     def test_read_from_str(self):
-        with open("test_pymarc/one.json") as fh:
+        with fixture_path("one.json").open() as fh:
             data = fh.read()
         records = list(JSONReader(data))
         self.assertEqual(len(records), 1)
 
     def test_single_record_not_in_list(self):
         """A single JSON object (not wrapped in array) should parse as one record."""
-        with open("test_pymarc/test.json") as fh:
+        with fixture_path("test.json").open() as fh:
             first = json.load(fh, strict=False)[0]
         data = json.dumps(first)
         records = list(JSONReader(data))
@@ -211,21 +212,21 @@ class TestXmlParseConsistency(unittest.TestCase):
     """Verify XML parsing produces correct Records regardless of backend."""
 
     def test_parse_batch_count(self):
-        records = parse_xml_to_array("test_pymarc/batch.xml")
+        records = parse_xml_to_array(str(fixture_path("batch.xml")))
         self.assertEqual(len(records), 2)
 
     def test_parse_batch_types(self):
-        records = parse_xml_to_array("test_pymarc/batch.xml")
+        records = parse_xml_to_array(str(fixture_path("batch.xml")))
         for rec in records:
             self.assertIsInstance(rec, Record)
 
     def test_parse_control_field_content(self):
-        records = parse_xml_to_array("test_pymarc/batch.xml")
+        records = parse_xml_to_array(str(fixture_path("batch.xml")))
         record = records[0]
         self.assertEqual(record["008"].data, "910926s1957    nyuuun              eng  ")
 
     def test_parse_data_field_content(self):
-        records = parse_xml_to_array("test_pymarc/batch.xml")
+        records = parse_xml_to_array(str(fixture_path("batch.xml")))
         record = records[0]
         field = record["245"]
         self.assertEqual(field.indicator1, "0")
@@ -233,23 +234,23 @@ class TestXmlParseConsistency(unittest.TestCase):
         self.assertEqual(field["a"], "The Great Ray Charles")
 
     def test_parse_from_bytes_io(self):
-        with open("test_pymarc/batch.xml", "rb") as fh:
+        with fixture_path("batch.xml").open("rb") as fh:
             data = fh.read()
         records = parse_xml_to_array(io.BytesIO(data))
         self.assertEqual(len(records), 2)
 
     def test_map_xml(self):
         seen = []
-        map_xml(seen.append, "test_pymarc/batch.xml")
+        map_xml(seen.append, str(fixture_path("batch.xml")))
         self.assertEqual(len(seen), 2)
 
     def test_parse_strict(self):
-        with open("test_pymarc/batch.xml") as fh:
+        with fixture_path("batch.xml").open() as fh:
             records = parse_xml_to_array(fh, strict=True)
         self.assertEqual(len(records), 2)
 
     def test_parse_utf8_xml(self):
-        records = parse_xml_to_array("test_pymarc/utf8.xml")
+        records = parse_xml_to_array(str(fixture_path("utf8.xml")))
         self.assertGreater(len(records), 0)
 
 
@@ -303,7 +304,7 @@ class TestXmlSerializeConsistency(unittest.TestCase):
 
     def test_full_roundtrip_batch(self):
         """Parse batch.xml, serialize each record, re-parse, compare."""
-        originals = parse_xml_to_array("test_pymarc/batch.xml")
+        originals = parse_xml_to_array(str(fixture_path("batch.xml")))
         for orig in originals:
             xml_bytes = record_to_xml(orig)
             recovered = parse_xml_to_array(io.BytesIO(xml_bytes))[0]
