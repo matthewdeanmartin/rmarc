@@ -460,6 +460,7 @@ class Record:
     def as_dict(self) -> dict[str, object]:
         record: dict[str, object] = {"leader": str(self.leader), "fields": []}
         from typing import cast
+
         fields_list = cast(list, record["fields"])
 
         for field in self:

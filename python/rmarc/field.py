@@ -100,7 +100,7 @@ class Field:
             _ind = []
             _subf = []
 
-            for indicator in (self._indicators or Indicators(" ", " ")):
+            for indicator in self._indicators or Indicators(" ", " "):
                 if indicator in (" ", "\\"):
                     _ind.append("\\")
                 else:

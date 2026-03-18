@@ -15,11 +15,13 @@ rebuild:
 
 ## Run tests with unittest discover (matches pymarc CI floor).
 test:
-	uv run python -m unittest discover -s tests -v
+	uv run python -m unittest discover -s test_pymarc -v
+	uv run pytest
 
 ## Run tests with coverage measurement and report.
 test-coverage:
-	uv run coverage run -m unittest discover -s tests
+	# This is messed up. Needs to c
+	uv run coverage run -m unittest discover -s test_pymarc
 	uv run coverage xml
 	uv run coverage report
 
