@@ -292,4 +292,63 @@ mod tests {
         let result = unicode_normalization_nfc(nfd);
         assert_eq!(result, "\u{00e9}");
     }
+
+    // ── More Complex MARC-8 scenarios ────────────────────────────────────────
+
+    #[test]
+    fn marc8_polish_l_and_ae_ligature() {
+        // ANSEL 0xA1 is Ł, 0xB1 is ł
+        // ANSEL 0xA5 is Æ, 0xB5 is æ
+        let input = b"\xa1\xb1 \xa5\xb5";
+        let result = marc8_to_unicode_rs(input, false);
+        assert_eq!(result, "Łł Ææ");
+    }
+
+    #[test]
+    fn marc8_cjk_multibyte() {
+        // CJK designator ESC $ 1 (0x1B 0x24 0x31)
+        // Character 0x213021 is U+4E00 (一)
+        let input = b"\x1b$1\x21\x30\x21";
+        let result = marc8_to_unicode_rs(input, false);
+        assert_eq!(result, "一");
+    }
+
+    #[test]
+    fn marc8_cjk_then_ascii_switch() {
+        // Switch to CJK, then back to ASCII with ESC ( B
+        let input = b"\x1b$1\x21\x30\x21\x1b(BASCII";
+        let result = marc8_to_unicode_rs(input, false);
+        assert_eq!(result, "一ASCII");
+    }
+
+    #[test]
+    fn marc8_multiple_combinings_on_one_base() {
+        // 'a' with acute accent (0xE2) and cedilla (0xF0)
+        // In MARC-8 combining marks appear before the base character.
+        let input = b"\xf0\xe2a";
+        let result = marc8_to_unicode_rs(input, false);
+        // Result should be NFC normalized
+        use unicode_normalization::UnicodeNormalization;
+        let expected: String = "a\u{0327}\u{0301}".nfc().collect();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn marc8_greek_switch() {
+        // Greek designator ESC ( S (0x1B 0x28 0x53)
+        // Character 0x41 is Alpha (U+0391)
+        let input = b"\x1b(SA";
+        let result = marc8_to_unicode_rs(input, false);
+        assert_eq!(result, "\u{0391}");
+    }
+
+    #[test]
+    fn marc8_cyrillic_switch() {
+        // Cyrillic designator ESC ( N (0x1B 0x28 0x4E)
+        // Character 0x61 is CYRILLIC CAPITAL LETTER A (U+0410)
+        // Character 0x41 is CYRILLIC SMALL LETTER A (U+0430)
+        let input = b"\x1b(NaA";
+        let result = marc8_to_unicode_rs(input, false);
+        assert_eq!(result, "\u{0410}\u{0430}");
+    }
 }

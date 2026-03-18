@@ -428,4 +428,23 @@ mod tests {
         assert_eq!(END_OF_FIELD, 0x1E);
         assert_eq!(END_OF_RECORD, 0x1D);
     }
+
+    #[test]
+    fn split_on_indicator_multiple_empty_subfields() {
+        // "  " (indicators) + \x1f + 'a' + "" + \x1f + 'b' + ""
+        let input = b"  \x1Fa\x1Fb";
+        let parts = split_on_indicator_pub(input);
+        assert_eq!(parts.len(), 3);
+        assert_eq!(parts[0], b"  ");
+        assert_eq!(parts[1], b"a");
+        assert_eq!(parts[2], b"b");
+    }
+
+    #[test]
+    fn parse_indicators_malformed() {
+        // Only one byte provided
+        assert_eq!(parse_indicators_pub(b"1"), (b'1', b' '));
+        // More than two bytes - should take first two
+        assert_eq!(parse_indicators_pub(b"123"), (b'1', b'2'));
+    }
 }
