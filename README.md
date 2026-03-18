@@ -1,8 +1,9 @@
 # rmarc
 
-A pymarc-compatible MARC21 record library with a Rust core for high performance.
+A pymarc-compatible MARC21 record library with a Rust core for high performance, roughly 2x faster.
 
-This is a fork of pymarc. Significant use of LLMs to write the rust speedups. License is the same MIT.
+This is a fork of [pymarc](https://pypi.org/project/pymarc). Significant use of LLMs to write the Rust speedups. License
+is the same MIT.
 
 ## Installing and Using
 
@@ -72,9 +73,11 @@ from rmarc.marcxml import parse_xml_to_array, map_xml, record_to_xml
 # Parse a MARCXML file
 records = parse_xml_to_array("records.xml")
 
+
 # Stream-process without loading everything into memory
 def handle(record):
     print(record.title)
+
 
 map_xml(handle, "records.xml")
 
@@ -119,11 +122,11 @@ operations. The speedups below are measured against the stdlib-only path.
 
 #### JSON (`pip install "rmarc[fast-json]"` — uses [orjson](https://github.com/ijl/orjson))
 
-| Operation              | stdlib   | orjson  | Speedup  |
-|------------------------|----------|---------|----------|
-| JSON decode (batch)    | ~30 us   | ~6 us   | **~5x**  |
-| `record.as_json()`     | ~9 us    | ~5 us   | **~2x**  |
-| `JSONWriter.write()`   | ~9 us    | ~5 us   | **~2x**  |
+| Operation            | stdlib | orjson | Speedup |
+|----------------------|--------|--------|---------|
+| JSON decode (batch)  | ~30 us | ~6 us  | **~5x** |
+| `record.as_json()`   | ~9 us  | ~5 us  | **~2x** |
+| `JSONWriter.write()` | ~9 us  | ~5 us  | **~2x** |
 
 orjson is a Rust-backed JSON library. It is used transparently whenever
 installed. If a JSON document contains MARC control characters that orjson
@@ -132,11 +135,11 @@ automatically retries with stdlib `json` so nothing breaks.
 
 #### XML (`pip install "rmarc[fast-xml]"` — uses [lxml](https://lxml.de))
 
-| Operation                  | stdlib SAX/ET | lxml     | Speedup  |
-|----------------------------|---------------|----------|----------|
-| `parse_xml_to_array()`     | ~270 us       | ~67 us   | **~4x**  |
-| `record_to_xml()`          | ~110 us       | ~80 us   | **~1.4x**|
-| `XMLWriter.write()` (batch)| ~600 us       | ~500 us  | **~1.2x**|
+| Operation                   | stdlib SAX/ET | lxml    | Speedup   |
+|-----------------------------|---------------|---------|-----------|
+| `parse_xml_to_array()`      | ~270 us       | ~67 us  | **~4x**   |
+| `record_to_xml()`           | ~110 us       | ~80 us  | **~1.4x** |
+| `XMLWriter.write()` (batch) | ~600 us       | ~500 us | **~1.2x** |
 
 lxml uses the libxml2 C library for parsing. `parse_xml` is reimplemented
 using `lxml.sax.saxify` so the existing `XmlHandler` subclass API is unchanged.

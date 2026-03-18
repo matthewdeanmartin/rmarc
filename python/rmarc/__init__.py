@@ -5,7 +5,7 @@ try:
 
     __version__ = version()
 except ImportError:
-    __version__ = "0.0.0"
+    __version__ = "5.3.1"
 
 from rmarc.constants import *
 from rmarc.exceptions import *

@@ -1,6 +1,6 @@
 [project]
 name = "rmarc"
-version = "0.1.0"
+version = "5.3.1"
 description = "Pymarc compaitible reimplementation in Rust."
 readme = "README.md"
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
