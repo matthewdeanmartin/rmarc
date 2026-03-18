@@ -75,9 +75,7 @@ class XmlTest(unittest.TestCase):
             if field1[pos].control_field:
                 self.assertEqual(field1[pos].data, field2[pos].data)
             else:
-                self.assertEqual(
-                    field1[pos].get_subfields(), field2[pos].get_subfields()
-                )
+                self.assertEqual(field1[pos].get_subfields(), field2[pos].get_subfields())
                 self.assertEqual(field1[pos].indicators, field2[pos].indicators)
             pos += 1
 

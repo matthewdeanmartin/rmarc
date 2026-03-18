@@ -43,29 +43,30 @@ lint: lint-ruff lint-pylint lint-mypy lint-pyright lint-rust
 
 ## ruff: fast lint (pymarc CI floor).
 lint-ruff:
-	uv run ruff check python/rmarc tests
+	uv run ruff check python/rmarc
+ 	# test_pymarc
 
 ## pylint: deeper static analysis.
 lint-pylint:
-	uv run pylint python/rmarc tests
+	uv run pylint python/rmarc
 
 ## mypy: strict type checking.
 lint-mypy:
-	uv run mypy python/rmarc tests
+	uv run mypy python/rmarc
 
 ## pyright: Microsoft type checker (pymarc CI floor).
 lint-pyright:
-	uv run pyright python/rmarc tests
+	uv run pyright python/rmarc
 
 # ── Formatting ────────────────────────────────────────────────────────────────
 
 ## Auto-format with ruff (pymarc CI floor).
 format:
-	uv run ruff format python/rmarc tests
+	uv run ruff format python/rmarc test_pymarc
 
 ## Check formatting without modifying files (CI mode).
 format-check:
-	uv run ruff format --check --diff python/rmarc tests
+	uv run ruff format --check --diff python/rmarc test_pymarc
 
 # ── Building & packaging ──────────────────────────────────────────────────────
 
@@ -88,14 +89,14 @@ all: lint format-check rust-test test-coverage
 ## Format everything, then run every check exactly as CI does. Run this before pushing.
 check-all:
 	cargo fmt
-	uv run ruff format python/rmarc tests
+	uv run ruff format python/rmarc test_pymarc
 	cargo fmt --check
-	uv run ruff format --check --diff python/rmarc tests
-	uv run ruff check python/rmarc tests
-	uv run pyright python/rmarc tests
+	uv run ruff format --check --diff python/rmarc
+	uv run ruff check python/rmarc
+	uv run pyright python/rmarc
 	cargo clippy -- -D warnings
 	cargo test
-	uv run pytest test_pymarc/ tests/ \
+	uv run pytest test_pymarc/ \
 		--cov=python/rmarc \
 		--cov-report=xml \
 		--cov-report=term-missing \

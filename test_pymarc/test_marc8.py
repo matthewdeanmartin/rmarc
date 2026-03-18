@@ -121,9 +121,7 @@ class MARC8Test(unittest.TestCase):
 
     def test_writing_unicode(self):
         record = Record()
-        record.add_field(
-            Field("245", Indicators("1", "0"), [Subfield(code="a", value=chr(0x1234))])
-        )
+        record.add_field(Field("245", Indicators("1", "0"), [Subfield(code="a", value=chr(0x1234))]))
         record.leader = Leader("         a              ")
         with open("test_pymarc/foo", "wb") as fh:
             writer = MARCWriter(fh)
@@ -178,9 +176,7 @@ class MARC8Test(unittest.TestCase):
 
         # force reading as utf-8
         with open("test_pymarc/utf8_without_leader_flag.dat", "rb") as fh:
-            reader = MARCReader(
-                fh, to_unicode=True, force_utf8=True, hide_utf8_warnings=True
-            )
+            reader = MARCReader(fh, to_unicode=True, force_utf8=True, hide_utf8_warnings=True)
             record = next(reader)
             assert isinstance(record, Record)
             utitle = record["240"]["a"]
@@ -195,9 +191,7 @@ class MARC8Test(unittest.TestCase):
         self.assertEqual(r.leader[9], "a")
 
     def test_subscript_2(self):
-        self.assertEqual(
-            marc8_to_unicode(b"CO\x1bb2\x1bs is a gas"), "CO\u2082 is a gas"
-        )
+        self.assertEqual(marc8_to_unicode(b"CO\x1bb2\x1bs is a gas"), "CO\u2082 is a gas")
         self.assertEqual(marc8_to_unicode(b"CO\x1bb2\x1bs"), "CO\u2082")
 
     def test_eszett_euro(self):
@@ -215,9 +209,7 @@ class MARC8Test(unittest.TestCase):
     def test_alif(self):
         # MARC-8 mapping: Revised March 2005 to change the mapping from MARC-8
         # to Unicode for the Alif (M+2E) from U+02BE to U+02BC.
-        self.assertEqual(
-            marc8_to_unicode(b"ALIF: \xae is U+02BC"), "ALIF: \u02bc is U+02BC"
-        )
+        self.assertEqual(marc8_to_unicode(b"ALIF: \xae is U+02BC"), "ALIF: \u02bc is U+02BC")
 
 
 if __name__ == "__main__":

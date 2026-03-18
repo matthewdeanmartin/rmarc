@@ -146,13 +146,11 @@ class MARCReaderFilePermissiveTest(TestCase):
             else:
                 self.assertIsNone(
                     record,
-                    "expected parsing error with the following "
-                    f"exception {exception_type!r}",
+                    f"expected parsing error with the following exception {exception_type!r}",
                 )
                 self.assertTrue(
                     isinstance(self.reader.current_exception, exception_type),
-                    f"expected {exception_type!r} exception, "
-                    f"received: {self.reader.current_exception!r}",
+                    f"expected {exception_type!r} exception, received: {self.reader.current_exception!r}",
                 )
 
 
@@ -174,8 +172,7 @@ class TestTruncatedData(TestCase):
         self.assertEqual(reader.current_chunk, b"0012")
         self.assertTrue(
             isinstance(reader.current_exception, exceptions.TruncatedRecord),
-            f"expected {exceptions.TruncatedRecord} exception, "
-            f"received: {type(reader.current_exception)}",
+            f"expected {exceptions.TruncatedRecord} exception, received: {type(reader.current_exception)}",
         )
 
     def test_bad_length(self):
@@ -188,8 +185,7 @@ class TestTruncatedData(TestCase):
         self.assertEqual(reader.current_chunk, b"0012X")
         self.assertTrue(
             isinstance(reader.current_exception, exceptions.RecordLengthInvalid),
-            f"expected {exceptions.RecordLengthInvalid} exception, "
-            f"received: {type(reader.current_exception)}",
+            f"expected {exceptions.RecordLengthInvalid} exception, received: {type(reader.current_exception)}",
         )
 
     def test_partial_data(self):
@@ -207,8 +203,7 @@ class TestTruncatedData(TestCase):
         )
         self.assertTrue(
             isinstance(reader.current_exception, exceptions.TruncatedRecord),
-            f"expected {exceptions.TruncatedRecord} exception, "
-            f"received: {type(reader.current_exception)}",
+            f"expected {exceptions.TruncatedRecord} exception, received: {type(reader.current_exception)}",
         )
 
     def test_missing_end_of_record(self):
@@ -226,8 +221,7 @@ class TestTruncatedData(TestCase):
         )
         self.assertTrue(
             isinstance(reader.current_exception, exceptions.EndOfRecordNotFound),
-            f"expected {exceptions.EndOfRecordNotFound} exception, "
-            f"received: {type(reader.current_exception)}",
+            f"expected {exceptions.EndOfRecordNotFound} exception, received: {type(reader.current_exception)}",
         )
 
 
@@ -244,9 +238,7 @@ class MARCMakerReaderTest(TestCase, MARCReaderBaseTest):
 
     def test_round_trip(self):
         for index, record in enumerate(self.reader):
-            self.assertEqual(
-                str(record), self.records[index], "records should be identical"
-            )
+            self.assertEqual(str(record), self.records[index], "records should be identical")
 
     def test_parse_line_leader(self):
         leader = self.reader._parse_line("=LDR  00755cam  22002414a 4500")
@@ -304,9 +296,8 @@ class MARCMakerReaderTest(TestCase, MARCReaderBaseTest):
                     tmp.close()
                     reader = rmarc.MARCMakerReader(tmp.name, encoding=encoding)
                     record = next(reader)
-                    self.assertEqual(
-                        str(record), self.records[0], "records should be identical"
-                    )
+                    self.assertEqual(str(record), self.records[0], "records should be identical")
                 finally:
                     import os
+
                     os.unlink(tmp.name)

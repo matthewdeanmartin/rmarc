@@ -190,9 +190,7 @@ class RecordTest(unittest.TestCase):
             ],
         )
         record.add_field(t1)
-        self.assertRaisesRegex(
-            MissingLinkedFields, "^245 field", record.get_linked_fields, t1
-        )
+        self.assertRaisesRegex(MissingLinkedFields, "^245 field", record.get_linked_fields, t1)
 
     def test_bad_leader(self):
         record = Record()
@@ -200,9 +198,7 @@ class RecordTest(unittest.TestCase):
 
     def test_bad_base_address(self):
         record = Record()
-        self.assertRaises(
-            BaseAddressInvalid, record.decode_marc, b"00695cam  2200241Ia 45x00"
-        )
+        self.assertRaises(BaseAddressInvalid, record.decode_marc, b"00695cam  2200241Ia 45x00")
 
     def test_title(self):
         record = Record()
@@ -255,11 +251,7 @@ class RecordTest(unittest.TestCase):
         self.assertEqual(record.issn_title, "Farghin")
 
         record = Record()
-        record.add_field(
-            Field(
-                "222", Indicators("", ""), subfields=[Subfield(code="b", value="bar")]
-            )
-        )
+        record.add_field(Field("222", Indicators("", ""), subfields=[Subfield(code="b", value="bar")]))
         self.assertEqual(record.issn_title, None)
 
     def test_isbn(self):
@@ -647,16 +639,8 @@ class RecordTest(unittest.TestCase):
 
     def test_alphatag(self):
         record = Record()
-        record.add_field(
-            Field(
-                "CAT", Indicators(" ", " "), subfields=[Subfield(code="a", value="foo")]
-            )
-        )
-        record.add_field(
-            Field(
-                "CAT", Indicators(" ", " "), subfields=[Subfield(code="b", value="bar")]
-            )
-        )
+        record.add_field(Field("CAT", Indicators(" ", " "), subfields=[Subfield(code="a", value="foo")]))
+        record.add_field(Field("CAT", Indicators(" ", " "), subfields=[Subfield(code="b", value="bar")]))
         fields = record.get_fields("CAT")
         self.assertEqual(len(fields), 2)
         self.assertEqual(fields[0]["a"], "foo")

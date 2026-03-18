@@ -24,7 +24,6 @@ from rmarc.marcjson import parse_json_to_array
 from rmarc.marcxml import parse_xml_to_array, record_to_xml
 from rmarc.record import normalize_subfield_code
 
-
 TEST_DIR = Path(__file__).resolve().parent
 
 
@@ -152,10 +151,10 @@ class FieldSuite2Test(unittest.TestCase):
         self.assertEqual(field.format_field(), "Libraries -- Automation -- Fiction.")
 
     def test_normalize_subfield_code_handles_utf8_and_latin1_diacritics(self):
-        code, skip_bytes = normalize_subfield_code("eclair".encode("utf-8"))
+        code, skip_bytes = normalize_subfield_code(b"eclair")
         self.assertEqual((code, skip_bytes), ("e", 1))
 
-        utf8_code, utf8_skip = normalize_subfield_code("éclair".encode("utf-8"))
+        utf8_code, utf8_skip = normalize_subfield_code("éclair".encode())
         self.assertEqual((utf8_code, utf8_skip), ("e", 2))
 
         latin1_code, latin1_skip = normalize_subfield_code(b"\xe9clair")
@@ -383,9 +382,8 @@ class XmlSuite2Test(TempDirTestCase):
         strict_records = parse_xml_to_array(str(_fixture_path("batch.xml")), strict=True)
         self.assertEqual(len(strict_records), 2)
 
-        with _fixture_path("bad_tag.xml").open(encoding="utf-8") as fh:
-            with self.assertRaises(RecordLeaderInvalid):
-                parse_xml_to_array(fh)
+        with _fixture_path("bad_tag.xml").open(encoding="utf-8") as fh, self.assertRaises(RecordLeaderInvalid):
+            parse_xml_to_array(fh)
 
     def test_parse_xml_to_array_can_normalize_unicode(self):
         decomposed = unicodedata.normalize("NFD", "Cafe")

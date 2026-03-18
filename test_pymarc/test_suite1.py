@@ -12,22 +12,21 @@ from copy import deepcopy
 from io import BytesIO, StringIO
 
 import pytest
-
 import rmarc
 from rmarc import (
     Field,
     Indicators,
-    Leader,
-    MARCReader,
-    MARCWriter,
     JSONReader,
     JSONWriter,
-    TextWriter,
-    XMLWriter,
+    Leader,
     MARCMakerReader,
+    MARCReader,
+    MARCWriter,
     RawField,
     Record,
     Subfield,
+    TextWriter,
+    XMLWriter,
     marc8_to_unicode,
 )
 from rmarc.constants import (
@@ -54,18 +53,18 @@ from rmarc.exceptions import (
     TruncatedRecord,
     WriteNeedsRecord,
 )
+from rmarc.marcjson import parse_json_to_array
 from rmarc.marcxml import (
     map_xml,
     parse_xml_to_array,
     record_to_xml,
     record_to_xml_node,
 )
-from rmarc.marcjson import parse_json_to_array
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_simple_record():
     """Create a minimal record with a 245 field."""
@@ -86,9 +85,7 @@ def _make_full_record():
     r.add_field(Field("001", data="ocm12345678"))
     r.add_field(Field("003", data="OCoLC"))
     r.add_field(Field("008", data="910926s1957    nyuuun              eng  "))
-    r.add_field(
-        Field("020", Indicators(" ", " "), [Subfield("a", "9780316769488")])
-    )
+    r.add_field(Field("020", Indicators(" ", " "), [Subfield("a", "9780316769488")]))
     r.add_field(
         Field(
             "100",
@@ -110,21 +107,16 @@ def _make_full_record():
             [Subfield("a", "Boston :"), Subfield("b", "Little, Brown,"), Subfield("c", "1951.")],
         )
     )
-    r.add_field(
-        Field("300", Indicators(" ", " "), [Subfield("a", "277 p. ;"), Subfield("c", "21 cm.")])
-    )
-    r.add_field(
-        Field("650", Indicators(" ", "0"), [Subfield("a", "Teenage boys"), Subfield("v", "Fiction.")])
-    )
-    r.add_field(
-        Field("852", Indicators("0", " "), [Subfield("a", "DLC"), Subfield("b", "Main")])
-    )
+    r.add_field(Field("300", Indicators(" ", " "), [Subfield("a", "277 p. ;"), Subfield("c", "21 cm.")]))
+    r.add_field(Field("650", Indicators(" ", "0"), [Subfield("a", "Teenage boys"), Subfield("v", "Fiction.")]))
+    r.add_field(Field("852", Indicators("0", " "), [Subfield("a", "DLC"), Subfield("b", "Main")]))
     return r
 
 
 # ===================================================================
 # 1. FIELD BASICS
 # ===================================================================
+
 
 class TestFieldCreation:
     def test_data_field_basic(self):
@@ -482,6 +474,7 @@ class TestFieldMisc:
 # 2. LEADER
 # ===================================================================
 
+
 class TestLeader:
     LEADER_STR = "00475casaa2200169 ib4500"
 
@@ -560,6 +553,7 @@ class TestLeader:
 # 3. RECORD BASICS
 # ===================================================================
 
+
 class TestRecordCreation:
     def test_empty_record(self):
         r = Record()
@@ -568,10 +562,12 @@ class TestRecordCreation:
         assert len(str(r.leader)) == LEADER_LEN
 
     def test_record_with_fields_param(self):
-        r = Record(fields=[
-            Field("245", subfields=[Subfield("a", "A title")]),
-            Field("500", subfields=[Subfield("a", "A note")]),
-        ])
+        r = Record(
+            fields=[
+                Field("245", subfields=[Subfield("a", "A title")]),
+                Field("500", subfields=[Subfield("a", "A note")]),
+            ]
+        )
         assert r["245"]["a"] == "A title"
         assert r["500"]["a"] == "A note"
 
@@ -586,7 +582,7 @@ class TestRecordCreation:
         # Positions 0-4 and 12-16 are recalculated, but 5-11 and 17-19 preserved
         leader = marc[0:24]
         assert leader[5:10] == b"fghia"  # positions 5-9 from original
-        assert leader[17:20] == b"rst"   # positions 17-19 from original
+        assert leader[17:20] == b"rst"  # positions 17-19 from original
 
     def test_record_with_leader_and_force_utf8(self):
         r = Record(leader="abcdefghijklmnopqrstuvwx", force_utf8=True)
@@ -721,6 +717,7 @@ class TestRecordLinkedFields:
 # ===================================================================
 # 4. RECORD PROPERTIES (title, isbn, author, etc.)
 # ===================================================================
+
 
 class TestRecordProperties:
     def test_title_none(self):
@@ -898,6 +895,7 @@ class TestRecordProperties:
 # 5. RECORD ENCODING / DECODING (as_marc round-trip)
 # ===================================================================
 
+
 class TestRecordEncoding:
     def test_simple_roundtrip(self):
         r = _make_simple_record()
@@ -986,6 +984,7 @@ class TestRecordEncodingFromFile:
 # 6. RECORD DICT / JSON
 # ===================================================================
 
+
 class TestRecordDict:
     def test_as_dict_structure(self):
         r = _make_simple_record()
@@ -1029,6 +1028,7 @@ class TestRecordDict:
 # 7. RECORD STRING REPR
 # ===================================================================
 
+
 class TestRecordStr:
     def test_str_has_leader(self):
         r = _make_simple_record()
@@ -1048,6 +1048,7 @@ class TestRecordStr:
 # ===================================================================
 # 8. ORDERED / GROUPED FIELDS
 # ===================================================================
+
 
 class TestOrderedFields:
     def test_add_ordered_field(self):
@@ -1078,6 +1079,7 @@ class TestOrderedFields:
 # 9. DEEP COPY
 # ===================================================================
 
+
 class TestRecordCopy:
     def test_deepcopy_independent(self):
         r1 = _make_full_record()
@@ -1097,6 +1099,7 @@ class TestRecordCopy:
 # ===================================================================
 # 10. MARC READER
 # ===================================================================
+
 
 class TestMARCReaderFile:
     def test_read_test_dat(self):
@@ -1119,18 +1122,22 @@ class TestMARCReaderFile:
 
     def test_map_records(self):
         count = 0
+
         def f(r):
             nonlocal count
             count += 1
+
         with open("test_pymarc/test.dat", "rb") as fh:
             rmarc.map_records(f, fh)
         assert count == 10
 
     def test_multi_map_records(self):
         count = 0
+
         def f(r):
             nonlocal count
             count += 1
+
         with open("test_pymarc/test.dat", "rb") as fh1, open("test_pymarc/test.dat", "rb") as fh2:
             rmarc.map_records(f, fh1, fh2)
         assert count == 20
@@ -1201,14 +1208,14 @@ class TestMARCReaderPermissive:
         with open("test_pymarc/bad_records.mrc", "rb") as fh:
             reader = MARCReader(fh)
             expected = [
-                None,                              # good record
+                None,  # good record
                 BaseAddressInvalid,
                 BaseAddressNotFound,
                 RecordDirectoryInvalid,
                 UnicodeDecodeError,
                 ValueError,
                 NoFieldsFound,
-                None,                              # good record
+                None,  # good record
                 TruncatedRecord,
             ]
             for exc_type in expected:
@@ -1238,6 +1245,7 @@ class TestRecordDecode:
 # ===================================================================
 # 11. JSON READER
 # ===================================================================
+
 
 class TestJSONReader:
     def test_read_json_file(self):
@@ -1276,6 +1284,7 @@ class TestJSONReader:
 # ===================================================================
 # 12. MARC MAKER READER
 # ===================================================================
+
 
 class TestMARCMakerReader:
     @pytest.fixture
@@ -1344,6 +1353,7 @@ class TestMARCMakerReader:
 # ===================================================================
 # 13. WRITERS (all using tmp_path)
 # ===================================================================
+
 
 class TestMARCWriter:
     def test_write_and_read_back(self, tmp_path):
@@ -1553,6 +1563,7 @@ class TestXMLWriter:
 # 14. XML PARSING
 # ===================================================================
 
+
 class TestXMLParsing:
     def test_map_xml(self):
         seen = []
@@ -1604,9 +1615,8 @@ class TestXMLParsing:
         assert len(records) == 2
 
     def test_bad_tag_xml(self):
-        with open("test_pymarc/bad_tag.xml") as fh:
-            with pytest.raises(RecordLeaderInvalid):
-                parse_xml_to_array(fh)
+        with open("test_pymarc/bad_tag.xml") as fh, pytest.raises(RecordLeaderInvalid):
+            parse_xml_to_array(fh)
 
     def test_write_then_parse_xml(self, tmp_path):
         filepath = tmp_path / "roundtrip.xml"
@@ -1623,6 +1633,7 @@ class TestXMLParsing:
 # ===================================================================
 # 15. JSON PARSING
 # ===================================================================
+
 
 class TestJSONParsing:
     def test_parse_json_to_array_one(self):
@@ -1651,6 +1662,7 @@ class TestJSONParsing:
 # ===================================================================
 # 16. MARC-8 / CHARACTER ENCODING
 # ===================================================================
+
 
 class TestMARC8:
     def test_marc8_reader_raw(self):
@@ -1732,10 +1744,12 @@ class TestMARC8:
 class TestUTF8:
     def test_utf8_xml_fields(self):
         field_count = 0
+
         def process_xml(record):
             nonlocal field_count
             for _ in record.get_fields():
                 field_count += 1
+
         rmarc.map_xml(process_xml, "test_pymarc/utf8.xml")
         assert field_count == 8
 
@@ -1744,10 +1758,12 @@ class TestUTF8:
         with open(filepath, "wb") as fh:
             writer = MARCWriter(fh)
             new_record = Record(to_unicode=True, force_utf8=True)
+
             def process_xml(record):
                 new_record.leader = record.leader
                 for field in record.get_fields():
                     new_record.add_field(field)
+
             rmarc.map_xml(process_xml, "test_pymarc/utf8.xml")
             writer.write(new_record)
             writer.close()
@@ -1823,6 +1839,7 @@ class TestUTF8:
 # 17. CONSTANTS
 # ===================================================================
 
+
 class TestConstants:
     def test_leader_len(self):
         assert LEADER_LEN == 24
@@ -1831,18 +1848,19 @@ class TestConstants:
         assert DIRECTORY_ENTRY_LEN == 12
 
     def test_subfield_indicator(self):
-        assert SUBFIELD_INDICATOR == chr(0x1F)
+        assert chr(0x1F) == SUBFIELD_INDICATOR
 
     def test_end_of_field(self):
-        assert END_OF_FIELD == chr(0x1E)
+        assert chr(0x1E) == END_OF_FIELD
 
     def test_end_of_record(self):
-        assert END_OF_RECORD == chr(0x1D)
+        assert chr(0x1D) == END_OF_RECORD
 
 
 # ===================================================================
 # 18. EXCEPTIONS
 # ===================================================================
+
 
 class TestExceptions:
     def test_exception_hierarchy(self):
@@ -1879,6 +1897,7 @@ class TestExceptions:
 # ===================================================================
 # 19. CROSS-FORMAT ROUNDTRIP TESTS
 # ===================================================================
+
 
 class TestCrossFormatRoundtrip:
     """Test that records survive conversions between MARC binary, JSON, XML, and text."""
@@ -1943,6 +1962,7 @@ class TestCrossFormatRoundtrip:
 # 20. EDGE CASES AND MISC
 # ===================================================================
 
+
 class TestEdgeCases:
     def test_record_with_many_fields(self):
         r = Record()
@@ -1960,10 +1980,10 @@ class TestEdgeCases:
 
     def test_special_chars_in_subfields(self):
         r = Record()
-        r.add_field(Field("245", Indicators("0", "1"), [Subfield("a", "Title with <html> & \"quotes\"")]))
+        r.add_field(Field("245", Indicators("0", "1"), [Subfield("a", 'Title with <html> & "quotes"')]))
         marc = r.as_marc()
         r2 = Record(marc)
-        assert r2["245"]["a"] == "Title with <html> & \"quotes\""
+        assert r2["245"]["a"] == 'Title with <html> & "quotes"'
 
     def test_record_alpha_tags(self):
         r = Record()
@@ -1988,6 +2008,7 @@ class TestEdgeCases:
 
     def test_map_marc8_record(self):
         from rmarc.record import map_marc8_record
+
         with open("test_pymarc/marc8.dat", "rb") as fh:
             record = next(MARCReader(fh, to_unicode=True))
             assert record is not None
