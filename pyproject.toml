@@ -24,6 +24,11 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 
+[project.optional-dependencies]
+fast = ["orjson>=3.9", "lxml>=5.0"]
+fast-json = ["orjson>=3.9"]
+fast-xml = ["lxml>=5.0"]
+
 [project.urls]
 Repository = "https://github.com/matthewdeanmartin/rmarc"
 Documentation = "https://rmarc.readthedocs.io/en/latest/"

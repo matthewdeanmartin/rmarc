@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler, feature_namespaces
 
+from rmarc._compat import HAS_LXML, lxml_ET
 from rmarc.field import Field, Indicators
 from rmarc.leader import Leader
 from rmarc.marc8 import MARC8ToUnicode
@@ -92,10 +93,16 @@ class XmlHandler(ContentHandler):
 
 
 def parse_xml(xml_file, handler):
-    parser = make_parser()
-    parser.setContentHandler(handler)
-    parser.setFeature(feature_namespaces, 1)
-    parser.parse(xml_file)
+    if HAS_LXML:
+        from lxml import sax as _lxml_sax
+
+        tree = lxml_ET.parse(xml_file)
+        _lxml_sax.saxify(tree, handler)
+    else:
+        parser = make_parser()
+        parser.setContentHandler(handler)
+        parser.setFeature(feature_namespaces, 1)
+        parser.parse(xml_file)
 
 
 def map_xml(function, *files):
@@ -113,10 +120,14 @@ def parse_xml_to_array(xml_file, strict=False, normalize_form=None):
 
 def record_to_xml(record, quiet=False, namespace=False):
     node = record_to_xml_node(record, quiet, namespace)
+    if HAS_LXML:
+        return lxml_ET.tostring(node)
     return ET.tostring(node)
 
 
 def record_to_xml_node(record, quiet=False, namespace=False):
+    _ET = lxml_ET if HAS_LXML else ET
+
     marc8 = MARC8ToUnicode(quiet=quiet)
 
     def translate(data):
@@ -125,25 +136,31 @@ def record_to_xml_node(record, quiet=False, namespace=False):
         else:
             return marc8.translate(data)
 
-    root = ET.Element("record")
-    if namespace:
-        root.set("xmlns", MARC_XML_NS)
-        root.set("xmlns:xsi", XSI_NS)
-        root.set("xsi:schemaLocation", MARC_XML_SCHEMA)
-    leader = ET.SubElement(root, "leader")
+    if namespace and HAS_LXML:
+        # lxml manages namespaces natively; declare via nsmap on the element
+        NSMAP = {None: MARC_XML_NS, "xsi": XSI_NS}
+        root = _ET.Element("record", nsmap=NSMAP)
+        root.set(f"{{{XSI_NS}}}schemaLocation", MARC_XML_SCHEMA)
+    else:
+        root = _ET.Element("record")
+        if namespace:
+            root.set("xmlns", MARC_XML_NS)
+            root.set("xmlns:xsi", XSI_NS)
+            root.set("xsi:schemaLocation", MARC_XML_SCHEMA)
+    leader = _ET.SubElement(root, "leader")
     leader.text = str(record.leader)
     for field in record:
         if field.control_field:
-            control_field = ET.SubElement(root, "controlfield")
+            control_field = _ET.SubElement(root, "controlfield")
             control_field.set("tag", field.tag)
             control_field.text = translate(field.data)
         else:
-            data_field = ET.SubElement(root, "datafield")
+            data_field = _ET.SubElement(root, "datafield")
             data_field.set("ind1", field.indicators.first)
             data_field.set("ind2", field.indicators.second)
             data_field.set("tag", field.tag)
             for subfield in field:
-                data_subfield = ET.SubElement(data_field, "subfield")
+                data_subfield = _ET.SubElement(data_field, "subfield")
                 data_subfield.set("code", subfield.code)
                 data_subfield.text = translate(subfield.value)
 

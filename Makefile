@@ -1,5 +1,6 @@
 .PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
-        lint-rust rust-test format format-check build build-release clean all ci check-all claude
+        lint-rust rust-test format format-check build build-release clean all ci check-all claude \
+        fast fast-uninstall bench bench-all
 
 # ── Developer workflow ────────────────────────────────────────────────────────
 
@@ -10,6 +11,14 @@ dev:
 ## Rebuild after Rust changes without reinstalling Python deps.
 rebuild:
 	uv run maturin develop --skip-install
+
+## Install optional fast serialization backends (orjson + lxml).
+fast:
+	uv pip install "orjson>=3.9" "lxml>=5.0"
+
+## Uninstall optional fast serialization backends.
+fast-uninstall:
+	uv pip uninstall orjson lxml
 
 # ── Testing ───────────────────────────────────────────────────────────────────
 
@@ -101,6 +110,14 @@ check-all:
 		--cov-report=xml \
 		--cov-report=term-missing \
 		-v
+
+## Run JSON/XML serialization benchmarks.
+bench:
+	uv run pytest bench/bench_json_xml.py --benchmark-only -v
+
+## Run all benchmarks.
+bench-all:
+	uv run pytest bench/ --benchmark-only -v
 
 # ── Housekeeping ──────────────────────────────────────────────────────────────
 

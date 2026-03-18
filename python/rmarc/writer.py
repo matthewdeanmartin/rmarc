@@ -12,6 +12,8 @@ import json
 import xml.etree.ElementTree as ET
 from typing import IO
 
+from rmarc._compat import HAS_ORJSON, json_dumps
+
 from rmarc.exceptions import WriteNeedsRecord
 from rmarc.marcxml import record_to_xml_node
 from rmarc.record import Record
@@ -47,7 +49,10 @@ class JSONWriter(Writer):
         if self.file_handle:
             if self.write_count > 0:
                 self.file_handle.write(",")
-            json.dump(record.as_dict(), self.file_handle, separators=(",", ":"))
+            if HAS_ORJSON:
+                self.file_handle.write(json_dumps(record.as_dict()))
+            else:
+                json.dump(record.as_dict(), self.file_handle, separators=(",", ":"))
             self.write_count += 1
 
     def close(self, close_fh: bool = True) -> None:

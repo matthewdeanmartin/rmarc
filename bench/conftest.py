@@ -37,3 +37,28 @@ def large_dat_path():
     if not os.path.exists(path):
         pytest.skip("Run bench/generate_data.py first")
     return path
+
+
+@pytest.fixture(scope="session")
+def one_json_bytes():
+    with open("test_pymarc/one.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture(scope="session")
+def batch_json_bytes():
+    with open("test_pymarc/batch.json", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture(scope="session")
+def batch_xml_bytes():
+    with open("test_pymarc/batch.xml", "rb") as f:
+        return f.read()
+
+
+@pytest.fixture(scope="session")
+def one_record(one_record_bytes):
+    from rmarc import Record
+
+    return Record(one_record_bytes)

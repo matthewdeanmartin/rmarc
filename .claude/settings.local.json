@@ -24,7 +24,17 @@
       "Bash(make rebuild:*)",
       "Bash(make check-all:*)",
       "Bash(grep -l \"utf8_handling\\\\|utf-8\\\\|UTF-8\\\\|strict\\\\|force_utf8\" /github/rmarc/test_pymarc/*.py)",
-      "Bash(python -m pytest test_pymarc/test_regressions.py -v)"
+      "Bash(python -m pytest test_pymarc/test_regressions.py -v)",
+      "Bash(find /c/github/rmarc -path /c/github/rmarc/.venv -prune -o -type f -name test*.py -print)",
+      "Bash(find /c/github/rmarc -maxdepth 2 -name README* -o -name readme*)",
+      "Bash(python:*)",
+      "Bash(bash sample_app/sample_integration_test.sh 2>&1)",
+      "Bash(bash -c '\nset +e\nbash sample_app/sample_integration_test.sh 2>&1 | grep -E \"\\(PASS|FAIL|SKIP|===|======\\)\"\necho \"EXIT: $?\"\n' 2>&1)",
+      "Bash(tee /c/github/rmarc/sample_app/itest_out.txt)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(tee /c/github/rmarc/itest_out.txt)",
+      "Bash(uv pip:*)",
+      "Bash(uv run python -c \":*)"
     ]
   }
 }

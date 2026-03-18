@@ -8,6 +8,8 @@ __all__ = [
 
 import json
 import logging
+
+from rmarc._compat import HAS_ORJSON, json_dumps
 import re
 import unicodedata
 import warnings
@@ -466,12 +468,8 @@ class Record:
     as_marc21 = as_marc
 
     def as_dict(self) -> dict[str, object]:
-        record: dict[str, object] = {"leader": str(self.leader), "fields": []}
-        from typing import cast
-
-        fields_list = cast(list, record["fields"])
-
-        for field in self:
+        fields_list: list = []
+        for field in self.fields:  # iterate list directly, avoids custom __iter__ overhead
             if field.control_field:
                 fields_list.append({field.tag: field.data})
             else:
@@ -484,9 +482,11 @@ class Record:
                         }
                     }
                 )
-        return record
+        return {"leader": str(self.leader), "fields": fields_list}
 
     def as_json(self, **kwargs) -> str:
+        if HAS_ORJSON and not kwargs:
+            return json_dumps(self.as_dict())
         return json.dumps(self.as_dict(), **kwargs)
 
     @property

@@ -11,6 +11,8 @@ __all__ = [
 import json
 import os
 import sys
+
+from rmarc._compat import json_loads
 from collections.abc import Callable, Iterator
 from io import BufferedReader, BytesIO, IOBase, StringIO
 from typing import IO, BinaryIO
@@ -152,7 +154,7 @@ class JSONReader(Reader):
                 )
         if stream:
             sys.stderr.write("Streaming not yet implemented, your data will be loaded into memory\n")
-        self.records = json.load(self.file_handle, strict=False)
+        self.records = json_loads(self.file_handle.read())
 
     def __iter__(self) -> Iterator[Record]:
         if hasattr(self.records, "__iter__") and not isinstance(self.records, dict):
@@ -165,21 +167,30 @@ class JSONReader(Reader):
         jobj = next(self.iter)
         rec = Record()
         rec.leader = Leader(jobj["leader"])
-        for field in jobj["fields"]:
-            k, v = list(field.items())[0]
-            if "subfields" in v and hasattr(v, "update"):
-                subfields: list = []
-                for sub in v["subfields"]:
-                    for code, value in sub.items():
-                        subfields.append(Subfield(code=code, value=value))
-                fld = Field(
-                    tag=k,
-                    subfields=subfields,
-                    indicators=Indicators(v["ind1"], v["ind2"]),
-                )
-            else:
-                fld = Field(tag=k, data=v)
-            rec.add_field(fld)
+        fields_out = rec.fields
+        for field_dict in jobj["fields"]:
+            for k, v in field_dict.items():
+                # Use __new__ to skip the Field constructor overhead; set slots directly.
+                fld = Field.__new__(Field)
+                try:
+                    fld.tag = f"{int(k):03}"
+                except ValueError:
+                    fld.tag = k
+                fld._Field__pos = 0  # mangled __pos slot
+                if isinstance(v, dict):
+                    fld.control_field = False
+                    fld.data = None
+                    fld._indicators = Indicators(v["ind1"], v["ind2"])
+                    fld.subfields = [
+                        Subfield(code=c, value=val) for sub in v["subfields"] for c, val in sub.items()
+                    ]
+                else:
+                    fld.control_field = True
+                    fld.data = v
+                    fld._indicators = None
+                    fld.subfields = []
+                fields_out.append(fld)
+                break  # each field_dict has exactly one key
         return rec
 
 
