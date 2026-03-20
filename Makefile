@@ -1,6 +1,6 @@
 .PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
         lint-rust rust-test format format-check build build-release build-wheels clean all ci check-all claude \
-        fast fast-uninstall bench bench-contest bench-all
+        fast fast-uninstall bench bench-contest bench-all perf
 
 # ── Developer workflow ────────────────────────────────────────────────────────
 
@@ -126,6 +126,10 @@ bench-contest:
 ## Run all benchmarks.
 bench-all:
 	uv run pytest bench/ --benchmark-only -v
+
+## Run 3-way performance deathmatch: rmarc vs pymarc vs mrrc.
+perf:
+	uv run pytest bench/bench_deathmatch.py --benchmark-only --benchmark-group-by=group -v
 
 # ── Housekeeping ──────────────────────────────────────────────────────────────
 
