@@ -10,6 +10,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from sample_app.goodreads import import_goodreads
 from sample_app.loc import fetch_marc_by_lccn, search_loc
 from sample_app.store import Collection, make_record
 
@@ -196,6 +197,27 @@ def cmd_import(args: argparse.Namespace) -> None:
     print(f"Imported {count} record(s) from {path}")
 
 
+def cmd_import_goodreads(args: argparse.Namespace) -> None:
+    """Import books from a Goodreads library export CSV."""
+    coll = get_collection(args)
+    path = Path(args.csv)
+    if not path.exists():
+        print(f"Error: File not found: {path}", file=sys.stderr)
+        sys.exit(1)
+
+    def progress(current: int, total: int, title: str) -> None:
+        print(f"  [{current}/{total}] {title}")
+
+    enrich = args.enrich
+    if enrich:
+        print(f"Importing from {path} with Library of Congress enrichment...")
+    else:
+        print(f"Importing from {path}...")
+
+    count = import_goodreads(path, coll, enrich=enrich, batch_size=args.batch_size, on_progress=progress)
+    print(f"Imported {count} book(s) from Goodreads CSV.")
+
+
 def cmd_loc_search(args: argparse.Namespace) -> None:
     """Search the Library of Congress catalog."""
     try:
@@ -318,6 +340,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_import.add_argument("format", choices=["marc", "xml"], help="Input format")
     p_import.add_argument("input", help="Input file path")
     p_import.set_defaults(func=cmd_import)
+
+    # import-goodreads
+    p_igr = sub.add_parser("import-goodreads", help="Import from Goodreads CSV export")
+    p_igr.add_argument("csv", help="Path to goodreads_library_export.csv")
+    p_igr.add_argument("--enrich", action="store_true", help="Fetch full MARC records from Library of Congress")
+    p_igr.add_argument("--batch-size", type=int, default=20, help="Concurrent LOC requests per batch (default: 20)")
+    p_igr.set_defaults(func=cmd_import_goodreads)
 
     # loc-search
     p_locsearch = sub.add_parser("loc-search", help="Search Library of Congress catalog")

@@ -100,7 +100,9 @@ default-groups = "all"
 rmarc = { workspace = true }
 
 [tool.uv.workspace]
-members = ["./",
+members = [
+    "./",
+    "sample_src/sample_app",
 ]
 
 [project.scripts]
@@ -158,7 +160,8 @@ exclude = '''
 minversion = "6.0"
 testpaths = [
     "test",
-    "test_pymarc"
+    "test_pymarc",
+    "sample_src/sample_app/tests",
 ]
 junit_family = "xunit1"
 norecursedirs = ["vendor", "scripts"]

@@ -224,3 +224,9 @@ target
 # Benchmark generated data
 bench_data/
 data/
+
+# Sample app: ignore real Goodreads export, keep the fake sample
+!sample_src/sample_app/sample_app/data/
+sample_src/sample_app/sample_app/data/*
+!sample_src/sample_app/sample_app/data/sample.csv
+/bookshelf.mrc
