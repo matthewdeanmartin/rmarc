@@ -116,7 +116,7 @@ def test_deathmatch_title_access(benchmark, test_dat, name, loader):
             titles = []
             for rec in marc.MARCReader(test_dat):
                 if rec:
-                    titles.append(rec.title())
+                    titles.append(rec.title)
             return titles
 
     benchmark.group = "deathmatch-title-access"
