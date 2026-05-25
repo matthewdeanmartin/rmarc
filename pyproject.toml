@@ -98,7 +98,6 @@ dev = [
 
 [tool.uv]
 default-groups = "all"
-universal = true
 
 [tool.uv.sources]
 rmarc = { workspace = true }
@@ -109,6 +108,8 @@ members = [
     "sample_src/sample_app",
 ]
 
+[tool.uv.pip]
+universal = true
 [project.scripts]
 rmarc = "rmarc.__main__:main"
 
