@@ -205,9 +205,7 @@ class XMLWriter(Writer):
         super().__init__(file_handle)
         if self.file_handle:
             self.file_handle.write(b'<?xml version="1.0" encoding="UTF-8"?>')
-            self.file_handle.write(
-                b'<collection xmlns="http://www.loc.gov/MARC21/slim">'
-            )
+            self.file_handle.write(b'<collection xmlns="http://www.loc.gov/MARC21/slim">')
 
     def write(self, record: Record) -> None:
         """Writes a record."""

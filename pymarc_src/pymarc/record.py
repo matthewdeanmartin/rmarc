@@ -284,9 +284,7 @@ class Record:
         """Given a field that is not an 880, retrieve a list of any linked 880 fields."""
         num = field.linkage_occurrence_num()
         fields = self.get_fields("880")
-        linked_fields = list(
-            filter(lambda f: f.linkage_occurrence_num() == num, fields)
-        )
+        linked_fields = list(filter(lambda f: f.linkage_occurrence_num() == num, fields))
         if num is not None and not linked_fields:
             raise MissingLinkedFields(field)
         return linked_fields
@@ -343,12 +341,7 @@ class Record:
             entry_tag = entry[0:3]
             entry_length = int(entry[3:7])
             entry_offset = int(entry[7:12])
-            entry_data = marc[
-                base_address + entry_offset : base_address
-                + entry_offset
-                + entry_length
-                - 1
-            ]
+            entry_data = marc[base_address + entry_offset : base_address + entry_offset + entry_length - 1]
             # assume controlfields are numeric; replicates ruby-marc behavior
             if entry_tag < "010" and entry_tag.isdigit():
                 if to_unicode:

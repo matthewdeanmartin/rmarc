@@ -62,7 +62,7 @@ def cmd_show(args: argparse.Namespace) -> None:
         sys.exit(1)
 
 
-def cmd_edit(args: argparse.Namespace) -> None:
+def cmd_edit(args: argparse.Namespace) -> None:  # noqa: C901
     """Edit fields of an existing book."""
     coll = get_collection(args)
     try:

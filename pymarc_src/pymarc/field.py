@@ -69,11 +69,9 @@ class Field:
             self.tag = f"{tag}"
 
         if subfields and isinstance(subfields[0], str):
-            raise ValueError(
-                """The subfield input no longer accepts strings, and should use Subfield.
+            raise ValueError("""The subfield input no longer accepts strings, and should use Subfield.
                    Please consult the documentation for details.
-                """
-            )
+                """)
 
         self.subfields: list[Subfield] = []
         # Indicators are None if this is a control field.
@@ -90,11 +88,7 @@ class Field:
             self.subfields = subfields or []
             if not indicators:
                 self._indicators = Indicators(" ", " ")
-            elif (
-                indicators
-                and isinstance(indicators, list | tuple)
-                and len(indicators) == 2
-            ):
+            elif indicators and isinstance(indicators, list | tuple) and len(indicators) == 2:
                 self._indicators = Indicators(*indicators)
             else:
                 # Fall back to setting the indicators through the setter. This will
@@ -110,12 +104,10 @@ class Field:
     def indicators(self, value: Sequence) -> None:
         """Set the field's indicators."""
         if value and isinstance(value, list | tuple) and len(value) != 2:
-            raise ValueError(
-                """The indicators input no longer accepts an iterable of arbitrary length. Use
+            raise ValueError("""The indicators input no longer accepts an iterable of arbitrary length. Use
                    the Indicators() named tuple instead. Please consult the documentation
                    for details.
-                """
-            )
+                """)
         if value is not None:
             if isinstance(value, Indicators):
                 self._indicators = value
@@ -401,11 +393,7 @@ class Field:
         for subfield in self.subfields:
             _subf.append(f"{SUBFIELD_INDICATOR}{subfield.code}{subfield.value}")
 
-        return (
-            f"{self.indicator1}{self.indicator2}{''.join(_subf)}{END_OF_FIELD}".encode(
-                encoding
-            )
-        )
+        return f"{self.indicator1}{self.indicator2}{''.join(_subf)}{END_OF_FIELD}".encode(encoding)
 
     # alias for backwards compatibility
     as_marc21 = as_marc
@@ -492,11 +480,7 @@ class RawField(Field):
             return self.data + END_OF_FIELD.encode("ascii")  # type: ignore
         marc: bytes = self.indicator1.encode("ascii") + self.indicator2.encode("ascii")
         for subfield in self.subfields:
-            marc += (
-                SUBFIELD_INDICATOR.encode("ascii")
-                + subfield.code.encode("ascii")
-                + subfield.value  # type: ignore
-            )
+            marc += SUBFIELD_INDICATOR.encode("ascii") + subfield.code.encode("ascii") + subfield.value  # type: ignore
         return marc + END_OF_FIELD.encode("ascii")
 
 
@@ -505,8 +489,5 @@ def map_marc8_field(f: Field) -> Field:
     if f.control_field:
         f.data = marc8_to_unicode(f.data)
     else:
-        f.subfields = [
-            Subfield(subfield.code, marc8_to_unicode(subfield.value))
-            for subfield in f.subfields
-        ]
+        f.subfields = [Subfield(subfield.code, marc8_to_unicode(subfield.value)) for subfield in f.subfields]
     return f

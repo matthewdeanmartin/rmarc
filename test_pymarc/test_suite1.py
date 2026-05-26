@@ -12,9 +12,7 @@ from copy import deepcopy
 from io import BytesIO, StringIO
 
 import pytest
-
 import rmarc
-from test_pymarc import fixture_path
 from rmarc import (
     Field,
     Indicators,
@@ -51,6 +49,8 @@ from rmarc.exceptions import (
 )
 from rmarc.marcjson import parse_json_to_array
 from rmarc.marcxml import map_xml, parse_xml_to_array, record_to_xml, record_to_xml_node
+
+from test_pymarc import fixture_path
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -938,7 +938,7 @@ class TestRecordEncoding:
         r = Record()
         leader_type = type(r.leader)
         r.as_marc()
-        assert type(r.leader) == leader_type
+        assert isinstance(r.leader, leader_type)
 
     def test_no_leader_gives_default(self):
         r = Record()
@@ -1009,7 +1009,7 @@ class TestRecordDict:
     def test_as_json_roundtrip(self):
         r = _make_full_record()
         j = r.as_json()
-        parsed = json.loads(j)
+        _parsed = json.loads(j)
         reader = JSONReader(j)
         r2 = next(iter(reader))
         assert r2["245"]["a"] == "The catcher in the rye /"
@@ -1585,7 +1585,7 @@ class TestXMLParsing:
         r2 = parse_xml_to_array(BytesIO(xml))[0]
         assert r1.leader.leader == r2.leader.leader
         assert len(r1.get_fields()) == len(r2.get_fields())
-        for f1, f2 in zip(r1.get_fields(), r2.get_fields()):
+        for f1, f2 in zip(r1.get_fields(), r2.get_fields(), strict=False):
             assert f1.tag == f2.tag
             if f1.control_field:
                 assert f1.data == f2.data
@@ -1638,7 +1638,7 @@ class TestJSONParsing:
         with fixture_path("one.dat").open("rb") as fh:
             dat_records = list(MARCReader(fh))
         assert len(json_records) == len(dat_records)
-        for jr, dr in zip(json_records, dat_records):
+        for jr, dr in zip(json_records, dat_records, strict=False):
             assert jr.as_marc() == dr.as_marc()
 
     def test_parse_json_matches_xml(self):
@@ -1646,7 +1646,7 @@ class TestJSONParsing:
             json_records = parse_json_to_array(fh)
         xml_records = parse_xml_to_array(str(fixture_path("batch.xml")))
         assert len(json_records) == len(xml_records)
-        for jr, xr in zip(json_records, xml_records):
+        for jr, xr in zip(json_records, xml_records, strict=False):
             assert jr.as_marc() == xr.as_marc()
 
 

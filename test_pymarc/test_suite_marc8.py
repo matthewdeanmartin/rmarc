@@ -33,7 +33,7 @@ Codeset notes
 
 import unicodedata
 import unittest
-from typing import Callable
+from collections.abc import Callable
 
 from rmarc._rmarc import marc8_to_unicode_rs
 from rmarc.marc8 import _marc8_to_unicode_python

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import csv
 import re
-import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 

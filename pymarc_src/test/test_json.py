@@ -26,9 +26,7 @@ class JsonReaderTest(unittest.TestCase):
         marc-in-json files directly
         """
         recs = list(self.reader)
-        self.assertEqual(
-            len(self.in_json), len(recs), "Incorrect number of records found"
-        )
+        self.assertEqual(len(self.in_json), len(recs), "Incorrect number of records found")
         for i, rec in enumerate(recs):
             deserialized = json.loads(rec.as_json(), strict=False)
             comp = self.in_json[i]
@@ -132,15 +130,11 @@ class JsonParse(unittest.TestCase):
 
     def testRoundtrip(self):
         recs = list(self.reader_dat)
-        self.assertEqual(
-            len(self.parse_json), len(recs), "Incorrect number of records found"
-        )
+        self.assertEqual(len(self.parse_json), len(recs), "Incorrect number of records found")
         for from_dat, from_json in zip(recs, self.parse_json, strict=False):
             assert from_dat
             assert from_json
-            self.assertEqual(
-                from_dat.as_marc(), from_json.as_marc(), "Incorrect Record"
-            )
+            self.assertEqual(from_dat.as_marc(), from_json.as_marc(), "Incorrect Record")
 
     def testParseJsonXml(self):
         self.assertEqual(
@@ -149,9 +143,7 @@ class JsonParse(unittest.TestCase):
             "Incorrect number of parse records found",
         )
         for from_dat, from_json in zip(self.batch_json, self.batch_xml, strict=False):
-            self.assertEqual(
-                from_dat.as_marc(), from_json.as_marc(), "Incorrect Record"
-            )
+            self.assertEqual(from_dat.as_marc(), from_json.as_marc(), "Incorrect Record")
 
 
 if __name__ == "__main__":

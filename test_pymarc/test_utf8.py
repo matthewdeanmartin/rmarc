@@ -8,6 +8,7 @@ import os
 import unittest
 
 import rmarc
+
 from test_pymarc import fixture_path
 
 

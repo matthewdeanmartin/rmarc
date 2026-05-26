@@ -20,9 +20,7 @@ class FieldTest(unittest.TestCase):
             ],
         )
 
-        self.controlfield = Field(
-            tag="008", data="831227m19799999nyu           ||| | ger  "
-        )
+        self.controlfield = Field(tag="008", data="831227m19799999nyu           ||| | ger  ")
 
         self.subjectfield = Field(
             tag="650",
@@ -117,14 +115,10 @@ class FieldTest(unittest.TestCase):
             )
 
     def test_string(self):
-        self.assertEqual(
-            str(self.field), "=245  01$aHuckleberry Finn: $bAn American Odyssey"
-        )
+        self.assertEqual(str(self.field), "=245  01$aHuckleberry Finn: $bAn American Odyssey")
 
     def test_controlfield_string(self):
-        self.assertEqual(
-            str(self.controlfield), r"=008  831227m19799999nyu\\\\\\\\\\\|||\|\ger\\"
-        )
+        self.assertEqual(str(self.controlfield), r"=008  831227m19799999nyu\\\\\\\\\\\|||\|\ger\\")
 
     def test_indicators(self):
         assert self.field.indicators
@@ -155,16 +149,12 @@ class FieldTest(unittest.TestCase):
         self.assertIsNone(self.field.get("z"))
 
     def test_subfield_setter(self):
-        self.field.subfields = [
-            Subfield(code="a", value="The Adventures of Tom Sawyer")
-        ]
+        self.field.subfields = [Subfield(code="a", value="The Adventures of Tom Sawyer")]
         self.assertEqual(self.field["a"], "The Adventures of Tom Sawyer")
 
     def test_subfields(self):
         self.assertEqual(self.field.get_subfields("a"), ["Huckleberry Finn: "])
-        self.assertEqual(
-            self.subjectfield.get_subfields("a"), ["Python (Computer program language)"]
-        )
+        self.assertEqual(self.subjectfield.get_subfields("a"), ["Python (Computer program language)"])
 
     def test_subfields_multi(self):
         self.assertEqual(
@@ -192,9 +182,7 @@ class FieldTest(unittest.TestCase):
 
     def test_value(self):
         self.assertEqual(self.field.value(), "Huckleberry Finn: An American Odyssey")
-        self.assertEqual(
-            self.controlfield.value(), "831227m19799999nyu           ||| | ger  "
-        )
+        self.assertEqual(self.controlfield.value(), "831227m19799999nyu           ||| | ger  ")
 
     def test_non_integer_tag(self):
         # make sure this doesn't throw an exception
@@ -257,9 +245,7 @@ class FieldTest(unittest.TestCase):
             "Python (Computer program language) -- Poetry.",
         )
         self.field.add_subfield("6", "880-1")
-        self.assertEqual(
-            self.field.format_field(), "Huckleberry Finn:  An American Odyssey"
-        )
+        self.assertEqual(self.field.format_field(), "Huckleberry Finn:  An American Odyssey")
 
     def test_tag_normalize(self):
         f = Field(tag="42", indicators=Indicators("", ""))
@@ -338,9 +324,7 @@ class FieldTest(unittest.TestCase):
     def test_set_indicators_affects_str(self):
         self.field.indicator1 = "9"
         self.field.indicator2 = "9"
-        self.assertEqual(
-            str(self.field), "=245  99$aHuckleberry Finn: $bAn American Odyssey"
-        )
+        self.assertEqual(str(self.field), "=245  99$aHuckleberry Finn: $bAn American Odyssey")
 
     def test_set_indicators_affects_marc(self):
         self.field.indicator1 = "9"

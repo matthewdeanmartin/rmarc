@@ -9,6 +9,7 @@ import tempfile
 import unittest
 
 from rmarc import Field, Indicators, Leader, MARCReader, MARCWriter, RawField, Record, Subfield, marc8_to_unicode
+
 from test_pymarc import fixture_path
 
 

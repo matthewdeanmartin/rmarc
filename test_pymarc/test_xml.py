@@ -11,6 +11,7 @@ from rmarc.exceptions import RecordLeaderInvalid
 from rmarc.marcxml import map_xml, parse_xml_to_array, record_to_xml
 from rmarc.reader import MARCReader
 from rmarc.record import Record
+
 from test_pymarc import fixture_path
 
 

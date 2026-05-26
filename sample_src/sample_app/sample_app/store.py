@@ -6,8 +6,6 @@ Each collection is a single .mrc file on disk.
 
 from __future__ import annotations
 
-import os
-from io import BytesIO, StringIO
 from pathlib import Path
 
 from rmarc import (
@@ -151,10 +149,7 @@ class Collection:
         query_lower = query.lower()
         results = []
         for i, rec in enumerate(self._records):
-            if field_tag:
-                fields = rec.get_fields(field_tag)
-            else:
-                fields = rec.get_fields()
+            fields = rec.get_fields(field_tag) if field_tag else rec.get_fields()
             for f in fields:
                 text = f.value().lower() if not f.control_field else (f.data or "").lower()
                 if query_lower in text:
@@ -165,25 +160,25 @@ class Collection:
     # --- Export ---
 
     def export_json(self, path: str | Path) -> None:
-        out = open(path, "w", encoding="utf-8")
-        writer = JSONWriter(out)
-        for rec in self._records:
-            writer.write(rec)
-        writer.close()
+        with open(path, "w", encoding="utf-8") as out:
+            writer = JSONWriter(out)
+            for rec in self._records:
+                writer.write(rec)
+            writer.close()
 
     def export_xml(self, path: str | Path) -> None:
-        out = open(path, "wb")
-        writer = XMLWriter(out)
-        for rec in self._records:
-            writer.write(rec)
-        writer.close()
+        with open(path, "wb") as out:
+            writer = XMLWriter(out)
+            for rec in self._records:
+                writer.write(rec)
+            writer.close()
 
     def export_text(self, path: str | Path) -> None:
-        out = open(path, "w", encoding="utf-8")
-        writer = TextWriter(out)
-        for rec in self._records:
-            writer.write(rec)
-        writer.close()
+        with open(path, "w", encoding="utf-8") as out:
+            writer = TextWriter(out)
+            for rec in self._records:
+                writer.write(rec)
+            writer.close()
 
     def import_xml(self, path: str | Path) -> int:
         """Import records from a MARCXML file. Returns count of records imported."""
@@ -207,7 +202,7 @@ class Collection:
 
     # --- Reports ---
 
-    def report_summary(self) -> str:
+    def report_summary(self) -> str:  # noqa: C901
         """Return a summary report of the collection."""
         lines = [f"Collection: {self.path.name}", f"Total books: {len(self._records)}", ""]
 

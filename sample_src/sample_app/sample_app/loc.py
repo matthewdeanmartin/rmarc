@@ -32,9 +32,9 @@ def search_loc(query: str, max_results: int = 5) -> list[dict]:
     )
     url = f"{LOC_SEARCH_BASE}?{params}"
 
-    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    req = urllib.request.Request(url, headers={"Accept": "application/json"})  # noqa: S310
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310
             data = json.loads(resp.read().decode("utf-8"))
     except (urllib.error.URLError, urllib.error.HTTPError, OSError) as e:
         raise ConnectionError(f"Failed to search Library of Congress: {e}") from e
@@ -96,8 +96,8 @@ def build_sru_url(lccn: str, record_schema: str = "marcxml", maximum_records: in
 
 def _read_url(url: str, *, accept: str | None = None) -> bytes:
     headers = {"Accept": accept} if accept else {}
-    req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=15) as resp:
+    req = urllib.request.Request(url, headers=headers)  # noqa: S310
+    with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310
         return resp.read()
 
 

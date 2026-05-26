@@ -94,12 +94,12 @@ class TestSuite4(unittest.TestCase):
     def test_field_getitem_keyerror(self):
         f = Field(tag="245", subfields=[Subfield("a", "Title")])
         with self.assertRaises(KeyError):
-            val = f["b"]
+            _val = f["b"]
 
         # Control field doesn't have subfields
         f001 = Field(tag="001", data="123")
         with self.assertRaises(KeyError):
-            val = f001["a"]
+            _val = f001["a"]
 
     def test_field_setitem_keyerror(self):
         f = Field(tag="245", subfields=[Subfield("a", "Title")])
@@ -115,7 +115,7 @@ class TestSuite4(unittest.TestCase):
     def test_record_getitem_keyerror(self):
         r = Record()
         with self.assertRaises(KeyError):
-            val = r["999"]
+            _val = r["999"]
 
 
 if __name__ == "__main__":

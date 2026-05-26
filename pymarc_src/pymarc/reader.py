@@ -155,9 +155,7 @@ class MARCReader(Reader):
 
     def __next__(self):
         """Read and parse the next record."""
-        if self._current_exception and isinstance(
-            self._current_exception, FatalReaderError
-        ):
+        if self._current_exception and isinstance(self._current_exception, FatalReaderError):
             raise StopIteration
 
         self._current_chunk = None
@@ -242,9 +240,7 @@ class JSONReader(Reader):
             else:
                 self.file_handle = StringIO(marc_target)  # type: ignore
         if stream:
-            sys.stderr.write(
-                "Streaming not yet implemented, your data will be loaded into memory\n"
-            )
+            sys.stderr.write("Streaming not yet implemented, your data will be loaded into memory\n")
         self.records = json.load(self.file_handle, strict=False)
 
     def __iter__(self) -> Iterator[Record]:
@@ -327,9 +323,7 @@ class MARCMakerReader(Reader):
         if line[0] != "=":
             raise ValueError('Line should start with a "=".')
         if line[4:6] != "  ":
-            raise ValueError(
-                "Tag should be separated from the rest of the field by two spaces."
-            )
+            raise ValueError("Tag should be separated from the rest of the field by two spaces.")
         tag = line[1:4]
         data = line[6:]
         if tag == "LDR":
@@ -338,9 +332,7 @@ class MARCMakerReader(Reader):
             return Field(tag, data=data)
         indicators = Indicators(data[0], data[1])
         # the first $ is ignored to avoid an empty list item after the split
-        subfields: list[Subfield] = [
-            Subfield(subfield[:1], subfield[1:]) for subfield in data[3:].split("$")
-        ]
+        subfields: list[Subfield] = [Subfield(subfield[:1], subfield[1:]) for subfield in data[3:].split("$")]
         return Field(tag, indicators=indicators, subfields=subfields)
 
     def __iter__(self):

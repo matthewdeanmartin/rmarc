@@ -11,6 +11,7 @@ import unittest
 from io import BytesIO, StringIO
 
 import rmarc
+
 from test_pymarc import fixture_path
 
 
@@ -37,11 +38,9 @@ class JSONWriterTest(unittest.TestCase):
         )
 
     def test_writing_0_records(self):
-        expected = json.loads(
-            r"""
+        expected = json.loads(r"""
             []
-        """
-        )
+        """)
         file_handle = StringIO()
         try:
             writer = rmarc.JSONWriter(file_handle)
@@ -52,16 +51,14 @@ class JSONWriterTest(unittest.TestCase):
             file_handle.close()
 
     def test_writing_empty_record(self):
-        expected = json.loads(
-            r"""
+        expected = json.loads(r"""
             [
                 {
                     "leader" : "          22        4500",
                     "fields" : []
                 }
             ]
-        """
-        )
+        """)
         file_handle = StringIO()
         try:
             writer = rmarc.JSONWriter(file_handle)
@@ -74,8 +71,7 @@ class JSONWriterTest(unittest.TestCase):
             file_handle.close()
 
     def test_writing_1_record(self):
-        expected = json.loads(
-            r"""
+        expected = json.loads(r"""
             [
                 {
                     "leader" : "          22        4500",
@@ -102,8 +98,7 @@ class JSONWriterTest(unittest.TestCase):
                     ]
                 }
             ]
-        """
-        )
+        """)
         file_handle = StringIO()
         try:
             writer = rmarc.JSONWriter(file_handle)
@@ -133,8 +128,7 @@ class JSONWriterTest(unittest.TestCase):
             file_handle.close()
 
     def test_writing_3_records(self):
-        expected = json.loads(
-            r"""
+        expected = json.loads(r"""
             [
                 {
                     "leader" : "          22        4500",
@@ -203,8 +197,7 @@ class JSONWriterTest(unittest.TestCase):
                     ]
                 }
             ]
-        """
-        )
+        """)
         file_handle = StringIO()
         try:
             writer = rmarc.JSONWriter(file_handle)

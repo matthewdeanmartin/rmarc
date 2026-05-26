@@ -2,20 +2,12 @@
 
 from __future__ import annotations
 
-import csv
-import io
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
-from sample_app.goodreads import (
-    import_goodreads,
-    parse_goodreads_csv,
-    row_to_record,
-)
+from sample_app.goodreads import import_goodreads, parse_goodreads_csv, row_to_record
 from sample_app.store import Collection
-
 
 SAMPLE_CSV_HEADER = (
     "Book Id,Title,Author,Author l-f,Additional Authors,ISBN,ISBN13,"

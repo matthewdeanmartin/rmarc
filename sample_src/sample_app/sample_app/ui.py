@@ -10,7 +10,7 @@ from __future__ import annotations
 import threading
 import tkinter as tk
 from pathlib import Path
-from tkinter import filedialog, messagebox, simpledialog, ttk
+from tkinter import filedialog, messagebox, ttk
 
 from sample_app.goodreads import import_goodreads
 from sample_app.loc import fetch_marc_by_lccn, search_loc
@@ -240,10 +240,7 @@ class BookShelfApp(tk.Tk):
             return
 
         p = Path(path)
-        if p.suffix.lower() == ".xml":
-            count = self.collection.import_xml(p)
-        else:
-            count = self.collection.import_marc(p)
+        count = self.collection.import_xml(p) if p.suffix.lower() == ".xml" else self.collection.import_marc(p)
 
         self._refresh_table()
         self._set_status(f"Imported {count} records from {p.name}")
@@ -430,9 +427,7 @@ class LocSearchDialog(tk.Toplevel):
         self._results = results
         self._result_tree.delete(*self._result_tree.get_children())
         for i, r in enumerate(results):
-            self._result_tree.insert(
-                "", tk.END, iid=str(i), values=(r["title"], r["author"], r["date"], r["lccn"])
-            )
+            self._result_tree.insert("", tk.END, iid=str(i), values=(r["title"], r["author"], r["date"], r["lccn"]))
         self._status_var.set(f"Found {len(results)} result(s).")
 
     def _fetch_selected(self) -> None:

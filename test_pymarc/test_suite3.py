@@ -224,7 +224,7 @@ class TestSuite3(unittest.TestCase):
         writer.close(close_fh=False)
 
         xml_data = out.getvalue()
-        root = ET.fromstring(xml_data)
+        root = ET.fromstring(xml_data)  # noqa: S314
         # Should have one <record> under <collection>
         self.assertEqual(root.tag, "{http://www.loc.gov/MARC21/slim}collection")
         record_node = root.find("{http://www.loc.gov/MARC21/slim}record")

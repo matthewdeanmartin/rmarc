@@ -10,8 +10,8 @@ import json
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from rmarc import record_to_xml
+
 from sample_app.loc import (
     build_lccn_permalink_url,
     build_sru_url,

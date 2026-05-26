@@ -25,8 +25,7 @@ def _repo_root() -> Path:
 class ImportFallbackRegressionTest(unittest.TestCase):
     def test_package_import_succeeds_without_rust_extension(self) -> None:
         python_root = _repo_root() / "python"
-        script = textwrap.dedent(
-            f"""
+        script = textwrap.dedent(f"""
             import importlib.abc
             import sys
 
@@ -44,10 +43,9 @@ class ImportFallbackRegressionTest(unittest.TestCase):
             assert hasattr(rmarc, "Record")
             assert hasattr(rmarc, "MARCReader")
             print("imported")
-            """
-        )
+            """)
 
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603
             [sys.executable, "-c", script],
             capture_output=True,
             text=True,

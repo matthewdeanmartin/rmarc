@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-import os
-from pathlib import Path
-
 import pytest
+from rmarc import Field, Record, Subfield
 
-from rmarc import Field, Indicators, Record, Subfield
 from sample_app.store import Collection, make_record
 
 

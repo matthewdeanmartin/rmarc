@@ -169,7 +169,6 @@ def test_bench_xml_tostring_stdlib(benchmark, one_record):
     import xml.etree.ElementTree as ET
 
     import pytest
-
     from rmarc._compat import HAS_LXML
     from rmarc.marcxml import record_to_xml_node
 

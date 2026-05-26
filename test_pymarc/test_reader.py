@@ -10,6 +10,7 @@ from unittest import TestCase
 
 import rmarc
 from rmarc import Field, Record, exceptions
+
 from test_pymarc import fixture_path
 
 # TODO: these tests are overly complicated and should be converted over to using

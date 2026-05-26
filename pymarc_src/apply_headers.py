@@ -65,9 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     with open("LICENSE", "w") as licensef:
         licensef.write(bsd2)
-        licensef.write(
-            "Copyright for this project is held by its many contributors, including:\n\n"
-        )
+        licensef.write("Copyright for this project is held by its many contributors, including:\n\n")
         for contrib in contribs:
             licensef.write(f"{contrib}\n")
 
