@@ -204,3 +204,10 @@ self-described as experimental/alpha), has its own API conventions (`.title()` m
 building a new pipeline from scratch where raw throughput is the priority -- bulk ETL, large-scale cataloging analytics,
 or anything that touches millions of records -- mrrc is the fastest option available today. Just know that you are
 adopting a less mature library with a smaller surface area for XML and field-level manipulation.
+
+## Project Links
+
+- [GitHub](https://github.com/matthewdeanmartin/rmarc)
+- [PyPI](https://pypi.org/project/rmarc/)
+- [Documentation](https://rmarc.readthedocs.io/en/latest/)
+- [Bug Tracker](https://github.com/matthewdeanmartin/rmarc/issues)
