@@ -94,6 +94,7 @@ dev = [
     "mypy>=1.19.1",
     "pytest-benchmark>=5.2.3",
     "mrrc>=0.7.4",
+    "keepachangelog-manager-fork>=6.1.1,<7",
 ]
 
 [tool.uv]
@@ -244,3 +245,21 @@ typeCheckingMode = "basic"
 app_name = "rmarc"
 app_author = "matth"
 source_folder = "rmarc"
+
+# changelogmanager (keepachangelog-manager-fork) drives the release workflows.
+# See .github/workflows/create_draft_release.yml and release.yml.
+[tool.changelogmanager.versioning]
+scheme = "semver"
+
+[tool.changelogmanager.validation]
+enforce_preamble = true
+format = "auto"
+
+[tool.changelogmanager.defaults]
+error_format = "github"
+commit_schema = "keepachangelog"
+schema_version = "current"
+
+[[tool.changelogmanager.components]]
+name = "default"
+changelog = "CHANGELOG.md"
