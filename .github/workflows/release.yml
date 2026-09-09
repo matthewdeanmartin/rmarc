@@ -131,11 +131,22 @@ jobs:
             echo "::error::No sdist found in dist/"
             exit 1
           fi
-          if ! echo "$SDIST" | grep -q "${EXPECTED}"; then
-            echo "::error::sdist ${SDIST} does not contain expected version ${EXPECTED}"
-            exit 1
-          fi
-          echo "Verified: ${SDIST} matches version ${EXPECTED}"
+          # The release tag may be SemVer (5.4.0-rc.1) while the sdist filename
+          # is PEP 440 normalized (5.4.0rc1), so compare normalized forms.
+          python -m pip install --quiet packaging
+          cat > /tmp/verify_sdist.py <<'EOF'
+          import sys
+          from packaging.utils import parse_sdist_filename
+          from packaging.version import Version
+
+          sdist, expected = sys.argv[1], sys.argv[2]
+          _, found = parse_sdist_filename(sdist.rsplit("/", 1)[-1])
+          if found != Version(expected):
+              print(f"::error::sdist {sdist} is version {found}, expected {Version(expected)}")
+              sys.exit(1)
+          print(f"Verified: {sdist} matches version {expected} (normalized {found})")
+          EOF
+          python /tmp/verify_sdist.py "$SDIST" "$EXPECTED"
 
       - name: Upload sdist artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
