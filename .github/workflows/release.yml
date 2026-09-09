@@ -181,8 +181,9 @@ jobs:
           path: dist/
 
       # Fail before uploading: the publish action's bundled twine rejects
-      # metadata it cannot parse (e.g. Metadata-Version 2.5 from hatchling),
+      # metadata it cannot parse (e.g. a newer Metadata-Version than it knows),
       # which otherwise only surfaces after the release is already tagged.
+      # Covers every wheel + the sdist downloaded above, not just one.
       - name: Validate distribution metadata
         run: uv run --with 'twine>=7' twine check --strict dist/*
       - name: Publish to PyPI
