@@ -125,11 +125,11 @@ bench-contest:
 
 ## Run all benchmarks.
 bench-all:
-	uv run pytest bench/ --benchmark-only -v
+	uv run --group benchmark pytest bench/ --benchmark-only -v
 
 ## Run 3-way performance deathmatch: rmarc vs pymarc vs mrrc.
 perf:
-	uv run pytest bench/bench_deathmatch.py --benchmark-only --benchmark-group-by=group -v
+	uv run --group benchmark pytest bench/bench_deathmatch.py --benchmark-only --benchmark-group-by=group -v
 
 # ── Housekeeping ──────────────────────────────────────────────────────────────
 
