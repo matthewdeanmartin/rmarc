@@ -70,7 +70,9 @@ class MARC8ToUnicode:
     basic_latin = 0x42
     ansel = 0x45
 
-    def __init__(self, G0: int = basic_latin, G1: int = ansel, quiet: bool = False) -> None:
+    def __init__(
+        self, G0: int = basic_latin, G1: int = ansel, quiet: bool = False
+    ) -> None:
         """Init."""
         self.g0 = G0
         self.g0_set = {b"(", b",", b"$"}
@@ -92,7 +94,10 @@ class MARC8ToUnicode:
                 next_byte = marc8_string[pos + 1 : pos + 2]
                 if next_byte in self.g0_set:
                     if len(marc8_string) >= pos + 3:
-                        if marc8_string[pos + 2 : pos + 3] == b"," and next_byte == b"$":
+                        if (
+                            marc8_string[pos + 2 : pos + 3] == b","
+                            and next_byte == b"$"
+                        ):
                             pos += 1
                         self.g0 = ord(marc8_string[pos + 2 : pos + 3])
                         pos = pos + 3
@@ -164,7 +169,9 @@ class MARC8ToUnicode:
                 except KeyError:
                     pass
                 if not self.quiet:
-                    sys.stderr.write(f"Unable to parse character 0x{code_point:x} in g0={self.g0} g1={self.g1}\n")
+                    sys.stderr.write(
+                        f"Unable to parse character 0x{code_point:x} in g0={self.g0} g1={self.g1}\n"
+                    )
                 uni = ord(" ")
                 cflag = False
 

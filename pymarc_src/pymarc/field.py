@@ -88,7 +88,11 @@ class Field:
             self.subfields = subfields or []
             if not indicators:
                 self._indicators = Indicators(" ", " ")
-            elif indicators and isinstance(indicators, list | tuple) and len(indicators) == 2:
+            elif (
+                indicators
+                and isinstance(indicators, list | tuple)
+                and len(indicators) == 2
+            ):
                 self._indicators = Indicators(*indicators)
             else:
                 # Fall back to setting the indicators through the setter. This will
@@ -393,7 +397,11 @@ class Field:
         for subfield in self.subfields:
             _subf.append(f"{SUBFIELD_INDICATOR}{subfield.code}{subfield.value}")
 
-        return f"{self.indicator1}{self.indicator2}{''.join(_subf)}{END_OF_FIELD}".encode(encoding)
+        return (
+            f"{self.indicator1}{self.indicator2}{''.join(_subf)}{END_OF_FIELD}".encode(
+                encoding
+            )
+        )
 
     # alias for backwards compatibility
     as_marc21 = as_marc
@@ -480,7 +488,11 @@ class RawField(Field):
             return self.data + END_OF_FIELD.encode("ascii")  # type: ignore
         marc: bytes = self.indicator1.encode("ascii") + self.indicator2.encode("ascii")
         for subfield in self.subfields:
-            marc += SUBFIELD_INDICATOR.encode("ascii") + subfield.code.encode("ascii") + subfield.value  # type: ignore
+            marc += (
+                SUBFIELD_INDICATOR.encode("ascii")
+                + subfield.code.encode("ascii")
+                + subfield.value
+            )  # type: ignore
         return marc + END_OF_FIELD.encode("ascii")
 
 
@@ -489,5 +501,8 @@ def map_marc8_field(f: Field) -> Field:
     if f.control_field:
         f.data = marc8_to_unicode(f.data)
     else:
-        f.subfields = [Subfield(subfield.code, marc8_to_unicode(subfield.value)) for subfield in f.subfields]
+        f.subfields = [
+            Subfield(subfield.code, marc8_to_unicode(subfield.value))
+            for subfield in f.subfields
+        ]
     return f
