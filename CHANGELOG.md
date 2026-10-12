@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Improve internal build and CI configuration
-- Test matrix now covers Python 3.10, 3.13, 3.14 and 3.15
+- Requires Python 3.11 or newer; Python 3.10 is no longer supported.
 - CI installs only maturin and pytest so prerelease Pythons are not blocked by
   dev-only tooling without wheels
 
