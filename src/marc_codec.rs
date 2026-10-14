@@ -23,6 +23,21 @@ enum DecodeMode {
     Marc8,
 }
 
+struct ObjectTypes<'a, 'py> {
+    field: &'a Bound<'py, PyAny>,
+    new_field: Bound<'py, PyAny>,
+    subfield: &'a Bound<'py, PyAny>,
+    indicators: &'a Bound<'py, PyAny>,
+}
+
+struct DecodeOptions<'a> {
+    to_unicode: bool,
+    force_utf8: bool,
+    encoding: &'a str,
+    utf8_handling: &'a str,
+    quiet: bool,
+}
+
 /// Decode a raw MARC21 record into structured components.
 ///
 /// Returns: (leader_str, [(tag, field_data), ...])
@@ -43,12 +58,79 @@ pub fn decode_marc_raw<'py>(
     utf8_handling: &str,
     quiet: bool,
 ) -> PyResult<(Bound<'py, PyString>, Bound<'py, PyList>)> {
+    decode_marc_impl(
+        py,
+        data,
+        DecodeOptions {
+            to_unicode,
+            force_utf8,
+            encoding,
+            utf8_handling,
+            quiet,
+        },
+        None,
+    )
+}
+
+/// Build the actual Python objects once, without an intermediate tuple tree.
+/// Types come from the caller; no process-global Python class cache is needed.
+#[pyfunction]
+#[pyo3(signature = (data, field_type, subfield_type, indicators_type, to_unicode=true, force_utf8=false, encoding="iso8859-1", utf8_handling="strict", quiet=false))]
+#[allow(clippy::too_many_arguments)]
+pub fn decode_marc_fields<'py>(
+    py: Python<'py>,
+    data: &[u8],
+    field_type: Bound<'py, PyAny>,
+    subfield_type: Bound<'py, PyAny>,
+    indicators_type: Bound<'py, PyAny>,
+    to_unicode: bool,
+    force_utf8: bool,
+    encoding: &str,
+    utf8_handling: &str,
+    quiet: bool,
+) -> PyResult<(Bound<'py, PyString>, Bound<'py, PyList>)> {
+    let types = ObjectTypes {
+        new_field: field_type.getattr(pyo3::intern!(py, "__new__"))?,
+        field: &field_type,
+        subfield: &subfield_type,
+        indicators: &indicators_type,
+    };
+    decode_marc_impl(
+        py,
+        data,
+        DecodeOptions {
+            to_unicode,
+            force_utf8,
+            encoding,
+            utf8_handling,
+            quiet,
+        },
+        Some(&types),
+    )
+}
+
+fn decode_marc_impl<'py>(
+    py: Python<'py>,
+    data: &[u8],
+    options: DecodeOptions<'_>,
+    types: Option<&ObjectTypes<'_, 'py>>,
+) -> PyResult<(Bound<'py, PyString>, Bound<'py, PyList>)> {
+    let DecodeOptions {
+        to_unicode,
+        force_utf8,
+        encoding,
+        utf8_handling,
+        quiet,
+    } = options;
     if data.len() < LEADER_LEN {
         return Err(PyValueError::new_err("Record too short for leader"));
     }
 
     // Extract leader as ASCII string
     let leader_bytes = &data[..LEADER_LEN];
+    if !leader_bytes.is_ascii() {
+        return Err(PyValueError::new_err("Leader is not valid ASCII"));
+    }
     let leader_str = std::str::from_utf8(leader_bytes)
         .map_err(|_| PyValueError::new_err("Leader is not valid ASCII"))?;
 
@@ -61,7 +143,7 @@ pub fn decode_marc_raw<'py>(
     // so Python can use its codec system
     let decode_mode = if !to_unicode {
         DecodeMode::Raw
-    } else if is_utf8 {
+    } else if effective_encoding == "utf-8" {
         DecodeMode::Utf8
     } else if effective_encoding == "iso8859-1" {
         DecodeMode::Marc8
@@ -69,6 +151,9 @@ pub fn decode_marc_raw<'py>(
         // Unknown encoding (cp1251, etc.) — return raw bytes for Python to decode
         DecodeMode::Raw
     };
+    // Explicit file_encoding without a leader/force flag uses strict decoding
+    // in pymarc, even when utf8_handling requests something else.
+    let subfield_errors = if is_utf8 { utf8_handling } else { "strict" };
 
     // Parse base address from leader positions 12-16
     let base_address_str = std::str::from_utf8(&data[12..17])
@@ -80,7 +165,7 @@ pub fn decode_marc_raw<'py>(
     if base_address == 0 {
         return Err(PyValueError::new_err("BaseAddressNotFound"));
     }
-    if base_address > data.len() {
+    if base_address >= data.len() {
         return Err(PyValueError::new_err("BaseAddressInvalid"));
     }
 
@@ -147,27 +232,45 @@ pub fn decode_marc_raw<'py>(
         if is_control {
             let value: Bound<'_, PyAny> = match &decode_mode {
                 DecodeMode::Raw => PyBytes::new(py, field_data).into_any(),
-                DecodeMode::Utf8 => {
-                    let s = decode_utf8(field_data, utf8_handling)
-                        .map_err(|msg| PyValueError::new_err(format!("InvalidUTF8: {msg}")))?;
-                    PyString::new(py, &s).into_any()
-                }
+                DecodeMode::Utf8 => decode_utf8(py, field_data, "strict")?.into_any(),
                 DecodeMode::Marc8 => {
-                    let s = marc8::marc8_to_unicode_rs(field_data, quiet);
-                    PyString::new(py, &s).into_any()
+                    // pymarc decodes legacy control fields as Latin-1, not MARC-8.
+                    if field_data.is_ascii() {
+                        PyString::new(py, std::str::from_utf8(field_data).expect("ASCII"))
+                            .into_any()
+                    } else {
+                        PyBytes::new(py, field_data)
+                            .call_method1(pyo3::intern!(py, "decode"), ("latin-1",))?
+                    }
                 }
             };
+            if let Some(types) = types {
+                let field = types.new_field.call1((types.field,))?;
+                field.setattr(pyo3::intern!(py, "tag"), tag_py)?;
+                field.setattr(pyo3::intern!(py, "data"), value)?;
+                field.setattr(pyo3::intern!(py, "control_field"), true)?;
+                field.setattr(pyo3::intern!(py, "_indicators"), py.None())?;
+                field.setattr(pyo3::intern!(py, "subfields"), PyList::empty(py))?;
+                fields_list.append(field)?;
+                continue;
+            }
             let control_tuple =
                 PyTuple::new(py, &[PyString::intern(py, "control").into_any(), value])?;
             let field_tuple = PyTuple::new(py, &[tag_py.into_any(), control_tuple.into_any()])?;
             fields_list.append(field_tuple)?;
         } else {
-            let subfield_parts = split_on_indicator(field_data);
-            let indicators = &subfield_parts[0];
+            let mut subfield_parts = split_on_indicator(field_data);
+            let indicators = subfield_parts.next().expect("split always yields a part");
+            if types.is_some() && (indicators.len() != 2 || !indicators.is_ascii()) {
+                // Let the Python path reproduce warnings and ASCII error details.
+                return Err(PyValueError::new_err(
+                    "Python fallback: malformed indicators",
+                ));
+            }
             let (ind1, ind2) = parse_indicators(indicators);
 
             let subfields_list = PyList::empty(py);
-            for part in &subfield_parts[1..] {
+            for part in subfield_parts {
                 if part.is_empty() {
                     continue;
                 }
@@ -179,20 +282,29 @@ pub fn decode_marc_raw<'py>(
                     let code_py = PyString::intern(py, code_str);
                     let value_py: Bound<'_, PyAny> = match &decode_mode {
                         DecodeMode::Raw => PyBytes::new(py, value).into_any(),
-                        DecodeMode::Utf8 => {
-                            let s = decode_utf8(value, utf8_handling).map_err(|msg| {
-                                PyValueError::new_err(format!("InvalidUTF8: {msg}"))
-                            })?;
-                            PyString::new(py, &s).into_any()
-                        }
+                        DecodeMode::Utf8 => decode_utf8(py, value, subfield_errors)?.into_any(),
                         DecodeMode::Marc8 => {
-                            let s = marc8::marc8_to_unicode_rs(value, quiet);
+                            if value.last() == Some(&0x1b) {
+                                return Err(PyValueError::new_err(
+                                    "Python fallback: trailing MARC-8 escape",
+                                ));
+                            }
+                            let s = marc8::marc8_to_unicode(value, quiet);
                             PyString::new(py, &s).into_any()
                         }
                     };
+                    if let Some(types) = types {
+                        subfields_list.append(types.subfield.call1((code_py, value_py))?)?;
+                        continue;
+                    }
                     let sub_tuple = PyTuple::new(py, &[code_py.into_any(), value_py])?;
                     subfields_list.append(sub_tuple)?;
                 } else {
+                    if types.is_some() {
+                        return Err(PyValueError::new_err(
+                            "Python fallback: non-ASCII subfield code",
+                        ));
+                    }
                     // Non-ASCII code - return raw bytes for Python to handle
                     let sub_tuple = PyTuple::new(
                         py,
@@ -203,6 +315,21 @@ pub fn decode_marc_raw<'py>(
                     )?;
                     subfields_list.append(sub_tuple)?;
                 }
+            }
+
+            if let Some(types) = types {
+                let field = types.new_field.call1((types.field,))?;
+                field.setattr(pyo3::intern!(py, "tag"), tag_py)?;
+                field.setattr(pyo3::intern!(py, "data"), py.None())?;
+                field.setattr(pyo3::intern!(py, "control_field"), false)?;
+                let indicators = types.indicators.call1((
+                    PyString::new(py, std::str::from_utf8(&[ind1]).expect("ASCII indicator")),
+                    PyString::new(py, std::str::from_utf8(&[ind2]).expect("ASCII indicator")),
+                ))?;
+                field.setattr(pyo3::intern!(py, "_indicators"), indicators)?;
+                field.setattr(pyo3::intern!(py, "subfields"), subfields_list)?;
+                fields_list.append(field)?;
+                continue;
             }
 
             let data_tuple = PyTuple::new(
@@ -222,39 +349,27 @@ pub fn decode_marc_raw<'py>(
     Ok((PyString::new(py, leader_str), fields_list))
 }
 
-/// Decode bytes as UTF-8 with the given error handling.
-///
-/// In "strict" mode, returns `Err` on invalid UTF-8 (matching Python's
-/// `bytes.decode("utf-8", "strict")` which raises `UnicodeDecodeError`).
-fn decode_utf8(data: &[u8], handling: &str) -> Result<String, String> {
-    match handling {
-        "strict" => String::from_utf8(data.to_vec()).map_err(|e| {
-            let pos = e.utf8_error().valid_up_to();
-            format!(
-                "'utf-8' codec can't decode byte {:#04x} in position {}: invalid start byte",
-                data[pos], pos
-            )
-        }),
-        "ignore" => Ok(String::from_utf8_lossy(data)
-            .chars()
-            .filter(|c| *c != '\u{FFFD}')
-            .collect()),
-        _ => Ok(String::from_utf8_lossy(data).into_owned()), // "replace" and others
+/// Borrow valid UTF-8; delegate invalid bytes to Python's codec registry.
+fn decode_utf8<'py>(
+    py: Python<'py>,
+    data: &[u8],
+    handling: &str,
+) -> PyResult<Bound<'py, PyString>> {
+    if let Ok(text) = std::str::from_utf8(data) {
+        // Borrow valid UTF-8 directly into Python, avoiding Vec and String copies.
+        return Ok(PyString::new(py, text));
     }
+    // Python owns error-handler semantics (including registered custom handlers
+    // and surrogateescape, which cannot be represented by Rust's String).
+    PyBytes::new(py, data)
+        .call_method1(pyo3::intern!(py, "decode"), ("utf-8", handling))?
+        .cast_into::<PyString>()
+        .map_err(Into::into)
 }
 
 /// Split byte slice on SUBFIELD_INDICATOR (0x1F)
-fn split_on_indicator(data: &[u8]) -> Vec<&[u8]> {
-    let mut parts = Vec::new();
-    let mut start = 0;
-    for (i, &byte) in data.iter().enumerate() {
-        if byte == SUBFIELD_INDICATOR {
-            parts.push(&data[start..i]);
-            start = i + 1;
-        }
-    }
-    parts.push(&data[start..]);
-    parts
+fn split_on_indicator(data: &[u8]) -> impl Iterator<Item = &[u8]> {
+    data.split(|byte| *byte == SUBFIELD_INDICATOR)
 }
 
 /// Parse indicator bytes, handling missing/malformed indicators
@@ -264,15 +379,6 @@ fn parse_indicators(indicators: &[u8]) -> (u8, u8) {
         1 => (indicators[0], b' '),
         _ => (indicators[0], indicators[1]),
     }
-}
-
-/// Parse a MARC-8 encoded field value string, handling escape sequences
-/// and returning a decoded Unicode string.
-///
-/// Public for testing; used by `decode_marc_raw` internally.
-#[cfg(test)]
-pub(crate) fn decode_utf8_pub(data: &[u8], handling: &str) -> Result<String, String> {
-    decode_utf8(data, handling)
 }
 
 #[cfg(test)]
@@ -410,42 +516,6 @@ mod tests {
     #[test]
     fn parse_indicators_extra_bytes_ignored() {
         assert_eq!(parse_indicators_pub(b"12extra"), (b'1', b'2'));
-    }
-
-    // ── decode_utf8 ───────────────────────────────────────────────────────────
-
-    #[test]
-    fn decode_utf8_valid_ascii() {
-        assert_eq!(decode_utf8_pub(b"hello", "strict").unwrap(), "hello");
-    }
-
-    #[test]
-    fn decode_utf8_valid_multibyte() {
-        // U+00E9 LATIN SMALL LETTER E WITH ACUTE (é) in UTF-8 is 0xC3 0xA9
-        assert_eq!(decode_utf8_pub(b"\xc3\xa9", "strict").unwrap(), "\u{00e9}");
-    }
-
-    #[test]
-    fn decode_utf8_invalid_strict_returns_error() {
-        // Invalid UTF-8 byte 0xFF — strict must return Err (matching Python UnicodeDecodeError)
-        let result = decode_utf8_pub(b"\xff", "strict");
-        assert!(result.is_err());
-        let msg = result.unwrap_err();
-        assert!(msg.contains("can't decode byte"));
-        assert!(msg.contains("0xff"));
-    }
-
-    #[test]
-    fn decode_utf8_ignore_strips_replacement() {
-        let result = decode_utf8_pub(b"\xff", "ignore").unwrap();
-        assert!(!result.contains('\u{FFFD}'));
-        assert!(result.is_empty());
-    }
-
-    #[test]
-    fn decode_utf8_replace_keeps_replacement() {
-        let result = decode_utf8_pub(b"\xff", "replace").unwrap();
-        assert!(result.contains('\u{FFFD}'));
     }
 
     // ── MARC record structure constants ───────────────────────────────────────

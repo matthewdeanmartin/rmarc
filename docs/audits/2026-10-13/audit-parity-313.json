@@ -1,0 +1,26 @@
+{
+  "test_pymarc/test.dat": {
+    "rmarc": {
+      "records": 10,
+      "title_mismatches": 0,
+      "binary_mismatches": 0
+    },
+    "mrrc": {
+      "records": 10,
+      "title_mismatches": 3,
+      "binary_mismatches": 10
+    }
+  },
+  "data/Computer.Files.2019.part01.utf8": {
+    "rmarc": {
+      "records": 10725,
+      "title_mismatches": 0,
+      "binary_mismatches": 0
+    },
+    "mrrc": {
+      "records": 10725,
+      "title_mismatches": 3436,
+      "binary_mismatches": 3913
+    }
+  }
+}

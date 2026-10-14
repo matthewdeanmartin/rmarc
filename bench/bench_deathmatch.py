@@ -9,6 +9,9 @@ Run with:
 
 from __future__ import annotations
 
+import json
+from io import BytesIO
+
 import pytest
 
 # ---------------------------------------------------------------------------
@@ -109,20 +112,15 @@ def test_deathmatch_title_access(benchmark, test_dat, name, loader):
                 titles.append(rec.title)
         return titles
 
-    # mrrc uses .title() method, pymarc/rmarc use .title property
-    if name == "mrrc":
-
-        def read_and_title():  # noqa: F811
-            titles = []
-            for rec in marc.MARCReader(test_dat):
-                if rec:
-                    titles.append(rec.title)
-            return titles
+    reference = pytest.importorskip("pymarc")
+    expected = [record.title for record in reference.MARCReader(test_dat)]
+    if read_and_title() != expected:
+        pytest.skip(f"{name} title results differ from pymarc; not an equivalent-output benchmark")
 
     benchmark.group = "deathmatch-title-access"
     benchmark.name = f"{name}"
     result = benchmark(read_and_title)
-    assert len(result) == 10
+    assert result == expected
 
 
 # ---------------------------------------------------------------------------
@@ -144,21 +142,17 @@ def test_deathmatch_field_access(benchmark, test_dat, name, loader):
     marc = loader()
     record = _load_one_record(marc, test_dat)
 
-    if name == "mrrc":
+    def access():
+        return [field.value() for field in record.get_fields()]
 
-        def access():
-            for field in record.get_fields():
-                _ = str(field)
-
-    else:
-
-        def access():
-            for field in record.get_fields():
-                _ = field.value()
+    reference = _load_one_record(pytest.importorskip("pymarc"), test_dat)
+    expected = [field.value() for field in reference.get_fields()]
+    if access() != expected:
+        pytest.skip(f"{name} field values differ from pymarc")
 
     benchmark.group = "deathmatch-field-access"
     benchmark.name = f"{name}"
-    benchmark(access)
+    assert benchmark(access) == expected
 
 
 # ---------------------------------------------------------------------------
@@ -191,8 +185,11 @@ def test_deathmatch_json_serialize(benchmark, test_dat, name, loader):
 
     benchmark.group = "deathmatch-json"
     benchmark.name = f"{name}"
+    expected = [record.as_dict() for record in pytest.importorskip("pymarc").MARCReader(test_dat)]
+    if [json.loads(value) for value in to_json()] != expected:
+        pytest.skip(f"{name} JSON results differ from pymarc")
     result = benchmark(to_json)
-    assert len(result) == 10
+    assert [json.loads(value) for value in result] == expected
 
 
 # ---------------------------------------------------------------------------
@@ -205,10 +202,11 @@ def test_deathmatch_xml_parse(benchmark, name, loader):
     """Parse MARCXML batch to record array."""
     marc = loader()
     xml_path = "test_pymarc/batch.xml"
+    with open(xml_path, "rb") as file:
+        xml_bytes = file.read()
 
     if name == "mrrc":
-        with open(xml_path) as f:
-            xml_str = f.read()
+        xml_str = xml_bytes.decode("utf-8")
 
         def parse():
             return marc.xml_to_records(xml_str)
@@ -216,9 +214,12 @@ def test_deathmatch_xml_parse(benchmark, name, loader):
     else:
 
         def parse():
-            return marc.parse_xml_to_array(xml_path)
+            return marc.parse_xml_to_array(BytesIO(xml_bytes))
 
     benchmark.group = "deathmatch-xml-parse"
     benchmark.name = f"{name}"
+    expected = [r.as_marc() for r in pytest.importorskip("pymarc").parse_xml_to_array(BytesIO(xml_bytes))]
+    if [r.as_marc() for r in parse()] != expected:
+        pytest.skip(f"{name} XML results differ from pymarc")
     result = benchmark(parse)
-    assert len(result) > 0
+    assert [r.as_marc() for r in result] == expected

@@ -1,0 +1,2325 @@
+{
+  "python": "3.15.0 (main, Oct  9 2026, 15:33:25) [MSC v.1951 64 bit (AMD64)]",
+  "versions": {
+    "pymarc": "5.4.0",
+    "rmarc": "5.3.1"
+  },
+  "probes": {
+    "pymarc": {
+      "fields_is_list": {
+        "value": true
+      },
+      "selector_order": {
+        "value": [
+          "650",
+          "245",
+          "650"
+        ]
+      },
+      "duplicate_selectors": {
+        "value": [
+          "650",
+          "650"
+        ]
+      },
+      "fields_list_identity": {
+        "value": true
+      },
+      "missing_subfield": {
+        "error": "KeyError"
+      },
+      "append_subfield": {
+        "value": "title subtitle"
+      },
+      "assign_subfield": {
+        "value": "changed"
+      },
+      "append_field": {
+        "value": 1
+      },
+      "tag_None": {
+        "value": "None"
+      },
+      "tag_' 1'": {
+        "value": " 1"
+      },
+      "tag_'+01'": {
+        "value": "+01"
+      },
+      "tag_'001'": {
+        "value": "001"
+      },
+      "tag_'\u0661\u0662\u0663'": {
+        "value": "\u0661\u0662\u0663"
+      }
+    },
+    "rmarc": {
+      "fields_is_list": {
+        "value": true
+      },
+      "selector_order": {
+        "value": [
+          "650",
+          "245",
+          "650"
+        ]
+      },
+      "duplicate_selectors": {
+        "value": [
+          "650",
+          "650"
+        ]
+      },
+      "fields_list_identity": {
+        "value": true
+      },
+      "missing_subfield": {
+        "error": "KeyError"
+      },
+      "append_subfield": {
+        "value": "title subtitle"
+      },
+      "assign_subfield": {
+        "value": "changed"
+      },
+      "append_field": {
+        "value": 1
+      },
+      "tag_None": {
+        "error": "TypeError"
+      },
+      "tag_' 1'": {
+        "value": "001"
+      },
+      "tag_'+01'": {
+        "value": "001"
+      },
+      "tag_'001'": {
+        "value": "001"
+      },
+      "tag_'\u0661\u0662\u0663'": {
+        "value": "123"
+      }
+    }
+  },
+  "fixtures": [
+    {
+      "file": "1251.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 4,
+              "end": 5,
+              "object_hex": "33382e31ff3733",
+              "reason": "invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "c0eded2c20cbfee4ece8ebe020d4e5e4eef0eee2ede0",
+              "reason": "invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 5,
+              "end": 6,
+              "object_hex": "36352e3331ff3733",
+              "reason": "invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 5,
+              "end": 6,
+              "object_hex": "36352e3331ff3733",
+              "reason": "invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 4,
+              "end": 5,
+              "object_hex": "38342834d8e2e5292d3434",
+              "reason": "invalid continuation byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "caf0e0f1edeef9e5f7e5edeaee2c20c2ebe0e4e8ece8f020c8e2e0edeee2e8f7",
+              "reason": "invalid continuation byte"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30303837356e616d202032323030323533206920343530303030313030313530303030303030333030303730303031353030353030313530303032323030383030333930303033373031353030333630303037363031373030323230303131323032303030313530303133343034303030323630303134393034313030303830303137353038303030323730303138333038343030323030303231303130303030333130303233303234353031373830303236313236303030343230303433393330303030323430303438313530343030323230303530353635303030343930303532373835323030313630303537363932303030323930303539321e727530332d303030303031524b501e52552d524b501e32303135313131363134313335361e31353131313673323030352020202072752061202020202020202020202020202020207275731e20201f6133303533331f6230352f31391f394b6e697a686e616a61206c65746f7069731e20201f6130352d32323133371f6252754d6f524b501e20201f61353933303933333432311e20201f6152754d6f524b501f627275731f6352754d6f524b501e30201f617275731e20201f613632342e30313a3533322e35283037352e38291f32341e20201f6133382e31ff37331f32727562626b6d1e31201f61c8ebfce8ede02c20d2e0f2fcffede020cde8eaeeebe0e5e2ede01e31301f61cef1edeee2fb20e3e8e4f0e0e2ebe8f7e5f1eaeee3ee20f0e0f1f7e5f2e020e8ede6e5ede5f0edfbf520f1e5f2e5e91f625bf3f7e5e12e20efeef1eee1e8e520e4ebff20e2f3e7eee220efee20f1efe5f6e8e0ebfcedeef1f2ffec203cd2e5efebeee3e0e7eef1ede0e1e6e5ede8e520e820e2e5edf2e8ebfff6e8ff3e2c203cc2eee4eef1ede0e1e6e5ede8e520e820e2eee4eeeef2e2e5e4e5ede8e53e5d1f63d22e20cd2e20c8ebfce8ede01e20201f61cc2e1f62c8e7e42de2ee20c0f1f1eef62e20f1f2f0eee8f22e20e2f3e7eee21f63323030351e20201f6131383620f12e1f62e8eb2e1f63323120f1ec2e1e20201f61c1e8e1ebe8eee3f02e3a20f12e203138331e20371f61d2f0f3e1eeeff0eee2eee4fb1f78c3e8e4f0e0e2ebe8f7e5f1eae8e920f0e0f1f7e5f21f3252754d6f524b501e20201f69c834361f6152552d524b501e20201f61352d39333039332d3334322d311f393130303020fdeae72e1e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xff in position 4: invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30303832326e616d202032323030323737206920343530303030313030313530303030303030333030303730303031353030353030313530303032323030383030333930303033373031353030333630303037363031373030323230303131323032303030313530303133343034303030323630303134393034313030303830303137353038303030313730303138333038343030313730303230303130303030323730303231373234353030353530303234343236303030343330303239393330303030313930303334323434303030333230303336313530343030323630303339333635303030333530303431393635303030333730303435343835323030313630303439313932303030333730303530371e727530332d303030303032524b501e52552d524b501e32303135313131363134313335361e31353131313673323030352020202072752020202020202020202020202020202020207275731e20201f6133313530361f6230352f32301f394b6e697a686e616a61206c65746f7069731e20201f6130352d32323539331f6252754d6f524b501e20201f61353934373233343932301e20201f6152754d6f524b501f627275731f6352754d6f524b501e30201f617275731e20201f613135392e3932322e371f32341e20201f6138382e341f32727562626b6d1e31201f61c0eded2c20cbfee4ece8ebe020d4e5e4eef0eee2ede01e31301f61cff1e8f5eeebeee3e8f7e5f1eae8e920f2f0e5ede8ede320f120efeee4f0eef1f2eae0ece81f63cbfee4ece8ebe020c0eded1e20201f61d1cfe12e205be820e4f02e5d1f62cfe8f2e5f01f62cfe8f2e5f020cff0e8edf21f63323030351e20201f6132373020f12e1f63323120f1ec2e1e20301f61d1e5f0e8ff203cddf4f4e5eaf2e8e2edfbe920f2f0e5ede8ede33e1e20201f61c1e8e1ebe8eee3f02e3a20f12e203236392d3237301e20371f61cfeee4f0eef1f2eae81f78cff1e8f5eeebeee3e8ff1f3252754d6f524b501e20371f61cff1e8f5eeebeee3e8f7e5f1eae8e920f2f0e5ede8ede31f3252754d6f524b501e20201f69c036381f6152552d524b501e20201f61352d39343732332d3439322d301f62e220efe5f02e1f393335303020fdeae72e1e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xc0 in position 0: invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30303938386e616d202032323030323839206920343530303030313030313530303030303030333030303730303031353030353030313530303032323030383030333930303033373031353030333630303037363031373030323230303131323032303030313530303133343034303030323630303134393034313030303830303137353038303030323530303138333038343030323130303230383130303030323930303232393234353031353530303235383235303030323730303431333236303030343230303434303330303030323630303438323530343030323230303530383534373030343830303533303635303030333430303537383635303030343130303631323835323030313630303635333932303030323930303636391e727530332d303030303033524b501e52552d524b501e32303135313131363134313335361e31353131313673323030352020202072752020202020202020202020202020202020207275731e20201f6133353939391f6230352f32321f394b6e697a686e616a61206c65746f7069731e20201f6130352d32393338321f6252754d6f524b501e20201f61353933303933333436341e20201f6152754d6f524b501f627275731f6352754d6f524b501e30201f617275731e20201f6136393a3635382e303132283037352e38291f32341e20201f6136352e3331ff37331f32727562626b6d1e31201f61cde0ede0f1eee22c20cfe0e2e5eb20d1f3f0e5edeee2e8f71e31301f61d3eff0e0e2ebe5ede8e520eff0eee5eaf2edee2df1f2f0eee8f2e5ebfcedfbec20eff0eef6e5f1f1eeec1f62f2e5eef0e8ff2c20eff0e0e2e8ebe02c20eff0e0eaf2e8eae0203a205bf3f7e5e12e20efeef1eee1e8e520e4ebff20e2f3e7eee220efee20e0f0f5e8f2e5eaf2f3f02e2df1f2f0eee8f22e20f1efe5f6e8e0ebfcedeef1f2ffec5d1f63cf2e20d12e20cde0ede0f1eee21e20201f615bcfe5f0e5f0e0e12e20e820e4eeef2e20e8e7e42e5d1e20201f61cc2e1f62c8e7e42de2ee20c0f1f1eef62e20f1f2f0eee8f22e20e2f3e7eee21f63323030351e20201f6131353920f12e1f62f1f5e5ecfb1f63323220f1ec2e1e20201f61c1e8e1ebe8eee3f02e3a20f12e203135331e20201f61c7e0e3eb2e20eff0e5e4fbe4f3f9e5e3ee20e8e7e42e3a20d3eff0e0e2ebe5ede8e520eff0eee5eaf2eeec1e20371f61d3eff0e0e2ebe5ede8e520eff0eee5eaf2e0ece81f3252754d6f524b501e20371f61d1f2f0eee8f2e5ebfcedeee520eff0eee5eaf2e8f0eee2e0ede8e51f3252754d6f524b501e20201f69cd32351f6152552d524b501e20201f61352d39333039332d3334362d341f393130303020fdeae72e1e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xff in position 5: invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30303830336e616d202032323030323533206920343530303030313030313530303030303030333030303730303031353030353030313530303032323030383030333930303033373031353030333630303037363031373030323230303131323032303030313530303133343034303030323630303134393034313030303830303137353038303030323130303138333038343030323130303230343130303030333330303232353234353031303630303235383236303030343230303336343330303030323630303430363530343030323230303433323635303030343930303435343835323030313730303530333932303030323930303532301e727530332d303030303034524b501e52552d524b501e32303135313131363134313335361e31353131313673323030342020202072752020202020202020202020202020202020207275731e20201f6133363030301f6230352f32321f394b6e697a686e616a61206c65746f7069731e20201f6130352d32393338331f6252754d6f524b501e20201f61353933303933333038311e20201f6152754d6f524b501f627275731f6352754d6f524b501e30201f617275731e20201f6136393a363538283037352e38291f32341e20201f6136352e3331ff37331f32727562626b6d1e31201f61cfe0f1f2f3f5eee2e02c20d2e0f2fcffede020d0eeece0edeee2ede01e31301f61ddeaeeedeeece8eae020f1f2f0eee8f2e5ebfcf1f2e2e01f62eaf0e0f22e20eaf3f0f1203a205bf3f7e5e12e20efeef1eee1e8e520efee20ede0eff0e0e2ebe5ede8fe20363533353030203cd1f2f02de2ee3e5d1f63d22e20d02e20cfe0f1f2f3f5eee2e01e20201f61cc2e1f62c8e7e42de2ee20c0f1f1eef62e20f1f2f0eee8f22e20e2f3e7eee21f63323030341e20201f6131323720f12e1f62e3f0e0f42e1f63323220f1ec2e1e20201f61c1e8e1ebe8eee3f02e3a20f12e203132371e20371f61d1f2f0eee8f2e5ebfcedfbe520eef0e3e0ede8e7e0f6e8e81f78ddeaeeedeeece8eae01f3252754d6f524b501e20201f69cf3139361f6152552d524b501e20201f61352d39333039332d3330382d311f393130303020fdeae72e1e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xff in position 5: invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30303837386e616d202032323030323737206920343530303030313030313530303030303030333030303730303031353030353030313530303032323030383030333930303033373031353030333630303037363031373030323230303131323032303030313530303133343034303030323630303134393034313030303830303137353038303030323030303138333038343030323430303230333130303030323130303232373234353031303030303234383236303030333230303334383330303030323430303338303434303030323330303430343530353030353730303432373635303030333730303438343730303030323630303532313835323030313630303534373932303030333730303536331e727530332d303030303035524b501e52552d524b501e32303135313131363134313335361e31353131313673323030352020202072752061202020202020202020202020202020207275731e20201f6133383434351f6230352f32331f394b6e697a686e616a61206c65746f7069731e20201f6130352d33303030391f6252754d6f524b501e20201f61353335323031323836371e20201f6152754d6f524b501f627275731f6352754d6f524b501e31201f617275731e20201f613832312e3131332e362d39331f32341e20201f6138342834d8e2e5292d34341f32727562626b6d1e31201f61cbe8ede4e3f0e5ed2c20c0f1f2f0e8e41e31301f61cce8ee2c20eceee920cce8ee211f625befeee2e5f1f2e82df1eae0e7eae8203a20e4ebff20e4e5f2e5e9203a20efe5f02e20f1ee20f8e2e5e42e5d1f63c0f1f2f0e8e420cbe8ede4e3f0e5ed3b205be8eb2e20c22e20c5eaebe5f0e8f1e05d1e20201f61d1cfe12e1f62c0e7e1f3eae02deaebe0f1f1e8eae01f63323030351e20201f6133343720f12e1f62e8eb2e1f63323120f1ec2e1e20301f61cceee820ebfee1e8ecfbe520eaede8e6eae81e30201f61d1eee4e5f0e62e3a20cce8ee2c20eceee920cce8ee21203b20cce0e4e8eae5ed203b20d1eeebede5f7ede0ff20efeeebffedeae01e20371f61d1eae0e7eae820f8e2e5e4f1eae8e52028e42e20eb2e291f3252754d6f524b501e31201f61c5eaebe5f0e8f12c20c2e8f2e0ebe8e91f34696c6c1e20201f69cb35391f6152552d524b501e20201f61352d3335322d30313238362d371f62e220efe5f02e1f393530303020fdeae72e1e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xd8 in position 4: invalid start byte"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30303937386e616d202032323030323737206920343530303030313030313530303030303030333030303730303031353030353030313530303032323030383030333930303033373031353030333630303037363031373030323230303131323032303030313530303133343034303030323630303134393034313030303830303137353038303030313530303138333038343030313830303139383130303030333730303231363234353031303130303235333236303030323630303335343330303030323430303338303530343030323630303430343635303030383930303433303635303030383930303531393730303030333830303630383835323030313730303634363932303030333730303636331e727530332d303030303036524b501e52552d524b501e32303135313131363134313335361e31353131313673323030352020202072752061202020202020202020202020202020207275731e20201f6134333331351f6230352f32361f394b6e697a686e616a61206c65746f7069731e20201f6130352d33353135331f6252754d6f524b501e20201f61353730333832313832371e20201f6152754d6f524b501f627275731f6352754d6f524b501e30201f617275731e20201f613533302e3138321f32341e20201f6132322e33311f32727562626b6d1e31201f61caf0e0f1edeef9e5f7e5edeaee2c20c2ebe0e4e8ece8f020c8e2e0edeee2e8f71e31301f61cde5ebe8ede5e9edfbe520f1e8f1f2e5ecfb3a20e3e5eeece5f2f0e8f7e5f1eae8e520ece5f2eee4fb20e0ede0ebe8e7e020e820f1e8edf2e5e7e01f63c22e20c82e20caf0e0f1edeef9e5f7e5edeaee2c20c02e20cf2e20caf0e8f9e5edeaee1e20201f61cc2e1f62c8e7e42de2ee20ccc3d2d31f63323030351e20201f6135313920f12e1f62e8eb2e1f63323220f1ec2e1e20201f61c1e8e1ebe8eee3f02e3a20f12e203530392d3531361e20371f61c0e2f2eeece0f2e8f7e5f1eae8e520f1e8f1f2e5ecfb20f3eff0e0e2ebe5ede8ff20ede5ebe8ede5e9edfbe51f78c0ede0ebe8e71f78c3e5eeece5f2f0e8f7e5f1eae8e520ece5f2eee4fb1f3252754d6f524b501e20371f61c0e2f2eeece0f2e8f7e5f1eae8e520f1e8f1f2e5ecfb20f3eff0e0e2ebe5ede8ff20ede5ebe8ede5e9edfbe51f78d1e8edf2e5e71f78c3e5eeece5f2f0e8f7e5f1eae8e520ece5f2eee4fb1f3252754d6f524b501e31201f61caf0e8f9e5edeaee2c20c0ebe5eaf1e0ede4f020cfe5f2f0eee2e8f71f346175741e20201f69ca3738321f6152552d524b501e20201f61352d373033382d323138322d371f62e220efe5f02e1f393130303020fdeae72e1e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xca in position 0: invalid start byte"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 12,
+              "end": 13,
+              "object_hex": "4265696b6f6b75206e6f2074e56f636869206e6f207368696b756d69",
+              "reason": "invalid continuation byte"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30313633326e616d202032323030343231496120343530303030313030313330303030303030333030303630303031333030353030313730303031393030363030313930303033363030373030313530303035353030383030343130303037303033353030313830303131313034303030313830303132393034333030313230303134373034393030303930303135393036363030303730303136383038363030323230303137353039393030323530303139373130303030323030303232323234303030363430303234323234353030363530303330363236303031343430303337313330303030343830303531353530303030353930303536333534363030323230303632323635303030333030303634343635303030333930303637343635303030333730303731333635303030333830303735303635303030323730303738383635313030343430303831353731303030383330303835393731303030323930303934323835363030363230303937313838303030373830313033333930373030333530313131313939383030343330313134363931303030323130313138391e6f636e3530333030313230381e4f436f4c431e32303130303230313132343732312e301e6d20202020202020206420662020202020201e637220636e7c7c7c7c7c7c7c7c7c1e31303032303173323030342020202076617561202020207320202020663030302030206a706e20641e20201f612847504f2939393239303230371e20201f6147504f1f6347504f1f644d76491e20201f616e2d75732d2d2d1e20201f61565049491e20201f6324311e30201f61532032302e323a414d20332f4a41504e2e1e20201f61446f6373205332302e323a414d332f4a41504e2e1e31201f6141726e6f6c642c205061756c20412e1e31301f6141626f757420416d65726963613a20686f772074686520556e697465642053746174657320697320676f7665726e65642e1f6c4a6170616e6573651e31301f363838302d30311f614265696b6f6b75206e6f2074e56f636869206e6f207368696b756d691f685b656c656374726f6e6963207265736f757263655d2e1e20201f614865726e646f6e2c2056612e203a1f6242726164646f636b20436f6d6d756e69636174696f6e73203b1f615b57617368696e67746f6e2c20442e432e5d203a1f62552e532e20446570742e206f662053746174652c20427572656175206f6620496e7465726e6174696f6e616c20496e666f726d6174696f6e2050726f6772616d732c1f6363323030342e1e20201f6131206f6e6c696e65207265736f75726365202833362c205b315d2920702e203a1f62636f6c2e20696c6c2e1e20201f615469746c652066726f6d2063617074696f6e2028416d65726963612e676f762c20766965776564204665622e20312c2032303130292e1e20201f615465787420696e204a6170616e6573652e1e20301f6144656d6f63726163791f7a556e69746564205374617465732e1e20301f614665646572616c20676f7665726e6d656e741f7a556e69746564205374617465732e1e20301f614c6f63616c20676f7665726e6d656e741f7a556e69746564205374617465732e1e20301f61537461746520676f7665726e6d656e74731f7a556e69746564205374617465732e1e20301f61566f74696e671f7a556e69746564205374617465732e1e20301f61556e69746564205374617465731f78506f6c697469637320616e6420676f7665726e6d656e742e1e31201f61556e69746564205374617465732e1f62446570742e206f662053746174652e1f62427572656175206f6620496e7465726e6174696f6e616c20496e666f726d6174696f6e2050726f6772616d732e1e32201f6142726164646f636b20436f6d6d756e69636174696f6e732e1e34301f75687474703a2f2f7075726c2e6163636573732e67706f2e676f762f47504f2f4c50533131393033311f7a4f6e6c696e65207265736f757263651e30301f363234352d30312f24311f611b24312150564b376f69244e21513121473469244e21307021512b7b3639323466367d1b28421f685b656c656374726f6e6963207265736f757263655d2e1e20201f612e6232393230323233311f6230392d30322d31311f6331312d30382d31301e20201f617777771f6231312d30382d31301f636d1f647a1f652d1f666a706e1f677661751f68301f69301e20201f61737468756d2031312f32392f323031301e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xe5 in position 12: invalid start byte"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 21,
+              "end": 22,
+              "object_hex": "42756c6c6574696e206465206c6120536f63691b74e265206c696e6e1b656e6e6520646520426f726465617578",
+              "reason": "invalid continuation byte"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "30313439316e6173202032323030333937206120343530303030313030303830303030303030333030303630303030383030353030313730303031343030383030343130303033313031303030313630303037323032323030313430303038383033303030313130303130323034303030343830303131333034323030313430303136313034393030303930303137353039303030313530303138343231303030323830303139393232323030353030303232373234353030353230303237373236303030323930303332393330303030323430303335383331303030313930303338323336323030313930303430313530303030363130303432303531303030333630303438313531303030323230303531373538303031393330303533393635303030333430303733323731303030333730303736363738303030353730303830333738303030363930303836303738303030393230303932393930373030323530313032313930323030313130313034363939383030323630313035373934353030313030313038331e323432393934331e4f436f4c431e31393039393035303030353134332e301e3736303931346331393731393939396672206d787a702020202020202030202020623066726520641e20201f61736e2038363031323937361e20201f61303735302d363834381e20201f6142534c4242531e20201f6146554c1f6346554c1f64434f4f1f645955531f644149501f64444c431f644149501f644e53541f6448554c1e20201f616e7364701f616c63641e20201f61414e534d1e30301f615148331f622e533732321e30201f6142756c6c2e20536f632e206c696e6e2e20426f7264782e1e20301f6142756c6c6574696e206465206c6120536f63691b74e265206c696e6e1b656e6e6520646520426f7264656175781e30301f6142756c6c6574696e206465206c6120536f6369e26574e265206c696e6e1b656e6e6520646520426f7264656175782e1e20201f61426f726465617578203a1f624c6120536f6369e265741b2c1e20201f6176203a1f62696c6c2e203b1f63323520636d2e1e20201f6154656e206e6f2e206120796561721e31201f61426567616e20696e20313937312e1e20201f614465736372697074696f6e206261736564206f6e3a20542e2031392c20666173632e20322c207075626c697368656420696e20313939312e1e32201f6142696f6c6f676963616c206162737472616374731f78303030362d333136391e32201f6147656f5265661f78303139372d373438321e20201f61466f726d65642062792074686520756e696f6e206f663a204163746573206465206c6120536f6369e265741b206c696e6ee265656e6e6520646520426f7264656175782e2020531b72696520413b204163746573206465206c6120536f6369e265741b206c696e6ee265656e6e6520646520426f7264656175782e2020531b72696520423b20616e643a20536f6369e265741b206c696e6ee265656e6e6520646520426f7264656175782e202050726f631b732d766572626175782e1e20301f614e61747572616c20686973746f72791f76506572696f646963616c732e1e32201f61536f6369e265741b206c696e6ee265656e6e6520646520426f7264656175782e1e31341f744163746573206465206c6120536f63691b74e265206c696e6e1b656e6e6520646520426f7264656175782e2053e26572696520421e31341f61536f63691b74e265206c696e6e1b656e6e6520646520426f7264656175782e1f7450726f63e165732d766572626175781f77284f436f4c4329323531303632361e31341f744163746573206465206c6120536f63691b74e265206c696e6e1b656e6e6520646520426f7264656175782e2053e26572696520411f77284f436f4c432931303933303331301f7728444c432973632038353030383136301e20201f612e6231303135323038381f626d61696e201f632d1e20201f613130303530371e20201f62311f633030303330311f64731f65611f662d1f67301e20201f6c6d61696e201e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xe2 in position 21: invalid start byte"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {},
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 3,
+              "end": 4,
+              "object_hex": "323435c3b93038393030303031",
+              "reason": "ordinal not in range(128)"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 0,
+              "end": 1,
+              "object_hex": "",
+              "reason": "Directory is not valid ASCII"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": {
+                            "bytes_hex": "54686520707261676d617469632070726f6772616d6d6572203a20"
+                          }
+                        },
+                        {
+                          "b": {
+                            "bytes_hex": "66726f6d206a6f75726e65796d616e20746f206d6173746572202f"
+                          }
+                        },
+                        {
+                          "c": {
+                            "bytes_hex": "416e647265772048756e742c2044617669642054686f6d61732e"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "995f0161802a09036d5ec3b9711fb5349f74bf33dd4d65ef26853d359f131adf"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 3,
+              "end": 4,
+              "object_hex": "323435c3b93038393030303031",
+              "reason": "ordinal not in range(128)"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": {
+                            "bytes_hex": "54686520707261676d617469632070726f6772616d6d6572203a20"
+                          }
+                        },
+                        {
+                          "b": {
+                            "bytes_hex": "66726f6d206a6f75726e65796d616e20746f206d6173746572202f"
+                          }
+                        },
+                        {
+                          "c": {
+                            "bytes_hex": "416e647265772048756e742c2044617669642054686f6d61732e"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "995f0161802a09036d5ec3b9711fb5349f74bf33dd4d65ef26853d359f131adf"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": {
+                            "bytes_hex": "54686520707261676d617469632070726f6772616d6d6572203a20"
+                          }
+                        },
+                        {
+                          "b": {
+                            "bytes_hex": "66726f6d206a6f75726e65796d616e20746f206d6173746572202f"
+                          }
+                        },
+                        {
+                          "c": {
+                            "bytes_hex": "416e647265772048756e742c2044617669642054686f6d61732e"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "995f0161802a09036d5ec3b9711fb5349f74bf33dd4d65ef26853d359f131adf"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 0,
+              "end": 1,
+              "object_hex": "",
+              "reason": "Directory is not valid ASCII"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": {
+                            "bytes_hex": "54686520707261676d617469632070726f6772616d6d6572203a20"
+                          }
+                        },
+                        {
+                          "b": {
+                            "bytes_hex": "66726f6d206a6f75726e65796d616e20746f206d6173746572202f"
+                          }
+                        },
+                        {
+                          "c": {
+                            "bytes_hex": "416e647265772048756e742c2044617669642054686f6d61732e"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "995f0161802a09036d5ec3b9711fb5349f74bf33dd4d65ef26853d359f131adf"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 3,
+              "end": 4,
+              "object_hex": "323435c3b93038393030303031",
+              "reason": "ordinal not in range(128)"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 0,
+              "end": 1,
+              "object_hex": "",
+              "reason": "Directory is not valid ASCII"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 3,
+              "end": 4,
+              "object_hex": "323435c3b93038393030303031",
+              "reason": "ordinal not in range(128)"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 0,
+              "end": 1,
+              "object_hex": "",
+              "reason": "Directory is not valid ASCII"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 3,
+              "end": 4,
+              "object_hex": "323435c3b93038393030303031",
+              "reason": "ordinal not in range(128)"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 0,
+              "end": 1,
+              "object_hex": "",
+              "reason": "Directory is not valid ASCII"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 3,
+              "end": 4,
+              "object_hex": "323435c3b93038393030303031",
+              "reason": "ordinal not in range(128)"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "BaseAddressInvalid"
+            },
+            {
+              "error": "BaseAddressNotFound"
+            },
+            {
+              "error": "RecordDirectoryInvalid"
+            },
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "ascii",
+              "start": 0,
+              "end": 1,
+              "object_hex": "",
+              "reason": "Directory is not valid ASCII"
+            },
+            {
+              "error": "ValueError"
+            },
+            {
+              "error": "NoFieldsFound"
+            },
+            {
+              "record": {
+                "leader": "00127     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": "0",
+                      "ind2": "1",
+                      "subfields": [
+                        {
+                          "a": "The pragmatic programmer : "
+                        },
+                        {
+                          "b": "from journeyman to master /"
+                        },
+                        {
+                          "c": "Andrew Hunt, David Thomas."
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "528fbfea160b5b393ac569aba6b8fbb7b2278dea8f09031a154f36a49c9cfaec"
+              }
+            },
+            {
+              "error": "TruncatedRecord"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": false,
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 15,
+              "end": 16,
+              "object_hex": "4465206c6120736f6c697475646520e161206c6120636f6d6d756e617574e2652e",
+              "reason": "invalid continuation byte"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "error": "UnicodeDecodeError",
+              "encoding": "utf-8",
+              "start": 0,
+              "end": 1,
+              "object_hex": "303131313763616d202032323030333439206120343530303030313030303230303030303030353030313730303030323030383030343130303031393031303030333230303036303033353030323030303039323033353030313330303131323034303030313030303132353034313030313130303133353034393030343730303134363034393030343030303139333035303030313730303233333039303030323330303235303130303030323030303237333234303030343830303239333234353030383030303334313236303030343730303432313330303030323130303436383530303030353330303438393530343030353430303534323635303030313630303539363635303030313030303631323635303030323330303632323635303030313630303634353635303030323230303636313733303030343830303638333935313030313130303733313935373030323530303734321e321e31393930303331363030303030302e301e3834303131327331393632202020207061752020202020206220202020303030313020656e6720201e20201f6120202036313031343539392f4c2f7238331f6f30303230343039361e20201f616f636d44434c4336313134353939421e20201f394141412d303432351e20201f645050542d4d1e31201f61656e67756e641e39381f61544d594d1f6242463537352e4c372054363820313936321f63311f7a33393037343530303732343633381e20201f615050434d1f63311f6c4672656420422e20526f676572732c204d2e442e1f6f476966741e30201f6142463639371f622e543632331e20201f6142463537352e4c371f6254363820313936321e31301f61546f75726e6965722c205061756c2e1e31301f614465206c6120736f6c697475646520e161206c6120636f6d6d756e617574e2652e1f6c456e676c6973682e1e31301f614573636170652066726f6d206c6f6e656c696e657373202f1f636279205061756c20546f75726e696572203b207472616e736c61746564206279204a6f686e20532e2047696c6d6f75722e1e30201f615068696c6164656c70686961203a1f62576573746d696e737465722050726573732c1f6363313936322e1e20201f6131393220702e203b1f63323120636d2e1e20201f615472616e736c6174696f6e206f66204465206c6120736f6c697475646520e161206c6120636f6d6d756e617574e2652e1e20201f61496e636c75646573206269626c696f67726170686963616c207265666572656e6365732028702e203139302d313932292e1e20301f614c6f6e656c696e6573732e1e20301f6153656c662e1e20301f61536f6369616c2070737963686f6c6f67792e1e20321f614c6f6e656c696e6573732e1e20321f61536f6369616c2049736f6c6174696f6e2e1e30311f614465206c6120736f6c697475646520e161206c6120636f6d6d756e617574e2652e1f6c456e676c6973682e1e20201f783037303130311e20201f614246203537352e4c3720543732386420313936321e1d",
+              "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xe1 in position 15: invalid start byte"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    }
+  ],
+  "utf8_handlers": {
+    "pymarc": {
+      "strict": {
+        "error": "UnicodeDecodeError",
+        "encoding": "utf-8",
+        "start": 8,
+        "end": 9,
+        "object_hex": "76616c6964efbfbdff",
+        "reason": "invalid start byte"
+      },
+      "ignore": {
+        "value": "valid\ufffd"
+      },
+      "replace": {
+        "value": "valid\ufffd\ufffd"
+      },
+      "backslashreplace": {
+        "value": "valid\ufffd\\xff"
+      },
+      "surrogateescape": {
+        "value": "valid\ufffd\udcff"
+      }
+    },
+    "rmarc": {
+      "strict": {
+        "error": "UnicodeDecodeError",
+        "encoding": "utf-8",
+        "start": 0,
+        "end": 1,
+        "object_hex": "3030303532202020206132323030303337202020343530303234353030313430303030301e20201f6176616c6964efbfbdff1e1d",
+        "reason": "InvalidUTF8: 'utf-8' codec can't decode byte 0xff in position 8: invalid start byte"
+      },
+      "ignore": {
+        "value": "valid"
+      },
+      "replace": {
+        "value": "valid\ufffd\ufffd"
+      },
+      "backslashreplace": {
+        "value": "valid\ufffd\ufffd"
+      },
+      "surrogateescape": {
+        "value": "valid\ufffd\ufffd"
+      }
+    }
+  },
+  "encoding_cases": {
+    "explicit_utf8_without_flag": {
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00048     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": " ",
+                      "ind2": " ",
+                      "subfields": [
+                        {
+                          "a": "caf\u00e9"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "6db0792b0a6caf9dafb6333cc0be9fff42ef3319a350abfd3dc2c54760816183"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00048     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": " ",
+                      "ind2": " ",
+                      "subfields": [
+                        {
+                          "a": {
+                            "bytes_hex": "636166c3a9"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "dffbc4d582a9909bc915a99b32bfc8d9c6bbde425e70c113e62a66209a77fa0b"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    "latin1_control_field": {
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00040     2200037   4500",
+                "fields": [
+                  {
+                    "001": "\u00e9"
+                  }
+                ]
+              },
+              "encode": {
+                "value": "a63040e691ac5be5f3cf99cbba6f2ac94bad44fbf5414ef562e3ab9920a95a0f"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00040     2200037   4500",
+                "fields": [
+                  {
+                    "001": ""
+                  }
+                ]
+              },
+              "encode": {
+                "value": "cdad646b24e77f4e4c376cd0f58beda0abf654f978109e01a1d1a353ddba8c73"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      }
+    }
+  }
+}

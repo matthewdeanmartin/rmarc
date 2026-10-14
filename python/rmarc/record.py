@@ -31,7 +31,7 @@ from rmarc.leader import Leader
 from rmarc.marc8 import marc8_to_unicode
 
 try:
-    from rmarc._rmarc import decode_marc_raw as _decode_marc_raw
+    from rmarc._rmarc import decode_marc_fields as _decode_marc_fields
     from rmarc._rmarc import encode_marc_raw as _encode_marc_raw
 
     _HAS_RUST_CODEC = True
@@ -85,20 +85,16 @@ class Record:
         return text
 
     def get(self, tag: str, default: Field | None = None) -> Field | None:
-        try:
-            return self[tag]
-        except KeyError:
-            return default
+        for field in self.fields:
+            if field.tag == tag:
+                return field
+        return default
 
     def __getitem__(self, tag: str) -> Field:
-        if tag not in self:
-            raise KeyError
-
-        fields: list[Field] = self.get_fields(tag)
-        if not fields:
-            raise KeyError
-
-        return fields[0]
+        for field in self.fields:
+            if field.tag == tag:
+                return field
+        raise KeyError
 
     def __contains__(self, tag: str) -> bool:
         for f in self.fields:
@@ -159,18 +155,37 @@ class Record:
                 raise FieldNotFound from None
 
     def remove_fields(self, *tags) -> None:
-        self.fields[:] = (field for field in self.fields if field.tag not in tags)
+        if not tags:
+            return None
+
+        if len(tags) == 1:
+            tag = tags[0]
+            self.fields[:] = (field for field in self.fields if field.tag != tag)
+            return None
+
+        tag_set = set(tags)
+        self.fields[:] = (field for field in self.fields if field.tag not in tag_set)
+
+        # Add explicit return so type-checkers don't complain about missing returns on some
+        # code paths.
+        return None
 
     def get_fields(self, *args) -> list[Field]:
         if not args:
             return self.fields
 
-        return [f for f in self.fields if f.tag in args]
+        if len(args) == 1:
+            tag = args[0]
+            return [field for field in self.fields if field.tag == tag]
+
+        tag_set = set(args)
+        return [field for field in self.fields if field.tag in tag_set]
 
     def get_linked_fields(self, field: Field) -> list[Field]:
         num = field.linkage_occurrence_num()
-        fields = self.get_fields("880")
-        linked_fields = list(filter(lambda f: f.linkage_occurrence_num() == num, fields))
+        linked_fields = [
+            linked_field for linked_field in self.get_fields("880") if linked_field.linkage_occurrence_num() == num
+        ]
         if num is not None and not linked_fields:
             raise MissingLinkedFields(field)
         return linked_fields
@@ -198,108 +213,36 @@ class Record:
         utf8_handling: str,
         encoding: str,
     ) -> None:
-        """Fast path: Rust does byte-level parsing + encoding, Python wraps into objects."""
-        # Validate leader first (needed for encoding detection)
-        if len(marc) < LEADER_LEN:
-            raise RecordLeaderInvalid
+        """Decode directly into Python objects, with exact Python fallback semantics."""
+        if (
+            encoding not in ("iso8859-1", "utf-8")
+            or utf8_handling not in ("strict", "ignore", "replace")
+            or force_utf8 != self.force_utf8
+            or type(self).add_field is not Record.add_field
+        ):
+            self._decode_marc_python(marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding)
+            return
 
-        leader_str = marc[0:LEADER_LEN].decode("ascii")
-        if leader_str[9] == "a" or self.force_utf8:
-            encoding = "utf-8"
-
-        self.leader = Leader(leader_str)
-
-        # Validate before calling Rust (to raise the right exception types)
-        base_address = int(marc[12:17])
-        if base_address <= 0:
-            raise BaseAddressNotFound
-        if base_address >= len(marc):
-            raise BaseAddressInvalid
-        if len(marc) < int(self.leader[:5]):
-            raise TruncatedRecord
-
-        # Rust does parsing + encoding conversion in one shot
         try:
-            _leader, fields_raw = _decode_marc_raw(
+            leader, fields = _decode_marc_fields(
                 marc,
+                Field if to_unicode else RawField,
+                Subfield,
+                Indicators,
                 to_unicode=to_unicode,
                 force_utf8=force_utf8,
                 encoding=encoding,
                 utf8_handling=utf8_handling,
                 quiet=hide_utf8_warnings,
             )
-        except ValueError as e:
-            msg = str(e)
-            if "DirectoryInvalid" in msg:
-                raise RecordDirectoryInvalid from None
-            if "NoFieldsFound" in msg:
-                raise NoFieldsFound from None
-            if "InvalidUTF8" in msg:
-                raise UnicodeDecodeError("utf-8", marc, 0, 1, msg) from None
-            if "not valid ASCII" in msg:
-                raise UnicodeDecodeError("ascii", b"", 0, 1, msg) from None
-            raise
-
-        # Convert Rust output into Python Field/RawField objects
-        # Rust returns decoded strings for utf-8 and marc8/iso8859-1 cases,
-        # but raw bytes for unknown encodings and to_unicode=False.
-        # We need to decode raw bytes when to_unicode=True but encoding is unknown to Rust.
-        needs_python_decode = to_unicode and encoding not in ("utf-8", "iso8859-1")
-        FieldClass = Field if to_unicode else RawField
-        fields = self.fields
-
-        if not fields_raw:
-            raise NoFieldsFound
-
-        for tag, field_info in fields_raw:
-            field_type = field_info[0]
-
-            if field_type == "control":
-                data_val = field_info[1]
-                if needs_python_decode and isinstance(data_val, bytes):
-                    data_val = data_val.decode(encoding)
-                field = FieldClass.__new__(FieldClass)
-                field.tag = tag
-                field.data = data_val
-                field.control_field = True
-                field._indicators = None
-                field.subfields = []
-            else:
-                raw_subfields = field_info[3]
-
-                subfields = []
-                for code_or_bytes, value in raw_subfields:
-                    if isinstance(code_or_bytes, bytes):
-                        # Non-ASCII subfield code — rare path
-                        warnings.warn(
-                            BadSubfieldCodeWarning(code_or_bytes + value),
-                            stacklevel=2,
-                        )
-                        code, skip_bytes = normalize_subfield_code(code_or_bytes + value)
-                        value = (code_or_bytes + value)[skip_bytes:]
-                        if to_unicode:
-                            if self.leader[9] == "a" or force_utf8:
-                                value = value.decode("utf-8", utf8_handling)
-                            elif encoding == "iso8859-1":
-                                value = marc8_to_unicode(value, hide_utf8_warnings)
-                            else:
-                                value = value.decode(encoding)
-                    else:
-                        code = code_or_bytes
-                        # Rust decoded the value for utf-8/marc8; decode here for other encodings
-                        if needs_python_decode and isinstance(value, bytes):
-                            value = value.decode(encoding)
-
-                    subfields.append(Subfield(code=code, value=value))
-
-                field = FieldClass.__new__(FieldClass)
-                field.tag = tag
-                field.data = None
-                field.control_field = False
-                field._indicators = Indicators(field_info[1], field_info[2])
-                field.subfields = subfields
-
-            fields.append(field)
+        except ValueError:
+            # Reparse into self only on failure. This preserves Python's exact
+            # exception payload, warnings, leader and partially appended fields.
+            # The native call has not mutated self or its existing fields list.
+            self._decode_marc_python(marc, to_unicode, force_utf8, hide_utf8_warnings, utf8_handling, encoding)
+            return
+        self.leader = Leader(leader)
+        self.fields.extend(fields)
 
     def _decode_marc_python(
         self,

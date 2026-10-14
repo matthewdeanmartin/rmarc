@@ -5,6 +5,7 @@
 //! combining characters, and NFC normalization.
 
 use pyo3::prelude::*;
+use std::borrow::Cow;
 
 use crate::marc8_mapping;
 
@@ -18,8 +19,14 @@ const ESC: u8 = 0x1B;
 /// Returns NFC-normalized Unicode text.
 #[pyfunction]
 pub fn marc8_to_unicode_rs(data: &[u8], quiet: bool) -> String {
-    if data.is_empty() {
-        return String::new();
+    marc8_to_unicode(data, quiet).into_owned()
+}
+
+/// Printable basic Latin needs neither character-set mapping nor normalization.
+/// Exclude controls (including ESC) and DEL: those have MARC-8 semantics.
+pub(crate) fn marc8_to_unicode(data: &[u8], quiet: bool) -> Cow<'_, str> {
+    if data.iter().all(|byte| (b' '..=b'~').contains(byte)) {
+        return Cow::Borrowed(std::str::from_utf8(data).expect("printable ASCII"));
     }
 
     let mut g0: u8 = BASIC_LATIN;
@@ -174,7 +181,7 @@ pub fn marc8_to_unicode_rs(data: &[u8], quiet: bool) -> String {
 
     // NFC normalization
     let result: String = uni_list.into_iter().collect();
-    unicode_normalization_nfc(&result)
+    Cow::Owned(unicode_normalization_nfc(&result))
 }
 
 /// Simple NFC normalization using the `unicode-normalization` crate pattern.

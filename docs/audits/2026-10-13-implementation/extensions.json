@@ -1,0 +1,9 @@
+{
+  "target\\audit-baseline\\python\\rmarc\\_rmarc.cp313-win_amd64.pyd": "4450ea5097ccf0f535f0aa66617e8349b2933e5cbd00ec03360898144013f462",
+  "target\\audit-baseline\\python\\rmarc\\_rmarc.cp314-win_amd64.pyd": "ef4e401966f779bb784dceb39d6d41e4b041c34e126f99ced398a127c2a663be",
+  "target\\audit-baseline\\python\\rmarc\\_rmarc.cp315-win_amd64.pyd": "5da610b7403c9e4b832c841d849bd598a753a0f767c52bded9410c4e887bbd1f",
+  "python\\rmarc\\_rmarc.cp313-win_amd64.pyd": "b882f76811bb80a614eea063f0fcae3784a16229bb5b40cd1e5d44b61a99b710",
+  "python\\rmarc\\_rmarc.cp314-win_amd64.pyd": "ef4e401966f779bb784dceb39d6d41e4b041c34e126f99ced398a127c2a663be",
+  "python\\rmarc\\_rmarc.cp315-win_amd64.pyd": "c9da239f1ba875ecce23c98f0fc21e6c17b2623e2164cf3dce1ab978d416dc59",
+  "..\\rmarc-audit-315\\.venv\\Lib\\site-packages\\rmarc\\_rmarc.cp315-win_amd64.pyd": "02d33917c0465595d3c321a27bd65da896eff46fa4a38cd227852f30dd2a09c0"
+}

@@ -10,6 +10,19 @@ from rmarc.field import Field, Indicators, Subfield
 
 
 class FieldTest(unittest.TestCase):
+    # Added by upstream pymarc 5.4.0 (see UPSTREAM.md).
+    def test_numeric_tag_is_zero_padded(self):
+        f = Field(tag="8", indicators=Indicators("", ""))
+        self.assertEqual(f.tag, "008")
+
+    def test_padded_numeric_tag_is_preserved(self):
+        f = Field(tag="008", data="foo")
+        self.assertEqual(f.tag, "008")
+
+    def test_integer_tag_is_zero_padded(self):
+        f = Field(tag=42, indicators=Indicators("", ""))
+        self.assertEqual(f.tag, "042")
+
     def setUp(self):
         self.field = Field(
             tag="245",

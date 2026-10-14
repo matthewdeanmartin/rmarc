@@ -1,0 +1,43 @@
+{
+  "test_pymarc/test.dat": {
+    "different_reparsed_records": 10,
+    "different_fields": 0,
+    "different_leaders": 10,
+    "examples": [
+      {
+        "index": 0,
+        "pymarc_leader": "00755cam a22002414a 4500",
+        "mrrc_leader": "00755cam  22002414a 4500",
+        "same_fields": true
+      },
+      {
+        "index": 1,
+        "pymarc_leader": "00647pam a2200241 a 4500",
+        "mrrc_leader": "00647pam  2200241 a 4500",
+        "same_fields": true
+      }
+    ]
+  },
+  "data/Computer.Files.2019.part01.utf8": {
+    "different_reparsed_records": 3913,
+    "different_fields": 3913,
+    "different_leaders": 0,
+    "examples": [
+      {
+        "index": 4,
+        "pymarc_leader": "02017cmm a2200421 a 4500",
+        "mrrc_leader": "02017cmm a2200421 a 4500",
+        "same_fields": false
+      },
+      {
+        "index": 16,
+        "pymarc_leader": "02018cmm a22003974a 4500",
+        "mrrc_leader": "02018cmm a22003974a 4500",
+        "same_fields": false
+      }
+    ]
+  },
+  "real_corpus_classification": {
+    "field_order_only": 3913
+  }
+}

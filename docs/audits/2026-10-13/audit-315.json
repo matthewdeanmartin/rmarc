@@ -1,0 +1,238 @@
+{
+  "python": "3.15.0 (main, Oct  9 2026, 15:33:25) [MSC v.1951 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "versions": {
+    "pymarc": "5.4.0",
+    "rmarc": "5.3.1"
+  },
+  "corpora": {
+    "repeated-1000": {
+      "sha256": "bd86eb06bb2fbf1586f15f5a818a5bfeae148b49a5cdad3a54abafedd5d9cce3",
+      "bytes": 659100,
+      "records": 1000
+    },
+    "loc-computer-files": {
+      "sha256": "f7fb110d96ebd45899a8b4f806701b8b121b275b503bb4866ed2bdc19acbbd5f",
+      "bytes": 14346341,
+      "records": 10725
+    }
+  },
+  "benchmarks": [
+    {
+      "corpus": "loc-computer-files",
+      "library": "pymarc",
+      "operation": "read",
+      "titles_equal_pymarc": true,
+      "result": 10725,
+      "seconds": [
+        0.6745696000289172,
+        0.6776356999762356,
+        0.6966892001219094,
+        0.68424930004403,
+        0.671428999863565,
+        0.8200400997884572,
+        0.6523537000175565
+      ],
+      "median_seconds": 0.6776356999762356,
+      "records_per_second": 15827.088213292365
+    },
+    {
+      "corpus": "loc-computer-files",
+      "library": "rmarc",
+      "operation": "read",
+      "titles_equal_pymarc": true,
+      "result": 10725,
+      "seconds": [
+        0.3716142000630498,
+        0.31970439990982413,
+        0.31496760016307235,
+        0.29389240010641515,
+        0.30100259999744594,
+        0.3536451000254601,
+        0.3106662000063807
+      ],
+      "median_seconds": 0.31496760016307235,
+      "records_per_second": 34051.121431052605
+    },
+    {
+      "corpus": "loc-computer-files",
+      "library": "pymarc",
+      "operation": "roundtrip",
+      "titles_equal_pymarc": true,
+      "result": 14346341,
+      "seconds": [
+        1.1344310001004487,
+        1.0856420998461545,
+        1.1083163002040237,
+        1.0909324998501688,
+        1.1360414999071509,
+        1.1064262001309544,
+        1.1062051998451352
+      ],
+      "median_seconds": 1.1064262001309544,
+      "records_per_second": 9693.371323573692
+    },
+    {
+      "corpus": "loc-computer-files",
+      "library": "rmarc",
+      "operation": "roundtrip",
+      "titles_equal_pymarc": true,
+      "result": 14346341,
+      "seconds": [
+        0.6561057998333126,
+        0.5779879000037909,
+        0.5688323001377285,
+        0.558669599937275,
+        0.5998207000084221,
+        0.56646170001477,
+        0.5567602999508381
+      ],
+      "median_seconds": 0.5688323001377285,
+      "records_per_second": 18854.414556633317
+    },
+    {
+      "corpus": "loc-computer-files",
+      "library": "pymarc",
+      "operation": "title",
+      "titles_equal_pymarc": true,
+      "result": 393116,
+      "seconds": [
+        0.8419273998588324,
+        0.6878879000432789,
+        0.7310166000388563,
+        0.6815439998172224,
+        0.6722257998771966,
+        0.6764201000332832,
+        0.6718194000422955
+      ],
+      "median_seconds": 0.6815439998172224,
+      "records_per_second": 15736.32810629431
+    },
+    {
+      "corpus": "loc-computer-files",
+      "library": "rmarc",
+      "operation": "title",
+      "titles_equal_pymarc": true,
+      "result": 393116,
+      "seconds": [
+        0.3367067000363022,
+        0.3246810999698937,
+        0.34821829991415143,
+        0.3268738000188023,
+        0.33102629985660315,
+        0.3504363000392914,
+        0.3327113001141697
+      ],
+      "median_seconds": 0.3327113001141697,
+      "records_per_second": 32235.15400985696
+    },
+    {
+      "corpus": "repeated-1000",
+      "library": "pymarc",
+      "operation": "read",
+      "titles_equal_pymarc": true,
+      "result": 1000,
+      "seconds": [
+        0.15237480006180704,
+        0.12084529991261661,
+        0.12034659995697439,
+        0.13188900006935,
+        0.13498460012488067,
+        0.15442480007186532,
+        0.12247910001315176
+      ],
+      "median_seconds": 0.13188900006935,
+      "records_per_second": 7582.13345672633
+    },
+    {
+      "corpus": "repeated-1000",
+      "library": "rmarc",
+      "operation": "read",
+      "titles_equal_pymarc": true,
+      "result": 1000,
+      "seconds": [
+        0.03585619991645217,
+        0.03423690004274249,
+        0.0339521998539567,
+        0.0348898998927325,
+        0.03546690009534359,
+        0.03494929987937212,
+        0.03160009998828173
+      ],
+      "median_seconds": 0.0348898998927325,
+      "records_per_second": 28661.589831855552
+    },
+    {
+      "corpus": "repeated-1000",
+      "library": "pymarc",
+      "operation": "roundtrip",
+      "titles_equal_pymarc": true,
+      "result": 659100,
+      "seconds": [
+        0.16244399989955127,
+        0.15679000015370548,
+        0.15950860013253987,
+        0.16328910016454756,
+        0.17122309980913997,
+        0.20493849995546043,
+        0.15893589984625578
+      ],
+      "median_seconds": 0.16244399989955127,
+      "records_per_second": 6155.967598793179
+    },
+    {
+      "corpus": "repeated-1000",
+      "library": "rmarc",
+      "operation": "roundtrip",
+      "titles_equal_pymarc": true,
+      "result": 659100,
+      "seconds": [
+        0.06472670007497072,
+        0.049688599770888686,
+        0.051744600059464574,
+        0.05405810009688139,
+        0.05817329999990761,
+        0.07163240015506744,
+        0.04828820005059242
+      ],
+      "median_seconds": 0.05405810009688139,
+      "records_per_second": 18498.615345486218
+    },
+    {
+      "corpus": "repeated-1000",
+      "library": "pymarc",
+      "operation": "title",
+      "titles_equal_pymarc": true,
+      "result": 33500,
+      "seconds": [
+        0.1317280000075698,
+        0.12566199991852045,
+        0.13221280020661652,
+        0.12408389989286661,
+        0.1250680999364704,
+        0.13890640018507838,
+        0.1551035000011325
+      ],
+      "median_seconds": 0.1317280000075698,
+      "records_per_second": 7591.400461120906
+    },
+    {
+      "corpus": "repeated-1000",
+      "library": "rmarc",
+      "operation": "title",
+      "titles_equal_pymarc": true,
+      "result": 33500,
+      "seconds": [
+        0.04520990001037717,
+        0.034335099859163165,
+        0.03651869995519519,
+        0.03514849999919534,
+        0.036756600020453334,
+        0.034578099846839905,
+        0.04761369992047548
+      ],
+      "median_seconds": 0.03651869995519519,
+      "records_per_second": 27383.231090561836
+    }
+  ]
+}

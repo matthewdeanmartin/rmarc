@@ -21,6 +21,9 @@ def marc8_to_unicode(marc8, hide_utf8_warnings: bool = False) -> str:
     if _HAS_RUST_MARC8:
         if isinstance(marc8, str):
             marc8 = marc8.encode("latin-1")
+        if marc8.endswith(b"\x1b"):
+            # Preserve Python's exception for an incomplete trailing escape.
+            return _marc8_to_unicode_python(marc8, hide_utf8_warnings)
         return _marc8_to_unicode_rs(marc8, hide_utf8_warnings)
 
     return _marc8_to_unicode_python(marc8, hide_utf8_warnings)

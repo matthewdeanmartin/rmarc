@@ -44,11 +44,17 @@ class Field:
         subfields: list[Subfield] | None = None,
         data: str | None = None,
     ):
-        # attempt to normalize integer tags if necessary
-        try:
-            self.tag = f"{int(tag):03}"
-        except ValueError:
-            self.tag = f"{tag}"
+        # Match pymarc 5.4: only digit strings are normalized.
+        if isinstance(tag, str):
+            if tag.isdigit():
+                self.tag = tag if len(tag) == 3 else f"{int(tag):03}"
+            else:
+                self.tag = tag
+        else:
+            try:
+                self.tag = f"{int(tag):03}"
+            except (TypeError, ValueError):
+                self.tag = f"{tag}"
 
         if subfields and isinstance(subfields[0], str):
             raise ValueError("""The subfield input no longer accepts strings, and should use Subfield.
@@ -126,16 +132,15 @@ class Field:
     def get(self, code: str, default: None = None) -> str | None: ...
 
     def get(self, code: str, default: str | None = None) -> str | None:
-        try:
-            return self[code]
-        except KeyError:
+        if self.control_field:
             return default
+        for subfield in self.subfields:
+            if subfield.code == code:
+                return subfield.value
+        return default
 
     def __getitem__(self, code: str) -> str:
         if self.control_field:
-            raise KeyError
-
-        if code not in self:
             raise KeyError
 
         for subf in self.subfields:
@@ -156,18 +161,19 @@ class Field:
         if self.control_field:
             raise KeyError("field is a control field")
 
-        num_subfields: int = [x.code for x in self.subfields].count(code)
-
-        if num_subfields > 1:
-            raise KeyError(f"more than one code '{code}'")
-        elif num_subfields == 0:
-            raise KeyError(f"no code '{code}'")
+        match_index: int | None = None
 
         for idx, subf in enumerate(self.subfields):
             if subf.code == code:
-                new_val = Subfield(code=subf.code, value=value)
-                self.subfields[idx] = new_val
-                break
+                if match_index is not None:
+                    raise KeyError(f"more than one code '{code}'")
+                match_index = idx
+
+        if match_index is None:
+            raise KeyError(f"no code '{code}'")
+
+        subfield = self.subfields[match_index]
+        self.subfields[match_index] = Subfield(code=subfield.code, value=value)
 
     def __next__(self) -> Subfield:
         if self.control_field:
@@ -189,6 +195,11 @@ class Field:
     def get_subfields(self, *codes) -> list[str]:
         if self.control_field:
             return []
+        if not codes:
+            return []
+        if len(codes) == 1:
+            code = codes[0]
+            return [subfield.value for subfield in self.subfields if subfield.code == code]
 
         return [subfield.value for subfield in self.subfields if subfield.code in codes]
 
@@ -210,13 +221,10 @@ class Field:
         if self.control_field:
             return None
 
-        if code not in self:
-            return None
-
-        index: int = [s.code for s in self.subfields].index(code)
-        whole_field: Subfield = self.subfields.pop(index)
-
-        return whole_field.value
+        for idx, subfield in enumerate(self.subfields):
+            if subfield.code == code:
+                return self.subfields.pop(idx).value
+        return None
 
     def subfields_as_dict(self) -> dict[str, list]:
         if self.control_field:
@@ -251,20 +259,18 @@ class Field:
         if self.control_field:
             return self.data or ""
 
-        field_data: str = ""
+        is_subject_field = self.is_subject_field()
+        fragments: list[str] = []
 
         for subfield in self.subfields:
             if subfield.code == "6":
                 continue
 
-            if not self.is_subject_field():
-                field_data += f" {subfield.value}"
+            if is_subject_field and subfield.code in ("v", "x", "y", "z"):
+                fragments.append(f" -- {subfield.value}")
             else:
-                if subfield.code not in ("v", "x", "y", "z"):
-                    field_data += f" {subfield.value}"
-                else:
-                    field_data += f" -- {subfield.value}"
-        return field_data.strip()
+                fragments.append(f" {subfield.value}")
+        return "".join(fragments).strip()
 
     def is_subject_field(self) -> bool:
         return self.tag.startswith("6")

@@ -1,0 +1,1055 @@
+{
+  "python": "3.15.0 (main, Oct  9 2026, 15:33:25) [MSC v.1951 64 bit (AMD64)]",
+  "versions": {
+    "pymarc": "5.4.0",
+    "rmarc": "5.3.1"
+  },
+  "probes": {
+    "pymarc": {
+      "fields_is_list": {
+        "value": true
+      },
+      "selector_order": {
+        "value": [
+          "650",
+          "245",
+          "650"
+        ]
+      },
+      "duplicate_selectors": {
+        "value": [
+          "650",
+          "650"
+        ]
+      },
+      "fields_list_identity": {
+        "value": true
+      },
+      "missing_subfield": {
+        "error": "KeyError"
+      },
+      "append_subfield": {
+        "value": "title subtitle"
+      },
+      "assign_subfield": {
+        "value": "changed"
+      },
+      "append_field": {
+        "value": 1
+      },
+      "tag_None": {
+        "value": "None"
+      },
+      "tag_' 1'": {
+        "value": " 1"
+      },
+      "tag_'+01'": {
+        "value": "+01"
+      },
+      "tag_'001'": {
+        "value": "001"
+      },
+      "tag_'\u0661\u0662\u0663'": {
+        "value": "\u0661\u0662\u0663"
+      }
+    },
+    "rmarc": {
+      "fields_is_list": {
+        "value": true
+      },
+      "selector_order": {
+        "value": [
+          "650",
+          "245",
+          "650"
+        ]
+      },
+      "duplicate_selectors": {
+        "value": [
+          "650",
+          "650"
+        ]
+      },
+      "fields_list_identity": {
+        "value": true
+      },
+      "missing_subfield": {
+        "error": "KeyError"
+      },
+      "append_subfield": {
+        "value": "title subtitle"
+      },
+      "assign_subfield": {
+        "value": "changed"
+      },
+      "append_field": {
+        "value": 1
+      },
+      "tag_None": {
+        "value": "None"
+      },
+      "tag_' 1'": {
+        "value": " 1"
+      },
+      "tag_'+01'": {
+        "value": "+01"
+      },
+      "tag_'001'": {
+        "value": "001"
+      },
+      "tag_'\u0661\u0662\u0663'": {
+        "value": "\u0661\u0662\u0663"
+      }
+    }
+  },
+  "fixtures": [
+    {
+      "file": "1251.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "1251.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "alphatag.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_eacc_encoding.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_indicator.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_marc8_escape.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_records.mrc",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "bad_subfield_code.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "diacritic.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "marc.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8-to-unicode.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "marc8.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "multi_isbn.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "one.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "regression45.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "test.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "testunimarc.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_errors.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_invalid.mrc",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_with_leader_flag.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {},
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "to_unicode": false
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "utf8_handling": "replace"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "utf8_handling": "ignore"
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "force_utf8": true
+      },
+      "equal": true
+    },
+    {
+      "file": "utf8_without_leader_flag.dat",
+      "options": {
+        "file_encoding": "cp1251"
+      },
+      "equal": true
+    }
+  ],
+  "utf8_handlers": {
+    "pymarc": {
+      "strict": {
+        "error": "UnicodeDecodeError",
+        "encoding": "utf-8",
+        "start": 8,
+        "end": 9,
+        "object_hex": "76616c6964efbfbdff",
+        "reason": "invalid start byte"
+      },
+      "ignore": {
+        "value": "valid\ufffd"
+      },
+      "replace": {
+        "value": "valid\ufffd\ufffd"
+      },
+      "backslashreplace": {
+        "value": "valid\ufffd\\xff"
+      },
+      "surrogateescape": {
+        "value": "valid\ufffd\udcff"
+      }
+    },
+    "rmarc": {
+      "strict": {
+        "error": "UnicodeDecodeError",
+        "encoding": "utf-8",
+        "start": 8,
+        "end": 9,
+        "object_hex": "76616c6964efbfbdff",
+        "reason": "invalid start byte"
+      },
+      "ignore": {
+        "value": "valid\ufffd"
+      },
+      "replace": {
+        "value": "valid\ufffd\ufffd"
+      },
+      "backslashreplace": {
+        "value": "valid\ufffd\\xff"
+      },
+      "surrogateescape": {
+        "value": "valid\ufffd\udcff"
+      }
+    }
+  },
+  "encoding_cases": {
+    "explicit_utf8_without_flag": {
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00048     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": " ",
+                      "ind2": " ",
+                      "subfields": [
+                        {
+                          "a": "caf\u00e9"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "6db0792b0a6caf9dafb6333cc0be9fff42ef3319a350abfd3dc2c54760816183"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00048     2200037   4500",
+                "fields": [
+                  {
+                    "245": {
+                      "ind1": " ",
+                      "ind2": " ",
+                      "subfields": [
+                        {
+                          "a": "caf\u00e9"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "encode": {
+                "value": "6db0792b0a6caf9dafb6333cc0be9fff42ef3319a350abfd3dc2c54760816183"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    "latin1_control_field": {
+      "pymarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00040     2200037   4500",
+                "fields": [
+                  {
+                    "001": "\u00e9"
+                  }
+                ]
+              },
+              "encode": {
+                "value": "a63040e691ac5be5f3cf99cbba6f2ac94bad44fbf5414ef562e3ab9920a95a0f"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "rmarc": {
+        "value": {
+          "events": [
+            {
+              "record": {
+                "leader": "00040     2200037   4500",
+                "fields": [
+                  {
+                    "001": "\u00e9"
+                  }
+                ]
+              },
+              "encode": {
+                "value": "a63040e691ac5be5f3cf99cbba6f2ac94bad44fbf5414ef562e3ab9920a95a0f"
+              }
+            }
+          ],
+          "warnings": []
+        }
+      }
+    }
+  }
+}

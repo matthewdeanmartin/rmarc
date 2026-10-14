@@ -35,6 +35,7 @@ fn _rmarc(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(version, m)?)?;
 
     m.add_function(wrap_pyfunction!(marc_codec::decode_marc_raw, m)?)?;
+    m.add_function(wrap_pyfunction!(marc_codec::decode_marc_fields, m)?)?;
     m.add_function(wrap_pyfunction!(marc_codec::encode_marc_raw, m)?)?;
     m.add_function(wrap_pyfunction!(marc8::marc8_to_unicode_rs, m)?)?;
     Ok(())

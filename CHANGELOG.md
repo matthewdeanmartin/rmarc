@@ -8,17 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Self-contained pytest reproductions of mrrc 0.9.2 compatibility differences.
+- Differential encoding and mutation regressions against pymarc 5.4.0.
 - Benchmark and deathmatch performance comparison script
 - Performance documentation comparing parsing implementations
 - Official support for Python 3.14 and 3.15, including binary wheels
 
 ### Changed
+- Decode MARC records directly into Python Field/Subfield objects, avoiding an
+  intermediate tuple tree; borrow valid UTF-8 and fast-path printable MARC-8 ASCII.
+- Adopt pymarc 5.4's single-pass lookups and tag normalization while preserving
+  mutable field/subfield lists and record order.
 - Improve internal build and CI configuration
 - Requires Python 3.11 or newer; Python 3.10 is no longer supported.
-- CI installs only maturin and pytest so prerelease Pythons are not blocked by
+- Matrix CI installs maturin, pytest and the pinned pymarc reference so prerelease Pythons are not blocked by
   dev-only tooling without wheels
 
 ### Fixed
+- Preserve valid replacement characters with UTF-8 `ignore`, honor custom/error
+  handlers, and retain exact decoding exceptions and partially decoded records.
+- Decode explicit UTF-8 and legacy control fields with pymarc's encoding semantics.
+- Preserve Python error behavior for trailing MARC-8 escape sequences.
+- Compare equivalent field/XML work in benchmarks and skip non-equivalent outputs;
+  install the `cpuinfo` provider required by pytest-benchmark's JSON reports.
 - Enable cibuildwheel's `cpython-prerelease` so `cp315-*` wheels are actually
   built instead of silently skipped
 - Compare PEP 440 normalized versions when verifying the sdist, so SemVer
