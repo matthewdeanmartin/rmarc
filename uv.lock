@@ -1806,7 +1806,7 @@ wheels = [
 
 [[package]]
 name = "keepachangelog-manager-fork"
-version = "6.9.0"
+version = "6.10.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirer" },
@@ -1817,9 +1817,9 @@ dependencies = [
     { name = "tomlkit" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/94/80/b08dbb212b396458f149db123c4e133936ff2d053a5adf438440d4271898/keepachangelog_manager_fork-6.9.0.tar.gz", hash = "sha256:a9d2cfaeac2a4a915f7063cccae4ebda51a5ae9a9ccf8582ee775749527918d4", size = 1455889, upload-time = "2026-09-11T00:28:30.464Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/e9/a4127d0473f22392829d958ea302b1d08cbf82c51cb01fe183090468e5b2/keepachangelog_manager_fork-6.10.1.tar.gz", hash = "sha256:49beb0519abf967f858d426b075d11a02e028c8302c49abd9b60419d9c91a845", size = 1380469, upload-time = "2026-10-14T02:32:22.179Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/57/aa/b85afbac124292db9cabe5b1a98d7b730ccfd52362ae401376dd0365c3af/keepachangelog_manager_fork-6.9.0-py3-none-any.whl", hash = "sha256:ab660efed9794cb57e408132920db748e534937e2c986f81553ea37ffb370afa", size = 211664, upload-time = "2026-09-11T00:28:28.815Z" },
+    { url = "https://files.pythonhosted.org/packages/2a/1f/56392e4bf05bcc1b7e7fb6b690f224ddd29fb2dc55a336e6935f97e5440a/keepachangelog_manager_fork-6.10.1-py3-none-any.whl", hash = "sha256:1721af756fa27ea39ffbdbd0f9ab4dbbdf034e773a7251b29855557852376858", size = 217233, upload-time = "2026-10-14T02:32:20.759Z" },
 ]
 
 [package.optional-dependencies]
@@ -3879,8 +3879,8 @@ dev = [
     { name = "hypothesis", extras = ["cli"] },
     { name = "interrogate", specifier = ">=1.5.0" },
     { name = "jiggle-version", specifier = ">=2.0.1" },
-    { name = "keepachangelog-manager-fork", extras = ["fast"], marker = "python_full_version < '3.15'", specifier = ">=6.8.0" },
-    { name = "keepachangelog-manager-fork", extras = ["stdlib"], marker = "python_full_version >= '3.15'", specifier = ">=6.8.0" },
+    { name = "keepachangelog-manager-fork", extras = ["fast"], marker = "python_full_version < '3.15'", specifier = ">=6.10.1" },
+    { name = "keepachangelog-manager-fork", extras = ["stdlib"], marker = "python_full_version >= '3.15'", specifier = ">=6.10.1" },
     { name = "linkcheckmd", specifier = ">=1.4.0" },
     { name = "maturin", specifier = ">=1.12.6" },
     { name = "maturin", marker = "python_full_version >= '3.14'", specifier = ">=1.9.6" },
