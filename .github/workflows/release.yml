@@ -60,9 +60,9 @@ jobs:
             --open-pr \
             --title "chore: release ${VERSION}" \
             --body "Automated release PR for ${VERSION}. Merge once the PyPI publish succeeds." \
-            --yes > release-bump.json
-          echo "version=$(python -c "import json;print(json.load(open('release-bump.json'))['version'])")" >> "$GITHUB_OUTPUT"
-          echo "branch=$(python -c "import json;print(json.load(open('release-bump.json'))['branch'])")" >> "$GITHUB_OUTPUT"
+            --yes > "$RUNNER_TEMP/release-bump.json"
+          echo "version=$(python -c "import json, os;print(json.load(open(os.path.join(os.environ['RUNNER_TEMP'], 'release-bump.json')))['version'])")" >> "$GITHUB_OUTPUT"
+          echo "branch=$(python -c "import json, os;print(json.load(open(os.path.join(os.environ['RUNNER_TEMP'], 'release-bump.json')))['branch'])")" >> "$GITHUB_OUTPUT"
   build-wheels:
     name: Wheels / ${{ matrix.name }}
     runs-on: ${{ matrix.os }}

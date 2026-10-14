@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Matrix CI installs maturin, pytest and the pinned pymarc reference so prerelease Pythons are not blocked by dev-only tooling without wheels
 
 ### Fixed
+- Keep release-bump JSON output outside the checkout so its clean-tree check succeeds.
 - Preserve valid replacement characters with UTF-8 `ignore`, honor custom/error handlers, and retain exact decoding exceptions and partially decoded records.
 - Decode explicit UTF-8 and legacy control fields with pymarc's encoding semantics.
 - Preserve Python error behavior for trailing MARC-8 escape sequences.
@@ -46,4 +47,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Path handling and Mac compatibility
 
-[5.3.1]: https://github.com/matthewdeanmartin/rmarc/compare/v5.3.1...v5.3.1
+[Unreleased]: https://github.com/matthewdeanmartin/rmarc/compare/37adfa08ad0f38c8993a44e5c20ec379ab59b8d8...HEAD
+[5.3.1]: https://github.com/matthewdeanmartin/rmarc/tree/37adfa08ad0f38c8993a44e5c20ec379ab59b8d8

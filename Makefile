@@ -191,3 +191,8 @@ check-examples:
 	uv run pyright examples/book_catalog.py
 	uv run pyrefly check examples/book_catalog.py
 	uv run pytest test_pymarc/test_typed_examples.py -q
+
+# Validate release notes without modifying the environment or checkout.
+.PHONY: changelog-check
+changelog-check:
+	uv run --frozen --no-sync kaclm validate --strict
