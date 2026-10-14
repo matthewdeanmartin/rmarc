@@ -194,6 +194,42 @@ fn unicode_normalization_nfc(s: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn all_printable_ascii_is_borrowed_without_allocation() {
+        let data: Vec<u8> = (b' '..=b'~').collect();
+        match marc8_to_unicode(&data, true) {
+            std::borrow::Cow::Borrowed(text) => {
+                assert_eq!(text.as_bytes(), data);
+                assert_eq!(text.as_ptr(), data.as_ptr());
+            }
+            _ => panic!("printable ASCII must use the borrowed fast path"),
+        }
+    }
+
+    #[test]
+    fn every_non_printable_byte_bypasses_ascii_fast_path() {
+        for byte in (0..b' ').chain(0x7f..=0xff) {
+            assert!(matches!(
+                marc8_to_unicode(&[byte], true),
+                std::borrow::Cow::Owned(_)
+            ));
+        }
+    }
+
+    #[test]
+    fn truncated_cjk_character_becomes_one_space() {
+        assert_eq!(marc8_to_unicode_rs(b"\x1b$1!", true), " ");
+        assert_eq!(marc8_to_unicode_rs(b"\x1b$1!0", true), " ");
+    }
+
+    #[test]
+    fn charset_and_combining_state_do_not_leak_between_calls() {
+        assert_eq!(marc8_to_unicode_rs(b"\x1b(SA", true), "Α");
+        assert_eq!(marc8_to_unicode_rs(b"A", true), "A");
+        assert_eq!(marc8_to_unicode_rs(b"\xe2", true), "");
+        assert_eq!(marc8_to_unicode_rs(b"e", true), "e");
+    }
+
     use super::*;
 
     // ── Basic Latin passthrough ───────────────────────────────────────────────

@@ -10,7 +10,7 @@ __all__ = [
 
 import json
 import xml.etree.ElementTree as ET
-from typing import IO
+from typing import IO, cast
 
 from rmarc._compat import HAS_ORJSON, json_dumps
 from rmarc.exceptions import WriteNeedsRecord
@@ -101,7 +101,9 @@ class XMLWriter(Writer):
         Writer.write(self, record)
         if self.file_handle:
             node = record_to_xml_node(record)
-            self.file_handle.write(ET.tostring(node, encoding="utf-8"))
+            # ElementTree serializes lxml elements through the same structural
+            # interface. Keep its existing byte formatting for compatibility.
+            self.file_handle.write(ET.tostring(cast(ET.Element, node), encoding="utf-8"))
 
     def close(self, close_fh: bool = True) -> None:
         if self.file_handle:

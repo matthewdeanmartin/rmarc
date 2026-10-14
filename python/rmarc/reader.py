@@ -9,11 +9,12 @@ __all__ = [
 ]
 
 import json
+import operator
 import os
 import sys
 from collections.abc import Callable, Iterator
-from io import BufferedReader, BytesIO, IOBase, StringIO
-from typing import IO, BinaryIO
+from io import BufferedReader, BytesIO, FileIO, IOBase, RawIOBase, StringIO, UnsupportedOperation
+from typing import IO, BinaryIO, cast
 
 from rmarc._compat import json_loads
 from rmarc.constants import END_OF_RECORD
@@ -35,20 +36,71 @@ class Reader:
     pass
 
 
-class MARCReader(Reader):
-    """An iterator class for reading a file of MARC21 records."""
+class _ReadAdapter(RawIOBase):
+    """Adapt a binary read-only interface to BufferedReader's readinto protocol."""
 
-    _current_chunk = None
-    _current_exception = None
+    def __init__(self, source: BinaryIO) -> None:
+        super().__init__()
+        self.source = source
+
+    def readable(self) -> bool:
+        return True
+
+    def readinto(self, buffer):
+        data = self.source.read(len(buffer))
+        if data is None:
+            return None
+        size = len(data)
+        memoryview(buffer)[:size] = data
+        return size
+
+    def seekable(self) -> bool:
+        return getattr(self.source, "seekable", lambda: False)()
+
+    def seek(self, offset: int, whence: int = 0) -> int:
+        if not hasattr(self.source, "seek"):
+            raise UnsupportedOperation("seek")
+        return self.source.seek(offset, whence)
+
+    def tell(self) -> int:
+        if not hasattr(self.source, "tell"):
+            raise UnsupportedOperation("tell")
+        return self.source.tell()
+
+    def close(self) -> None:
+        if not self.closed:
+            try:
+                self.source.close()
+            finally:
+                super().close()
+
+
+class MARCReader(Reader):
+    """An iterator class for reading a file of MARC21 records.
+
+    ``batch_bytes=0`` (default) preserves pymarc's read behavior. A positive
+    size enables bounded I/O read-ahead using ``io.BufferedReader``. Records
+    are still decoded one at a time, with the options in effect at ``next()``.
+
+    In batched mode, ``file_handle`` is the buffered stream, not the original
+    source. Use it for logical positions/seeks; do not access the original
+    source while this reader is active. Closing or collecting the buffer closes
+    its source. Short reads are accumulated; I/O timing follows BufferedReader.
+    This is useful for expensive/unbuffered reads, not a guarantee of faster
+    parsing on an already-buffered file or bytes input.
+    """
+
+    _current_chunk: bytes | None = None
+    _current_exception: Exception | None = None
 
     file_handle: IO
 
     @property
-    def current_chunk(self):
+    def current_chunk(self) -> bytes | None:
         return self._current_chunk
 
     @property
-    def current_exception(self):
+    def current_exception(self) -> Exception | None:
         return self._current_exception
 
     def __init__(
@@ -60,7 +112,12 @@ class MARCReader(Reader):
         utf8_handling: str = "strict",
         file_encoding: str = "iso8859-1",
         permissive: bool = False,
+        *,
+        batch_bytes: int = 0,
     ) -> None:
+        batch_bytes = operator.index(batch_bytes)
+        if batch_bytes < 0:
+            raise ValueError("batch_bytes must be non-negative")
         super().__init__()
         self.to_unicode = to_unicode
         self.force_utf8 = force_utf8
@@ -72,21 +129,32 @@ class MARCReader(Reader):
             self.file_handle = BytesIO(marc_target)
         else:
             self.file_handle = marc_target
+        if batch_bytes:
+            source = self.file_handle
+            # Subclasses may override read() without overriding readinto().
+            # Keep those hooks rather than bypassing them through the base type.
+            raw = (
+                cast(BytesIO | BufferedReader | FileIO, source)
+                if type(source) in (BytesIO, BufferedReader, FileIO)
+                else _ReadAdapter(source)
+            )
+            self.file_handle = BufferedReader(raw, buffer_size=batch_bytes)
 
     def close(self) -> None:
         self.file_handle.close()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Record | None]:
         return self
 
-    def __next__(self):
+    def __next__(self) -> Record | None:
         if self._current_exception and isinstance(self._current_exception, FatalReaderError):
             raise StopIteration
 
         self._current_chunk = None
         self._current_exception = None
 
-        self._current_chunk = first5 = self.file_handle.read(5)
+        first5: bytes = self.file_handle.read(5)
+        self._current_chunk = first5
         if not first5:
             raise StopIteration
 
@@ -104,11 +172,11 @@ class MARCReader(Reader):
         chunk = first5 + chunk
         self._current_chunk = chunk
 
-        if len(self._current_chunk) < length:
+        if len(chunk) < length:
             self._current_exception = TruncatedRecord()
             return None
 
-        if self._current_chunk[-1] != ord(END_OF_RECORD):
+        if chunk[-1] != ord(END_OF_RECORD):
             self._current_exception = EndOfRecordNotFound()
             return None
 
@@ -123,6 +191,7 @@ class MARCReader(Reader):
             )
         except Exception as ex:
             self._current_exception = ex
+            return None
 
 
 def map_records(f: Callable, *files: BytesIO | BufferedReader) -> None:

@@ -1,4 +1,4 @@
-.PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright \
+.PHONY: dev test test-coverage lint lint-ruff lint-pylint lint-mypy lint-pyright lint-pyrefly \
         lint-rust rust-test format format-check build build-release build-wheels clean all ci check-all claude \
         fast fast-uninstall bench bench-contest bench-all perf
 
@@ -24,13 +24,11 @@ fast-uninstall:
 
 ## Run all tests (Rust + Python).
 test: rust-test
-	uv run python -m unittest discover -s test_pymarc -v
 	uv run pytest
 
 ## Run tests with coverage measurement and report.
 test-coverage:
-	# This is messed up. Needs to c
-	uv run coverage run -m unittest discover -s test_pymarc
+	uv run coverage run -m pytest test_pymarc
 	uv run coverage xml
 	uv run coverage report
 
@@ -48,7 +46,7 @@ lint-rust:
 # ── Linting ───────────────────────────────────────────────────────────────────
 
 ## Run all linters (Python + Rust).
-lint: lint-ruff lint-pylint lint-mypy lint-pyright lint-rust
+lint: lint-ruff lint-pylint lint-mypy lint-pyright lint-pyrefly lint-rust
 
 ## ruff: fast lint (pymarc CI floor).
 lint-ruff:
@@ -59,13 +57,17 @@ lint-ruff:
 lint-pylint:
 	uv run pylint python/rmarc
 
-## mypy: strict type checking.
+## mypy: check annotated APIs and unannotated function bodies.
 lint-mypy:
 	uv run mypy python/rmarc
 
 ## pyright: Microsoft type checker (pymarc CI floor).
 lint-pyright:
 	uv run pyright python/rmarc
+
+## Pyrefly: independent type checking.
+lint-pyrefly:
+	uv run pyrefly check
 
 # ── Formatting ────────────────────────────────────────────────────────────────
 
@@ -80,11 +82,11 @@ format-check:
 # ── Building & packaging ──────────────────────────────────────────────────────
 
 ## Build a debug wheel.
-build:
+build: check-examples
 	uv run maturin build
 
 ## Build a release wheel (optimised).
-build-release:
+build-release: check-examples
 	uv run maturin build --release
 
 ## Build platform wheels for the current host via cibuildwheel.
@@ -94,18 +96,20 @@ build-wheels:
 # ── CI pipeline (mirrors pymarc .gitlab-ci.yml floor + extras) ────────────────
 
 ## Full CI sequence: lint → format-check → rust-test → test-coverage.
-ci: lint-ruff format-check lint-pyright lint-rust rust-test test-coverage
+ci: check-examples lint-ruff format-check lint-mypy lint-pyrefly lint-pyright lint-rust rust-test test-coverage
 
 ## Full quality gate including pylint and mypy on top of CI floor.
-all: lint format-check rust-test test-coverage
+all: check-examples lint format-check rust-test test-coverage
 
 ## Format everything, then run every check exactly as CI does. Run this before pushing.
-check-all:
+check-all: check-examples
 	cargo fmt
 	uv run ruff format python/rmarc test_pymarc
 	cargo fmt --check
 	uv run ruff format --check --diff python/rmarc
 	uv run ruff check python/rmarc
+	uv run mypy python/rmarc
+	uv run pyrefly check
 	uv run pyright python/rmarc
 	cargo clippy -- -D warnings
 	cargo test
@@ -170,3 +174,20 @@ pydoc-docs:
 
 # `bench` is also a directory in this repo; without .PHONY make can call the target up to date and skip it.
 .PHONY: bench
+
+# Local timings only: intentionally excluded from ci, all and check-all.
+.PHONY: perf-baseline perf-check check-examples
+PERF_OPTIONS ?=
+PERF_BASELINE ?=
+perf-baseline:
+	uv run pytest bench/regression --benchmark-only --benchmark-storage=target/performance --benchmark-save=baseline $(PERF_OPTIONS)
+
+perf-check:
+	uv run pytest bench/regression --benchmark-only --benchmark-storage=target/performance --benchmark-compare$(if $(PERF_BASELINE),=$(PERF_BASELINE),) --benchmark-compare-fail=median:15% $(PERF_OPTIONS)
+
+# Consumer examples are checked and executed, without launching the GUI.
+check-examples:
+	uv run mypy --strict --follow-imports=silent examples/book_catalog.py
+	uv run pyright examples/book_catalog.py
+	uv run pyrefly check examples/book_catalog.py
+	uv run pytest test_pymarc/test_typed_examples.py -q

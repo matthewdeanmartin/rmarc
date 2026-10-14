@@ -60,6 +60,8 @@ dev = [
     "packaging",
     # mpy
     "mypy",
+    "types-lxml>=2026.2.16",
+    "pyrefly>=1.3.2",
     "types-toml",
     "types-jsonschema",
     # reports
@@ -139,7 +141,7 @@ features = ["pyo3/extension-module"]
 enable = ["cpython-prerelease"]
 build = "cp311-* cp312-* cp313-* cp314-* cp315-*"
 skip = ["*-musllinux_*", "*-win32"]
-test-requires = ["pytest", "pymarc==5.4.0"]
+test-requires = ["pytest", "hypothesis", "pymarc==5.4.0"]
 test-command = "pytest {project}/test_pymarc -v"
 
 [tool.cibuildwheel.linux]
@@ -182,7 +184,7 @@ testpaths = [
     "sample_src/sample_app/tests",
 ]
 junit_family = "xunit1"
-norecursedirs = ["vendor", "scripts"]
+norecursedirs = ["vendor", "scripts", ".hypothesis"]
 # don't know how to do this in toml
 #addopts = "--strict-markers"
 #markers =
@@ -244,8 +246,14 @@ exclude_also = [
 output = "coverage.xml"
 
 [tool.mypy]
+check_untyped_defs = true
 exclude = ["^dist", "^target", "^pymarc_src"]
 python_version = "3.11"
+
+[tool.pyrefly]
+project-includes = ["python/rmarc"]
+search-path = ["python"]
+python-version = "3.11"
 
 [tool.pyright]
 pythonVersion = "3.11"

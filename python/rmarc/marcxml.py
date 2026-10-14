@@ -1,5 +1,7 @@
 """From XML to MARC21 and back again (pymarc compatible)."""
 
+from __future__ import annotations
+
 __all__ = [
     "XmlHandler",
     "parse_xml",
@@ -11,6 +13,8 @@ __all__ = [
 
 import unicodedata
 import xml.etree.ElementTree as ET
+from collections.abc import Callable
+from typing import TYPE_CHECKING, TypeVar
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler, feature_namespaces
 
@@ -19,6 +23,11 @@ from rmarc.field import Field, Indicators
 from rmarc.leader import Leader
 from rmarc.marc8 import MARC8ToUnicode
 from rmarc.record import Record
+
+if TYPE_CHECKING:
+    from lxml.etree import _Element
+
+_ElementT = TypeVar("_ElementT", ET.Element, "_Element")
 
 XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
 MARC_XML_NS = "http://www.loc.gov/MARC21/slim"
@@ -93,7 +102,7 @@ class XmlHandler(ContentHandler):
 
 
 def parse_xml(xml_file, handler):
-    if HAS_LXML:
+    if HAS_LXML and lxml_ET is not None:
         from lxml import sax as _lxml_sax
 
         tree = lxml_ET.parse(xml_file)
@@ -106,8 +115,11 @@ def parse_xml(xml_file, handler):
 
 
 def map_xml(function, *files):
-    handler = XmlHandler()
-    handler.process_record = function
+    class CallbackHandler(XmlHandler):
+        def process_record(self, record):
+            function(record)
+
+    handler = CallbackHandler()
     for xml_file in files:
         parse_xml(xml_file, handler)
 
@@ -120,47 +132,56 @@ def parse_xml_to_array(xml_file, strict=False, normalize_form=None):
 
 def record_to_xml(record, quiet=False, namespace=False):
     node = record_to_xml_node(record, quiet, namespace)
-    if HAS_LXML:
-        return lxml_ET.tostring(node)
-    return ET.tostring(node)
+    return _xml_to_bytes(node)
 
 
 def record_to_xml_node(record, quiet=False, namespace=False):
-    _ET = lxml_ET if HAS_LXML else ET
+    if HAS_LXML and lxml_ET is not None:
+        if namespace:
+            root = lxml_ET.Element("record", nsmap={None: MARC_XML_NS, "xsi": XSI_NS})
+            root.set(f"{{{XSI_NS}}}schemaLocation", MARC_XML_SCHEMA)
+        else:
+            root = lxml_ET.Element("record")
+        return _populate_xml(record, root, lxml_ET.SubElement, quiet)
 
+    stdlib_root = ET.Element("record")
+    if namespace:
+        stdlib_root.set("xmlns", MARC_XML_NS)
+        stdlib_root.set("xmlns:xsi", XSI_NS)
+        stdlib_root.set("xsi:schemaLocation", MARC_XML_SCHEMA)
+    return _populate_xml(record, stdlib_root, ET.SubElement, quiet)
+
+
+def _xml_to_bytes(node: ET.Element | _Element, encoding: str = "us-ascii") -> bytes:
+    if isinstance(node, ET.Element):
+        return ET.tostring(node, encoding=encoding)
+    assert lxml_ET is not None
+    return lxml_ET.tostring(node, encoding=encoding)
+
+
+def _populate_xml(record, root: _ElementT, subelement: Callable[[_ElementT, str], _ElementT], quiet) -> _ElementT:
+    """Keep each backend's elements paired with its own factory."""
     marc8 = MARC8ToUnicode(quiet=quiet)
 
     def translate(data):
         if type(data) is str:
             return data
-        else:
-            return marc8.translate(data)
+        return marc8.translate(data)
 
-    if namespace and HAS_LXML:
-        # lxml manages namespaces natively; declare via nsmap on the element
-        NSMAP = {None: MARC_XML_NS, "xsi": XSI_NS}
-        root = _ET.Element("record", nsmap=NSMAP)  # type: ignore[call-arg]
-        root.set(f"{{{XSI_NS}}}schemaLocation", MARC_XML_SCHEMA)
-    else:
-        root = _ET.Element("record")
-        if namespace:
-            root.set("xmlns", MARC_XML_NS)
-            root.set("xmlns:xsi", XSI_NS)
-            root.set("xsi:schemaLocation", MARC_XML_SCHEMA)
-    leader = _ET.SubElement(root, "leader")
+    leader = subelement(root, "leader")
     leader.text = str(record.leader)
     for field in record:
         if field.control_field:
-            control_field = _ET.SubElement(root, "controlfield")
+            control_field = subelement(root, "controlfield")
             control_field.set("tag", field.tag)
             control_field.text = translate(field.data)
         else:
-            data_field = _ET.SubElement(root, "datafield")
+            data_field = subelement(root, "datafield")
             data_field.set("ind1", field.indicators.first)
             data_field.set("ind2", field.indicators.second)
             data_field.set("tag", field.tag)
             for subfield in field:
-                data_subfield = _ET.SubElement(data_field, "subfield")
+                data_subfield = subelement(data_field, "subfield")
                 data_subfield.set("code", subfield.code)
                 data_subfield.text = translate(subfield.value)
 

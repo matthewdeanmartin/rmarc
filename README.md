@@ -42,6 +42,20 @@ with open("out.mrc", "wb") as fh:
     writer.close()
 ```
 
+### Optional read-ahead
+
+For sources with expensive read calls, enable I/O batching with
+`MARCReader(source, batch_bytes=256 * 1024)`. It still yields and decodes one
+ordinary record at a time. The default is `0`, preserving the existing reader.
+In batched mode, use `reader.file_handle` for logical positions or seeks;
+the original source may have advanced ahead. Closing the reader closes its
+source. Already-buffered files and bytes inputs may not become faster.
+For full local-file scans, start with a single buffer on
+`open(path, "rb", buffering=256 * 1024)` and leave `batch_bytes=0`. This works
+with both rmarc and pymarc. See the
+[maximum-throughput guide and equivalent pymarc examples](docs/batching-compatibility.md#getting-maximum-throughput)
+for tuning advice and the read-ahead contract.
+
 ### JSON (MARC-in-JSON)
 
 ```python
@@ -211,3 +225,9 @@ adopting a less mature library with a smaller surface area for XML and field-lev
 - [PyPI](https://pypi.org/project/rmarc/)
 - [Documentation](https://rmarc.readthedocs.io/en/latest/)
 - [Bug Tracker](https://github.com/matthewdeanmartin/rmarc/issues)
+
+### Developer regression checks
+
+See [testing workflows](docs/testing-workflows.md) for stateful pymarc comparisons,
+I/O failure tests, typed book-catalog examples (`make check-examples`), and local-only
+performance baselines (`make perf-baseline` / `make perf-check`).

@@ -33,6 +33,7 @@ except ImportError:
         return _json.dumps(obj, separators=(",", ":"))
 
 
+lxml_ET = None
 try:
     import lxml.etree as _lxml_ET
 

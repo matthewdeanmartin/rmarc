@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Stateful differential editing histories and targeted I/O fault-injection tests.
+- Executable typed book-catalog examples checked during builds and CI.
+- Local-only pytest-benchmark regression targets with saved baselines.
+- Release regressions for optional XML/JSON backends, malformed directories,
+  native panic boundaries, MARC-8 state isolation, and decimal encoding limits.
+- Pyrefly checks and maintained lxml stubs in development dependencies and CI.
+- Optional `MARCReader(..., batch_bytes=N)` I/O read-ahead, with lazy decoding
+  and unchanged default reader behavior; supports binary read-only streams.
+- Hypothesis differential tests for serialization, decoding, mutable lists,
+  encoding errors, raw bytes, tags, and reader state against pymarc 5.4.0.
 - Self-contained pytest reproductions of mrrc 0.9.2 compatibility differences.
 - Differential encoding and mutation regressions against pymarc 5.4.0.
 - Benchmark and deathmatch performance comparison script
@@ -15,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Official support for Python 3.14 and 3.15, including binary wheels
 
 ### Changed
+- Check unannotated function bodies with mypy; run pytest (including Hypothesis)
+  from the coverage Makefile target. Exercise optional backend wheels in CI.
+- Assemble MARC output directly in its final bytes buffer and avoid per-field
+  directory formatting allocations; retain custom field serialization hooks.
 - Decode MARC records directly into Python Field/Subfield objects, avoiding an
   intermediate tuple tree; borrow valid UTF-8 and fast-path printable MARC-8 ASCII.
 - Adopt pymarc 5.4's single-pass lookups and tag normalization while preserving

@@ -1,0 +1,142 @@
+{
+  "python": "3.13.3 (main, May 30 2025, 05:37:00) [MSC v.1943 64 bit (AMD64)]",
+  "baseline_label": "1d37798",
+  "corpora": {
+    "repeated-1000": {
+      "bytes": 659100,
+      "sha256": "bd86eb06bb2fbf1586f15f5a818a5bfeae148b49a5cdad3a54abafedd5d9cce3"
+    },
+    "loc-computer-files": {
+      "bytes": 14346341,
+      "sha256": "f7fb110d96ebd45899a8b4f806701b8b121b275b503bb4866ed2bdc19acbbd5f"
+    }
+  },
+  "extensions": {
+    "before": "b882f76811bb80a614eea063f0fcae3784a16229bb5b40cd1e5d44b61a99b710",
+    "after": "fdc3e38704c8f90c52380f23c26f7383da7780e598b321d6e547daa1f38bd5ab"
+  },
+  "module_paths": {
+    "before": "C:\\github\\rmarc\\target\\encoder-comparison\\rmarc_baseline\\__init__.py",
+    "after": "C:\\github\\rmarc\\python\\rmarc\\__init__.py"
+  },
+  "benchmarks": [
+    {
+      "corpus": "loc-computer-files",
+      "operation": "encode",
+      "variant": "after",
+      "seconds": [
+        0.3758035998325795,
+        0.34514109999872744,
+        0.33379409997723997,
+        0.3292513000778854,
+        0.31495500006712973,
+        0.33272260008379817,
+        0.3320962998550385
+      ]
+    },
+    {
+      "corpus": "loc-computer-files",
+      "operation": "encode",
+      "variant": "before",
+      "seconds": [
+        0.4656390999443829,
+        0.4974458001088351,
+        0.51163460011594,
+        0.465121999848634,
+        0.46103070001117885,
+        0.6131441998295486,
+        0.504452700028196
+      ]
+    },
+    {
+      "corpus": "loc-computer-files",
+      "operation": "roundtrip",
+      "variant": "after",
+      "seconds": [
+        0.7627519001252949,
+        0.7376865001861006,
+        0.8703266999218613,
+        0.8676605999935418,
+        0.7479330999776721,
+        0.9554210000205785,
+        0.721515400102362
+      ]
+    },
+    {
+      "corpus": "loc-computer-files",
+      "operation": "roundtrip",
+      "variant": "before",
+      "seconds": [
+        0.9897576000075787,
+        0.8722433000802994,
+        0.8632474998012185,
+        0.9128228998742998,
+        0.9346815999597311,
+        1.0019119000062346,
+        0.9531092999968678
+      ]
+    },
+    {
+      "corpus": "repeated-1000",
+      "operation": "encode",
+      "variant": "after",
+      "seconds": [
+        0.02374000009149313,
+        0.02332680020481348,
+        0.02132500009611249,
+        0.02425349992699921,
+        0.023206100100651383,
+        0.029124799882993102,
+        0.02722429996356368
+      ]
+    },
+    {
+      "corpus": "repeated-1000",
+      "operation": "encode",
+      "variant": "before",
+      "seconds": [
+        0.033422600012272596,
+        0.038286499911919236,
+        0.03336729994043708,
+        0.04201989993453026,
+        0.031091300072148442,
+        0.03127999999560416,
+        0.035227400017902255
+      ]
+    },
+    {
+      "corpus": "repeated-1000",
+      "operation": "roundtrip",
+      "variant": "after",
+      "seconds": [
+        0.06658470002003014,
+        0.05087050003930926,
+        0.06181059987284243,
+        0.05516780004836619,
+        0.05710080009885132,
+        0.07325130002573133,
+        0.06647720001637936
+      ]
+    },
+    {
+      "corpus": "repeated-1000",
+      "operation": "roundtrip",
+      "variant": "before",
+      "seconds": [
+        0.06299969996325672,
+        0.07763960002921522,
+        0.06137829995714128,
+        0.0608496000058949,
+        0.0625321997795254,
+        0.062429700046777725,
+        0.041537499986588955
+      ]
+    }
+  ],
+  "speedups": {
+    "repeated-1000 / encode": 1.4078601467339118,
+    "repeated-1000 / roundtrip": 1.0100160842187087,
+    "loc-computer-files / encode": 1.4950766794427262,
+    "loc-computer-files / roundtrip": 1.2254071078763538
+  }
+}

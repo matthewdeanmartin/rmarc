@@ -18,8 +18,8 @@ Every test runs twice, labeled `[pymarc]` and `[mrrc]`. Assertions express pymar
 behavior. Failures on mrrc are intentional reproductions, not installation errors
 or expected-failure markers.
 
-Verified outcome: **11 passed, 9 failed**: all ten pymarc cases pass, plus the
-mrrc direct-assignment control. The nine failures are the differences below.
+Verified outcome: **12 passed, 10 failed**: all eleven pymarc cases pass, plus the
+mrrc direct-assignment control. The ten failures are the differences below.
 
 To inspect one issue:
 
@@ -39,6 +39,11 @@ uv run --no-project pytest -v test_behavior.py -k title_includes_subtitle
 `test_api_differences.py` separately documents mutable-list APIs. mrrc exposes
 `fields` and `subfields` as methods, so code using pymarc's lists does not work.
 These may be intentional migration differences rather than bugs to fix.
+It also includes a batching/read-ahead reproduction: after yielding the first
+of three 42-byte records from a caller-owned `BytesIO`, pymarc leaves the stream
+at byte 42, while mrrc leaves it at byte 126. This is an observable tradeoff of
+read-ahead, not evidence that the yielded record is incorrect. Callers that stop
+early and reuse or inspect their stream need a documented contract or an opt-out.
 `test_direct_subfield_assignment_updates_record` is a passing control: do not
 claim all mrrc field mutations are lost.
 

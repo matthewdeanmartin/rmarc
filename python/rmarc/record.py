@@ -376,7 +376,7 @@ class Record:
                 field_data = field.as_marc(encoding=encoding)
 
             if field.tag.isdigit():
-                tag_str = f"{int(field.tag):03d}"
+                tag_str = field.tag if len(field.tag) == 3 and field.tag.isascii() else f"{int(field.tag):03d}"
             else:
                 tag_str = f"{field.tag:>03}"
             field_pairs.append((tag_str, field_data))

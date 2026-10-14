@@ -127,7 +127,6 @@ class MARC8ToUnicode:
                 pos += 1
 
             if code_point < 0x20 or 0x80 < code_point < 0xA0:
-                uni = chr(code_point)
                 continue
 
             try:

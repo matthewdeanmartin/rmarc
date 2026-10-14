@@ -415,25 +415,27 @@ pub fn encode_marc_raw<'py>(
     }
 
     let mut directory = Vec::with_capacity(fields.len() * DIRECTORY_ENTRY_LEN + 1);
-    let mut field_data = Vec::new();
     let mut offset: usize = 0;
 
     for (tag, data) in &fields {
         let data_bytes = data.as_bytes();
         let length = data_bytes.len();
 
-        let dir_entry = format!("{:>03}{:04}{:05}", tag, length, offset);
-        directory.extend_from_slice(dir_entry.as_bytes());
-
-        field_data.extend_from_slice(data_bytes);
+        // Widths are minimums, as in pymarc: oversized values must not truncate.
+        directory.extend(std::iter::repeat_n(
+            b' ',
+            3usize.saturating_sub(tag.chars().count()),
+        ));
+        directory.extend_from_slice(tag.as_bytes());
+        append_decimal(&mut directory, length, 4);
+        append_decimal(&mut directory, offset, 5);
         offset += length;
     }
 
     directory.push(END_OF_FIELD);
-    field_data.push(END_OF_RECORD);
 
     let base_address = LEADER_LEN + directory.len();
-    let record_length = base_address + field_data.len();
+    let record_length = base_address + offset + 1;
 
     let new_leader = format!(
         "{:0>5}{}{:0>5}{}",
@@ -443,17 +445,64 @@ pub fn encode_marc_raw<'py>(
         &leader[17..]
     );
 
-    let mut result = Vec::with_capacity(record_length);
-    result.extend_from_slice(new_leader.as_bytes());
-    result.extend_from_slice(&directory);
-    result.extend_from_slice(&field_data);
+    // Write each field once, straight into the final immutable Python bytes.
+    // The actual leader can exceed 24 bytes for oversized records/inputs.
+    let result_length = new_leader.len() + directory.len() + offset + 1;
+    PyBytes::new_with(py, result_length, |result| {
+        let mut position = 0;
+        for part in std::iter::once(new_leader.as_bytes())
+            .chain(std::iter::once(directory.as_slice()))
+            .chain(fields.iter().map(|(_, data)| data.as_bytes()))
+            .chain(std::iter::once([END_OF_RECORD].as_slice()))
+        {
+            result[position..position + part.len()].copy_from_slice(part);
+            position += part.len();
+        }
+        Ok(())
+    })
+}
 
-    Ok(PyBytes::new(py, &result))
+/// Append a zero-padded decimal without allocating a formatting String.
+fn append_decimal(output: &mut Vec<u8>, mut value: usize, width: usize) {
+    let mut digits = [b'0'; 20]; // Enough for usize on supported 32/64-bit targets.
+    let mut start = digits.len();
+    loop {
+        start -= 1;
+        digits[start] = b'0' + (value % 10) as u8;
+        value /= 10;
+        if value == 0 {
+            break;
+        }
+    }
+    start = start.min(digits.len() - width);
+    output.extend_from_slice(&digits[start..]);
 }
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn decimal_encoder_matches_format_for_entire_directory_range() {
+        for value in 0..=100_000 {
+            for width in [4, 5] {
+                let mut output = b"prefix:".to_vec();
+                append_decimal(&mut output, value, width);
+                assert_eq!(output, format!("prefix:{value:0width$}").as_bytes());
+            }
+        }
+    }
+
     use super::*;
+
+    #[test]
+    fn decimal_padding_preserves_oversized_values() {
+        for width in [4, 5] {
+            for value in [0, 9, 10, 9999, 10000, 99999, 100000, usize::MAX] {
+                let mut output = Vec::new();
+                append_decimal(&mut output, value, width);
+                assert_eq!(output, format!("{value:0width$}").as_bytes());
+            }
+        }
+    }
 
     // ── split_on_indicator ────────────────────────────────────────────────────
 
