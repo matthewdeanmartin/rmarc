@@ -104,7 +104,8 @@ jobs:
         run: uv run maturin develop
 
       - name: Install optional backend wheels
-        run: uv pip install --only-binary :all: "lxml>=5.0" "orjson>=3.9"
+        run: |
+          uv pip install --only-binary :all: "lxml>=5.0" "orjson>=3.9"
 
       - name: Run tests with coverage
         run: |
