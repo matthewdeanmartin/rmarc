@@ -230,3 +230,6 @@ data/
 sample_src/sample_app/sample_app/data/*
 !sample_src/sample_app/sample_app/data/sample.csv
 /bookshelf.mrc
+/landing/public/
+/landing/resources/
+/.hugo_build.lock

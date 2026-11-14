@@ -1,7 +1,7 @@
 [project]
 name = "rmarc"
 version = "5.4.0"
-description = "Pymarc compaitible reimplementation in Rust."
+description = "A pymarc-compatible MARC21 record library with optional Rust acceleration."
 readme = "README.md"
 authors = [{ name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" }]
 keywords = ["bash", "gitlab", "github"]
@@ -28,12 +28,11 @@ fast-json = ["orjson>=3.9"]
 fast-xml = ["lxml>=5.0"]
 
 [project.urls]
+Homepage = "https://matthewdeanmartin.github.io/rmarc/"
 Repository = "https://github.com/matthewdeanmartin/rmarc"
 Documentation = "https://rmarc.readthedocs.io/en/latest/"
 Changelog = "https://github.com/matthewdeanmartin/rmarc/blob/main/CHANGELOG.md"
-
-homepage = "https://github.com/matthewdeanmartin/rmarc"
-issues = "https://github.com/matthewdeanmartin/rmarc/issues/"
+Issues = "https://github.com/matthewdeanmartin/rmarc/issues/"
 
 
 
@@ -89,7 +88,6 @@ dev = [
     "pydoctest==0.2.1",
     "pdoc3>=0.5.0",
     "mdformat>=0.5.0",
-    "linkcheckmd>=1.4.0",
     "codespell>=2.2.6",
     "pyenchant>=3.2.2",
     "maturin>=1.12.6",

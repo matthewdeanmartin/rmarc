@@ -1,0 +1,33 @@
+{{ define "main" }}
+{{ $p := .Site.Params }}
+<div class="site-shell">
+  <header class="topbar">
+    <a class="brand" href="{{ .Site.Home.RelPermalink }}" aria-label="rmarc home"><span class="brand-mark">r<span>.</span></span><span>rmarc</span></a>
+    <nav aria-label="Main navigation"><a href="#record">The record</a><a href="#workflow">Workflow</a><a href="{{ $p.docs }}">Documentation</a><a class="nav-github" href="{{ $p.github }}">GitHub ↗</a></nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><p class="eyebrow"><span class="eyebrow-line"></span> MARC21 / PYTHON / RUST</p><h1 id="hero-title">Catalog data,<br><em>in motion.</em></h1><p class="lead">Read, write, and transform MARC21 records through a familiar pymarc API. A Rust extension accelerates the binary codec when available; a Python path keeps the library usable without it.</p><div class="hero-actions"><a class="button button-primary" href="#workflow">See the workflow <span aria-hidden="true">↘</span></a><a class="button button-text" href="{{ $p.docs }}">Read the docs <span aria-hidden="true">↗</span></a></div><p class="hero-note">For catalog imports, exports, and record-level processing.</p></div>
+      <div class="record-stage" id="record"><div class="record-tab">BIBLIOGRAPHIC RECORD <span>001—245</span></div><div class="record-card" aria-label="Illustrative MARC field structure"><div class="card-head"><span>LEADER</span><span>24 POSITION HEADER</span></div><div class="marc-row"><b>001</b><span>record identifier</span><small>Control field</small></div><div class="marc-row"><b>100</b><span><i>$a</i> Creator name</span><small>Main entry</small></div><div class="marc-row featured"><b>245</b><span><i>$a</i> The title of a book</span><small>Title statement</small></div><div class="marc-row"><b>260</b><span><i>$b</i> Publisher</span><small>Publication</small></div><div class="card-foot"><span class="status-dot"></span> Structure retained from bytes to fields</div></div><div class="stage-caption">A record is more than a row. Keep its fields and subfields intact.</div></div>
+    </section>
+
+    <section class="proof-strip" aria-label="Library capabilities"><div><strong>01</strong><span>pymarc-compatible API</span></div><div><strong>02</strong><span>MARC21 binary + JSON + XML</span></div><div><strong>03</strong><span>Optional Rust acceleration</span></div></section>
+
+    <section class="workflow section-grid" id="workflow"><div class="section-aside"><p class="section-index">THE WORKFLOW / 01</p><h2>From file to field<br>and back again.</h2><p>Work with record objects while rmarc handles the MARC wire format. The same reader and writer surface supports an ordinary scan or optional read-ahead for expensive sources.</p><a class="text-link" href="{{ $p.docs }}">Explore the API guide ↗</a></div><div class="code-panel"><div class="code-head"><span class="window-dots"><i></i><i></i><i></i></span><span>catalog.py</span><span>PYTHON</span></div><pre><code><span class="kw">from</span> rmarc <span class="kw">import</span> MARCReader, MARCWriter
+
+<span class="kw">with</span> open(<span class="str">"records.mrc"</span>, <span class="str">"rb"</span>) <span class="kw">as</span> source:
+    <span class="kw">with</span> open(<span class="str">"selected.mrc"</span>, <span class="str">"wb"</span>) <span class="kw">as</span> target:
+        writer = MARCWriter(target)
+        <span class="kw">for</span> record <span class="kw">in</span> MARCReader(source):
+            <span class="kw">if</span> record.title:
+                writer.write(record)
+        writer.close()</code></pre><div class="code-foot"><span>Read → inspect → write</span><span>MARC21</span></div></div></section>
+
+    <section class="formats"><div class="formats-head"><p class="section-index">FLEXIBLE PATHS / 02</p><h2>One record model.<br>Several ways through.</h2></div><div class="format-grid"><article><span class="format-icon">{ }</span><h3>JSON</h3><p>Read and serialize MARC-in-JSON. Install <code>rmarc[fast-json]</code> to opt into orjson where supported.</p></article><article><span class="format-icon">&lt; &gt;</span><h3>XML</h3><p>Parse and write MARCXML. The optional <code>rmarc[fast-xml]</code> extra uses lxml.</p></article><article><span class="format-icon">↻</span><h3>Fallback</h3><p>When the Rust extension is unavailable, the Python codec preserves the record workflow with lower throughput.</p></article></div></section>
+
+    <section class="install"><div><p class="section-index">GET STARTED / 03</p><h2>Bring your records.</h2><p>Install the core library, then choose optional JSON or XML backends for your workload.</p></div><div class="install-commands"><div><span>CORE</span><code>pip install rmarc</code></div><div><span>OPTIONAL</span><code>pip install "rmarc[fast]"</code></div></div></section>
+  </main>
+  <footer><span class="footer-brand">rmarc<span>.</span></span><p>Built for the structure behind the catalog.</p><div><a href="{{ $p.docs }}">Documentation</a><a href="{{ $p.pypi }}">PyPI</a><a href="{{ $p.github }}">Source</a></div></footer>
+</div>
+{{ end }}

@@ -1,0 +1,10 @@
+baseURL = "https://matthewdeanmartin.github.io/rmarc/"
+locale = "en-us"
+title = "rmarc — MARC records in motion"
+disableKinds = ["taxonomy", "term", "RSS"]
+
+[params]
+  description = "Read, write, and transform MARC21 records with a familiar pymarc API, optional Rust acceleration, and a Python fallback."
+  docs = "https://rmarc.readthedocs.io/en/latest/"
+  github = "https://github.com/matthewdeanmartin/rmarc"
+  pypi = "https://pypi.org/project/rmarc/"
